@@ -1,1 +1,1 @@
-print("\n hola\n")
+from app import app
