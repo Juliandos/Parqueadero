@@ -1,19 +1,11 @@
+from flask import render_template
 from app import app
 
-@app.route('/')
-def hola():
-    return 'Hola'
+info_template = {
+    'titulo': 'Inicio',
+    'nombre': 'Julian'
+}
 
-@app.route('/saludo/<nombre>')
-def saludo(nombre):
-    contenido = """
-        <html>
-            <head>
-                <title>Saludo</title>
-            </head>
-            <body>
-                <h1>Saludo a {}</h1>
-            </body>
-        </html>
-    """
-    return contenido.format(nombre)
+@app.route('/')
+def index():
+    return render_template('index.html', info_template=info_template)
