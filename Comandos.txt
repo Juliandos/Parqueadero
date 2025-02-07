@@ -3,4 +3,5 @@ parqueaderoVenv\scripts\activate.bat
 pip install dot-env flask
 pip freeze > requirements.txt
 pip install -r requirements.txt
-flask run
+flask run - servidor una vez
+flask --app app run --debug - para activar el modo depuración, significa que esta reiniciando cada vez que detecte un cambio
