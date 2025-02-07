@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es no-js" lang="zxx">
+<head>
+  <!-- Meta Tags -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dashboard - Sherah{% endblock %}</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+  <!-- Fav Icon -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome-all.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/charts.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/datatables.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jvector-map.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/slickslider.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Barra lateral -->
+    {% include 'partials/sidebar.html' %}
+
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <!-- Barra de navegación superior -->
+        {% include 'partials/navbar.html' %}
+
+        <!-- Contenido principal -->
+        <main class="content">
+            {% block content %}
+            <!-- El contenido específico de cada página se insertará aquí -->
+            {% endblock %}
+        </main>
+
+        <!-- Pie de página -->
+        {% include 'partials/footer.html' %}
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

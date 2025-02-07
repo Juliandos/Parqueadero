@@ -1,11 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ info_template.titulo }}</title>
-</head>
-<body>
-    <h1>Hola, {{ info_template.nombre }}</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Sherah{% endblock %}
+
+{% block content %}
+<h1>Bienvenido al Dashboard</h1>
+<div class="stats">
+    <div class="stat-card">
+        <h2>Total Sells</h2>
+        <p>$654.66k</p>
+        <span>+16.24%</span>
+    </div>
+    <div class="stat-card">
+        <h2>Total Orders</h2>
+        <p>$854.66k</p>
+        <span>-80.00%</span>
+    </div>
+    <div class="stat-card">
+        <h2>Daily Visitors</h2>
+        <p>$987.21M</p>
+        <span>+80.00%</span>
+    </div>
+</div>
+{% endblock %}
