@@ -5,3 +5,4 @@ pip freeze > requirements.txt
 pip install -r requirements.txt
 flask run - servidor una vez
 flask --app app run --debug - para activar el modo depuración, significa que esta reiniciando cada vez que detecte un cambio o también se puede Ejecutar la aplicación en modo de depuración en donde el servidor de flask este ejecutandose que en este caso es main.py con esta linea "app.run(debug=True)", pero no es tan seguro ya que en este caso se ejecuta 
+Agregar depuración era tan facíl como agregar "FLASK_DEBUG = True" en el archivo .flaskenv
