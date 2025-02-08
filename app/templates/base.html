@@ -29,6 +29,21 @@
 
 <body id="sherah-dark-light">
 
+  
+  <!-- sherah Scripts -->
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/circle-progress.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/datatables-2.0.5.min.js') }}"></script><!-- Actualizada -->
+  <script src="{{ url_for('static', filename='js/jquery-jvectormap.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jvector-map.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/slickslider.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
   <div class="sherah-body-area">
     
     {% include 'partials/sidebar.html' %}
@@ -40,20 +55,6 @@
     {% endblock %}
 
   </div>
-
-  <!-- sherah Scripts -->
-  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/datatables-2.0.5.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/circle-progress.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery-jvectormap.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jvector-map.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/slickslider.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   
   <script>
     $(document).ready(function () {
