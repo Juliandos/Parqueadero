@@ -1,0 +1,339 @@
+CREATE TABLE IF NOT EXISTS `parqueadero`.`pais` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(64) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`parqueadero` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `rut` VARCHAR(32) NOT NULL,
+  `nombre` VARCHAR(64) NOT NULL,
+  `direccion` VARCHAR(255) NOT NULL,
+  `telefono` VARCHAR(16) NOT NULL,
+  `email` VARCHAR(64) NOT NULL,
+  `ciudad` VARCHAR(64) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `usuario_id` INT NOT NULL,
+  `pais_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `rut_UNIQUE` (`rut` ASC) VISIBLE,
+  INDEX `fk_parqueadero_usuario1_idx` (`usuario_id` ASC) VISIBLE,
+  INDEX `fk_parqueadero_pais1_idx` (`pais_id` ASC) VISIBLE,
+  CONSTRAINT `fk_parqueadero_usuario1`
+    FOREIGN KEY (`usuario_id`)
+    REFERENCES `parqueadero`.`usuario` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parqueadero_pais1`
+    FOREIGN KEY (`pais_id`)
+    REFERENCES `parqueadero`.`pais` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`usuario` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `documento` VARCHAR(16) NOT NULL,
+  `nombres` VARCHAR(32) NOT NULL,
+  `apellidos` VARCHAR(32) NOT NULL,
+  `telefono` VARCHAR(16) NOT NULL,
+  `email` VARCHAR(64) NOT NULL,
+  `direccion` VARCHAR(255) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `rol_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_usuario_rol1_idx` (`rol_id` ASC) VISIBLE,
+  CONSTRAINT `fk_usuario_rol1`
+    FOREIGN KEY (`rol_id`)
+    REFERENCES `parqueadero`.`rol` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`rol` (
+  `id` INT NOT NULL,
+  `nombre` VARCHAR(32) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `rolcol` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`sede` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(64) NOT NULL,
+  `direccion` VARCHAR(255) NOT NULL,
+  `telefono` VARCHAR(16) NOT NULL,
+  `email` VARCHAR(64) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `parqueadero_id` INT NOT NULL,
+  `usuario_id` INT NOT NULL,
+  INDEX `fk_sede_parqueadero1_idx` (`parqueadero_id` ASC) VISIBLE,
+  PRIMARY KEY (`id`),
+  INDEX `fk_sede_usuario1_idx` (`usuario_id` ASC) VISIBLE,
+  CONSTRAINT `fk_sede_parqueadero1`
+    FOREIGN KEY (`parqueadero_id`)
+    REFERENCES `parqueadero`.`parqueadero` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sede_usuario1`
+    FOREIGN KEY (`usuario_id`)
+    REFERENCES `parqueadero`.`usuario` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`cliente` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `documento` VARCHAR(16) NOT NULL,
+  `nombres` VARCHAR(32) NOT NULL,
+  `apellidos` VARCHAR(32) NOT NULL,
+  `telefono` VARCHAR(16) NOT NULL,
+  `email` VARCHAR(64) NOT NULL,
+  `direccion` VARCHAR(255) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `parqueadero_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `documento_UNIQUE` (`documento` ASC) VISIBLE,
+  INDEX `fk_cliente_parqueadero1_idx` (`parqueadero_id` ASC) VISIBLE,
+  CONSTRAINT `fk_cliente_parqueadero1`
+    FOREIGN KEY (`parqueadero_id`)
+    REFERENCES `parqueadero`.`parqueadero` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`periodicidad` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(64) NOT NULL,
+  `dias` MEDIUMINT NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`arrendamiento` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `descripcion` VARCHAR(256) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `periodicidad_id` INT NOT NULL,
+  `vehiculo_placa` INT NOT NULL,
+  `medio_pago_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_arrendamiento_periodicidad1_idx` (`periodicidad_id` ASC) VISIBLE,
+  INDEX `fk_arrendamiento_vehiculo1_idx` (`vehiculo_placa` ASC) VISIBLE,
+  INDEX `fk_arrendamiento_medio_pago1_idx` (`medio_pago_id` ASC) VISIBLE,
+  CONSTRAINT `fk_arrendamiento_periodicidad1`
+    FOREIGN KEY (`periodicidad_id`)
+    REFERENCES `parqueadero`.`periodicidad` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_arrendamiento_vehiculo1`
+    FOREIGN KEY (`vehiculo_placa`)
+    REFERENCES `parqueadero`.`vehiculo` (`placa`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_arrendamiento_medio_pago1`
+    FOREIGN KEY (`medio_pago_id`)
+    REFERENCES `parqueadero`.`medio_pago` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`redimir` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cantidad` INT NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `redimircol` VARCHAR(45) NULL,
+  `puntos_id` INT NOT NULL,
+  `redimircol1` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_redimir_puntos1_idx` (`puntos_id` ASC) VISIBLE,
+  CONSTRAINT `fk_redimir_puntos1`
+    FOREIGN KEY (`puntos_id`)
+    REFERENCES `parqueadero`.`puntos` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`puntos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cantidad` INT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `puntoscol` VARCHAR(45) NULL,
+  `cliente_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_puntos_cliente1_idx` (`cliente_id` ASC) VISIBLE,
+  CONSTRAINT `fk_puntos_cliente1`
+    FOREIGN KEY (`cliente_id`)
+    REFERENCES `parqueadero`.`cliente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`medio_pago` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(64) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`modulo` (
+  `id` INT NOT NULL,
+  `nombre` VARCHAR(32) NOT NULL,
+  `habilitado` TINYINT NOT NULL DEFAULT 1,
+  `descripcion` VARCHAR(255) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `sede_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_modulo_sede1_idx` (`sede_id` ASC) VISIBLE,
+  CONSTRAINT `fk_modulo_sede1`
+    FOREIGN KEY (`sede_id`)
+    REFERENCES `parqueadero`.`sede` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`puntos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cantidad` INT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `puntoscol` VARCHAR(45) NULL,
+  `cliente_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_puntos_cliente1_idx` (`cliente_id` ASC) VISIBLE,
+  CONSTRAINT `fk_puntos_cliente1`
+    FOREIGN KEY (`cliente_id`)
+    REFERENCES `parqueadero`.`cliente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`medio_pago` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(64) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`modulo` (
+  `id` INT NOT NULL,
+  `nombre` VARCHAR(32) NOT NULL,
+  `habilitado` TINYINT NOT NULL DEFAULT 1,
+  `descripcion` VARCHAR(255) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `sede_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_modulo_sede1_idx` (`sede_id` ASC) VISIBLE,
+  CONSTRAINT `fk_modulo_sede1`
+    FOREIGN KEY (`sede_id`)
+    REFERENCES `parqueadero`.`sede` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`parqueo` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `modulo_id` INT NOT NULL,
+  `vehiculo_placa` INT NOT NULL,
+  `medio_pago_id` INT NOT NULL,
+  `fecha_entrada` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fecha_salida` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `tarifa_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_parqueo_modulo1_idx` (`modulo_id` ASC) VISIBLE,
+  INDEX `fk_parqueo_vehiculo1_idx` (`vehiculo_placa` ASC) VISIBLE,
+  INDEX `fk_parqueo_medio_pago1_idx` (`medio_pago_id` ASC) VISIBLE,
+  INDEX `fk_parqueo_tarifa1_idx` (`tarifa_id` ASC) VISIBLE,
+  CONSTRAINT `fk_parqueo_modulo1`
+    FOREIGN KEY (`modulo_id`)
+    REFERENCES `parqueadero`.`modulo` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parqueo_vehiculo1`
+    FOREIGN KEY (`vehiculo_placa`)
+    REFERENCES `parqueadero`.`vehiculo` (`placa`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parqueo_medio_pago1`
+    FOREIGN KEY (`medio_pago_id`)
+    REFERENCES `parqueadero`.`medio_pago` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parqueo_tarifa1`
+    FOREIGN KEY (`tarifa_id`)
+    REFERENCES `parqueadero`.`tarifa` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`vehiculo` (
+  `placa` INT NOT NULL,
+  `marca` VARCHAR(12) NULL,
+  `modelo` VARCHAR(32) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `vehiculo_tipo_id` INT NOT NULL,
+  `cliente_id` INT NOT NULL,
+  PRIMARY KEY (`placa`),
+  INDEX `fk_vehiculo_vehiculo_tipo1_idx` (`vehiculo_tipo_id` ASC) VISIBLE,
+  INDEX `fk_vehiculo_cliente1_idx` (`cliente_id` ASC) VISIBLE,
+  CONSTRAINT `fk_vehiculo_vehiculo_tipo1`
+    FOREIGN KEY (`vehiculo_tipo_id`)
+    REFERENCES `parqueadero`.`vehiculo_tipo` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_vehiculo_cliente1`
+    FOREIGN KEY (`cliente_id`)
+    REFERENCES `parqueadero`.`cliente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`tarifa_tipo` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(64) NOT NULL,
+  `unidad` TINYINT NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`tarifa` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(128) NOT NULL,
+  `costo` DOUBLE(12,2) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `tarifacol` VARCHAR(45) NULL,
+  `tarifa_tipo_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_tarifa_tarifa_tipo1_idx` (`tarifa_tipo_id` ASC) VISIBLE,
+  CONSTRAINT `fk_tarifa_tarifa_tipo1`
+    FOREIGN KEY (`tarifa_tipo_id`)
+    REFERENCES `parqueadero`.`tarifa_tipo` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `parqueadero`.`vehiculo_tipo` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(32) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
