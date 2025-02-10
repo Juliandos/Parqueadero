@@ -1,4 +1,4 @@
-from . import db
+from app import db
 from datetime import datetime
 
 
@@ -162,10 +162,12 @@ class Usuario(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     documento = db.Column(db.String(16), nullable=False)
+    contrasena = db.Column(db.String(45), nullable=False)
     nombres = db.Column(db.String(32), nullable=False)
     apellidos = db.Column(db.String(32), nullable=False)
     telefono = db.Column(db.String(16), nullable=False)
     email = db.Column(db.String(64), nullable=False)
+    ciudad = db.Column(db.String(64), nullable=False)
     direccion = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
