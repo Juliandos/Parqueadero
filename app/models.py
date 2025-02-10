@@ -14,6 +14,8 @@ class TarifaTipo(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    tarifas = db.relationship('Tarifa', back_populates='tarifa_tipo')
+
     def __repr__(self):
         return f'<TarifaTipo {self.nombre}, Unidad: {self.unidad}>'
 
@@ -28,67 +30,84 @@ class Tarifa(db.Model):
     tarifacol = db.Column(db.String(45), nullable=True)
     tarifa_tipo_id = db.Column(db.Integer, db.ForeignKey('tarifa_tipo.id'), nullable=False)
     
-    tarifa_tipo = db.relationship('TarifaTipo', backref=db.backref('tarifas', lazy=True))
+    parqueos = db.relationship('Parqueo', back_populates='tarifa')
+    tarifa_tipo = db.relationship('TarifaTipo', back_populates='tarifas') 
 
     def __repr__(self):
         return f'<Tarifa {self.nombre}, Costo: {self.costo}>'
 
+class Modulo(db.Model):
+    __tablename__ = 'modulo'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(32), nullable=False)
+    habilitado = db.Column(db.Boolean, default=True, nullable=False)
+    descripcion = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=current_time, nullable=False)
+    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
+    sede_id = db.Column(db.Integer, db.ForeignKey('sede.id'), nullable=False)
+
+    parqueos = db.relationship('Parqueo', back_populates='modulo')
+    sede = db.relationship('Sede', back_populates='modulos')
+
+class Vehiculo(db.Model):
+    __tablename__ = 'vehiculo'
+
+    placa = db.Column(db.Integer, primary_key=True)
+    marca = db.Column(db.String(12))
+    modelo = db.Column(db.String(32))
+    created_at = db.Column(db.DateTime, default=current_time, nullable=False)
+    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
+    vehiculo_tipo_id = db.Column(db.Integer, db.ForeignKey('vehiculo_tipo.id'), nullable=False)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
+
+    # Relaciones faltantes
+    parqueos = db.relationship('Parqueo', back_populates='vehiculo')
+    arrendamientos = db.relationship('Arrendamiento', back_populates='vehiculo')
+
 class Parqueo(db.Model):
     __tablename__ = 'parqueo'  # Nombre de la tabla en la base de datos
 
-    # Columnas de la tabla
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Clave primaria
     fecha_entrada = db.Column(db.DateTime, default=current_time, nullable=False)  # Fecha de entrada
     fecha_salida = db.Column(db.DateTime, nullable=True)  # Fecha de salida (puede ser nulo)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)  # Fecha de creación
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)  # Fecha de actualización
 
-    # Claves foráneas
     modulo_id = db.Column(db.Integer, db.ForeignKey('modulo.id'), nullable=False)  # Relación con 'modulo'
     vehiculo_placa = db.Column(db.Integer, db.ForeignKey('vehiculo.placa'), nullable=False)  # Relación con 'vehiculo'
     medio_pago_id = db.Column(db.Integer, db.ForeignKey('medio_pago.id'), nullable=False)  # Relación con 'medio_pago'
     tarifa_id = db.Column(db.Integer, db.ForeignKey('tarifa.id'), nullable=False)  # Relación con 'tarifa'
 
-    # Relaciones con otras tablas
     modulo = db.relationship('Modulo', back_populates='parqueos')  # Relación con 'modulo'
     vehiculo = db.relationship('Vehiculo', back_populates='parqueos')  # Relación con 'vehiculo'
     medio_pago = db.relationship('MedioPago', back_populates='parqueos')  # Relación con 'medio_pago'
     tarifa = db.relationship('Tarifa', back_populates='parqueos')  # Relación con 'tarifa'
 
-class Puntos(db.Model):
-    __tablename__ = 'puntos'  # Nombre de la tabla en la base de datos
+class Punto(db.Model):
+    __tablename__ = 'punto'
 
-    # Columnas de la tabla
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Clave primaria
-    cantidad = db.Column(db.Integer, nullable=True)  # Cantidad de puntos (puede ser nulo)
-    created_at = db.Column(db.DateTime, default=current_time, nullable=False)  # Fecha de creación
-    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)  # Fecha de actualización
-    puntoscol = db.Column(db.String(45), nullable=True)  # Columna adicional (opcional)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    cantidad = db.Column(db.Integer, nullable=True) 
+    created_at = db.Column(db.DateTime, default=current_time, nullable=False)
+    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
+    puntoscol = db.Column(db.String(45), nullable=True)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
 
-    # Clave foránea
-    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)  # Relación con 'cliente'
-
-    # Relación con la tabla 'cliente'
     cliente = db.relationship('Cliente', back_populates='puntos')
-
-    # Relación inversa con la tabla 'redimir'
-    redenciones = db.relationship('Redimir', back_populates='puntos')
+    redimidos = db.relationship('Redimir', back_populates='punto')
 
 class Redimir(db.Model):
-    __tablename__ = 'redimir'  # Nombre de la tabla en la base de datos
+    __tablename__ = 'redimir'  
 
-    # Columnas de la tabla
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Clave primaria
-    cantidad = db.Column(db.Integer, nullable=False)  # Cantidad de puntos redimidos
-    created_at = db.Column(db.DateTime, default=current_time, nullable=False)  # Fecha de creación
-    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)  # Fecha de actualización
-    redimircol = db.Column(db.String(45), nullable=True)  # Columna adicional (opcional)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    cantidad = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=current_time, nullable=False)
+    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
+    punto_id = db.Column(db.Integer, db.ForeignKey('punto.id'), nullable=False)
 
-    # Clave foránea
-    puntos_id = db.Column(db.Integer, db.ForeignKey('puntos.id'), nullable=False)  # Relación con 'puntos'
-
-    # Relación con la tabla 'puntos'
-    puntos = db.relationship('Puntos', back_populates='redenciones')
+    punto = db.relationship('Punto', back_populates='redimidos')
+    # redimidos = db.relationship('Punto', back_populates='redimidos')
 
 class Arrendamiento(db.Model):
     __tablename__ = 'arrendamiento'  # Nombre de la tabla en la base de datos
@@ -121,7 +140,12 @@ class Sede(db.Model):
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
 
+    parqueadero_id = db.Column(db.Integer, db.ForeignKey('parqueadero.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    
     modulos = db.relationship('Modulo', back_populates='sede')
+    parqueadero = db.relationship('Parqueadero', backref='sedes')
+    usuario = db.relationship('Usuario', backref='sedes')
 
 class Pais(db.Model):
     __tablename__ = 'pais'
@@ -164,6 +188,10 @@ class Periodicidad(db.Model):
     nombre = db.Column(db.String(64), nullable=False)
     dias = db.Column(db.Integer, nullable=False)
 
+    parqueadero_id = db.Column(db.Integer, db.ForeignKey('parqueadero.id'))
+    parqueadero = db.relationship('Parqueadero', back_populates='periodicidades')
+    arrendamientos = db.relationship('Arrendamiento', back_populates='periodicidad')
+
 class Cliente(db.Model):
     __tablename__ = 'cliente'
 
@@ -178,6 +206,9 @@ class Cliente(db.Model):
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
     parqueadero_id = db.Column(db.Integer, db.ForeignKey('parqueadero.id'), nullable=False)
 
+    parqueadero = db.relationship('Parqueadero', back_populates='clientes')
+    puntos = db.relationship('Punto', back_populates='cliente')
+
 class MedioPago(db.Model):
     __tablename__ = 'medio_pago'
 
@@ -186,16 +217,9 @@ class MedioPago(db.Model):
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
 
-class Vehiculo(db.Model):
-    __tablename__ = 'vehiculo'
-
-    placa = db.Column(db.Integer, primary_key=True)
-    marca = db.Column(db.String(12))
-    modelo = db.Column(db.String(32))
-    created_at = db.Column(db.DateTime, default=current_time, nullable=False)
-    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
-    vehiculo_tipo_id = db.Column(db.Integer, db.ForeignKey('vehiculo_tipo.id'), nullable=False)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
+    # Relaciones faltantes
+    parqueos = db.relationship('Parqueo', back_populates='medio_pago')
+    arrendamientos = db.relationship('Arrendamiento', back_populates='medio_pago')
 
 class VehiculoTipo(db.Model):
     __tablename__ = 'vehiculo_tipo'
@@ -204,17 +228,6 @@ class VehiculoTipo(db.Model):
     nombre = db.Column(db.String(64), nullable=False)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
-
-class Modulo(db.Model):
-    __tablename__ = 'modulo'
-
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(32), nullable=False)
-    habilitado = db.Column(db.Boolean, default=True, nullable=False)
-    descripcion = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=current_time, nullable=False)
-    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
-    sede_id = db.Column(db.Integer, db.ForeignKey('sede.id'), nullable=False)
 
 class Parqueadero(db.Model):
     __tablename__ = 'parqueadero'
@@ -231,6 +244,9 @@ class Parqueadero(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     pais_id = db.Column(db.Integer, db.ForeignKey('pais.id'), nullable=False)
 
+    periodicidades = db.relationship('Periodicidad', back_populates='parqueadero')
+
+    clientes = db.relationship('Cliente', back_populates='parqueadero')
     usuario = db.relationship('Usuario', back_populates='parqueaderos')
     pais = db.relationship('Pais', back_populates='parqueaderos')
 
