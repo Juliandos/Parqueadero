@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, jsonify, render_template, request
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero
 from app import db
 
@@ -20,9 +20,13 @@ def vehiculo_tipo():
     return render_template('vehiculo_tipo.html', titulo='Tipo de Vehiculo', tipos_vehiculo = tipos_vehiculo)
 
 # VehiculoTipo DELETE
-
 @routes.route('/vehiculo_tipo/delete/<int:id>', methods=['POST'])
 def vehiculo_tipo_delete(id):
     tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
-    db.session.delete(tipo_vehiculo)
-    db.session.commit()
+    
+    if request.form.get('_method') == 'DELETE':  # Simular DELETE
+        db.session.delete(tipo_vehiculo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Vehículo eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
