@@ -82,13 +82,12 @@ block content %}
       },
     });
 
-    // Botón para agregar un nuevo tipo de vehículo
-    // Enviar formulario al hacer submit
+    // Enviar formulario para Crear
     $("#addVehicleForm").submit(function (event) {
-      event.preventDefault(); // Evita recargar la página
+      event.preventDefault();
 
-      $("#addVehicleModal").modal("hide"); // Cierra el modal
-      let nombre = $("#nombre").val().trim(); // Obtiene el valor del input
+      $("#addVehicleModal").modal("hide");
+      let nombre = $("#nombre").val().trim();
 
       if (nombre === "") {
         Swal.fire("Error", "El nombre es obligatorio.", "error");
@@ -99,12 +98,10 @@ block content %}
         url: "/vehiculo_tipo/add",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify({ nombre: nombre }), // Enviar como JSON
+        data: JSON.stringify({ nombre: nombre }),
         success: function (data) {
           if (data.success) {
-            Swal.fire("Agregado", data.message, "success").then(() => {
-              // $("#TableVT tbody").append(newRow);
-            });
+            Swal.fire("Agregado", data.message, "success")
             setTimeout(function () {
               location.reload();
             }, 1000);
@@ -118,6 +115,7 @@ block content %}
       });
     });
 
+    // Peticción para borrar /vehiculo_tipo/delete/<int:id>
     $("#TableVT").on("click", ".btn-danger", function () {
       let row = $(this).closest("tr");
       let itemName = row.find("td:first").text();
@@ -153,7 +151,6 @@ block content %}
         }
       });
     });
-    // Peticción para borrar /vehiculo_tipo/delete/<int:id>
   });
 </script>
 {% endblock %}
