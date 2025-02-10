@@ -14,30 +14,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>Juan Pérez</td>
-        <td>
-          <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Editar</button>
-          <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Eliminar</button>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>María López</td>
-        <td>
-          <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Editar</button>
-          <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Eliminar</button>
-        </td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>Carlos Mendoza</td>
-        <td>
-          <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Editar</button>
-          <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Eliminar</button>
-        </td>
-      </tr>
+      {%for tipo in tipos_vehiculo %}
+        <tr>
+          <td> {{tipo.id}} </td>
+          <td> {{tipo.nombre}} </td>
+          <td>
+            <button class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Editar</button>
+            <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Eliminar</button>
+          </td>
+        </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>

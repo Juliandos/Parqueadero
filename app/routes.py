@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
-# from app import app
+from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero
+
 routes = Blueprint('routes', __name__)
 
 info_template = {
@@ -13,4 +14,5 @@ def index():
 
 @routes.route('/vehiculo_tipo')
 def vehiculo_tipo():
-    return render_template('vehiculo_tipo.html', titulo='Tipo de Vehiculo')
+    tipos_vehiculo = VehiculoTipo.query.all()
+    return render_template('vehiculo_tipo.html', titulo='Tipo de Vehiculo', tipos_vehiculo = tipos_vehiculo)
