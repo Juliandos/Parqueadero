@@ -57,30 +57,85 @@ block content %}
       },
     });
 
+    // Botón para agregar un nuevo tipo de vehículo
+      // $("#btnAddVehicle").click(function () {
+      //   Swal.fire({
+      //     title: "Agregar Tipo de Vehículo",
+      //     input: "text",
+      //     inputLabel: "Nombre del tipo de vehículo",
+      //     inputPlaceholder: "Ejemplo: Camioneta",
+      //     showCancelButton: true,
+      //     confirmButtonText: "Agregar",
+      //     cancelButtonText: "Cancelar",
+      //     preConfirm: (nombre) => {
+      //       if (!nombre) {
+      //         Swal.showValidationMessage("El nombre es obligatorio");
+      //       }
+      //       return nombre;
+      //     }
+      //   }).then((result) => {
+      //     if (result.isConfirmed) {
+      //       let nombre = result.value;
+  
+      //       fetch(`/vehiculo_tipo/add/${nombre}`, {
+      //         method: "POST",
+      //         headers: { "Content-Type": "application/json" },
+      //       })
+      //         .then((response) => response.json())
+      //         .then((data) => {
+      //           if (data.success) {
+      //             Swal.fire("Agregado", data.message, "success").then(() => {
+      //               location.reload(); // Recargar la tabla
+      //             });
+      //           } else {
+      //             Swal.fire("Error", data.message, "error");
+      //           }
+      //         })
+      //         .catch((error) => {
+      //           Swal.fire("Error", "No se pudo agregar.", "error");
+      //         });
+      //     }
+      //   });
+      // });
+  
+
     $("#TableVT").on("click", ".btn-danger", function () {
       let row = $(this).closest("tr");
       let itemName = row.find("td:first").text();
 
-      // Peticción para borrar /vehiculo_tipo/delete/<int:id>
-      $.ajax({
-        url: `/vehiculo_tipo/delete/${itemName}`,
-        type: "POST",
-        data: { _method: "DELETE" }, // Simulamos un DELETE
-        success: function (response) {
-          if (response.success) {
-            row.remove();
-            console.log('borrado');
-            
-          } else {
-            console.log('no borrado');
-            
-          }
-        },
-        error: function (error) {
-          Swal.fire("Error", "No se pudo eliminar.", "error");
-        },
+      Swal.fire({
+        title: "¿Eliminar este vehículo?",
+        text: "Esta acción no se puede deshacer.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/vehiculo_tipo/delete/${itemName}`,
+            type: "POST",
+            data: { _method: "DELETE" }, // Simulamos un DELETE
+            success: function (response) {
+              if (response.success) {
+                row.remove();
+                Swal.fire("Eliminado", response.message, "success").then(() => {
+                location.reload();
+                });
+              } else {
+                Swal.fire("Error", response.message, "error");
+              }
+            },
+            error: function (error) {
+              Swal.fire("Error", "No se pudo eliminar.", "error");
+            },
+          });
+        }
       });
     });
+    // Peticción para borrar /vehiculo_tipo/delete/<int:id>
   });
 </script>
 {% endblock %}
