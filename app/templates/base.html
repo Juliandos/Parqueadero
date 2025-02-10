@@ -25,24 +25,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  
 </head>
 
 <body id="sherah-dark-light">
 
-  
-  <!-- sherah Scripts -->
-  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/circle-progress.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/datatables-2.0.5.min.js') }}"></script><!-- Actualizada -->
-  <script src="{{ url_for('static', filename='js/jquery-jvectormap.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jvector-map.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/slickslider.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
   <div class="sherah-body-area">
     
@@ -56,6 +45,19 @@
 
   </div>
   
+    <!-- sherah Scripts -->
+    <script src="{{ url_for('static', filename='js/jquery-migrate.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/circle-progress.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datatables-2.0.5.min.js') }}"></script><!-- Actualizada -->
+    <script src="{{ url_for('static', filename='js/jquery-jvectormap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jvector-map.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slickslider.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
   <script>
     $(document).ready(function () {
 
@@ -131,22 +133,29 @@
   </script>
 
   <script>
-    new CircleProgress('.circle__one', {
-      max: 100,
-      value: 60,
-
+    $(document).ready(function () {
+      if ($('.circle__one').length) {
+        new CircleProgress('.circle__one', {
+          max: 100,
+          value: 60,
+        });
+      }
     });
-
-    new CircleProgress('.circle__two', {
-      max: 100,
-      value: 60,
-
+    
+    $(document).ready(function () {
+      if ($('.circle__two').length) {
+        new CircleProgress('.circle__two', {
+          max: 100,
+          value: 60,
+        });
+      }
     });
   </script>
 
   <script>
     // Chart One
     const ctx = document.getElementById('myChart_one_monthly').getContext('2d');
+    
     const myChart_one_monthly = new Chart(ctx, {
       type: 'bar',
 
