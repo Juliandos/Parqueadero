@@ -19,7 +19,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-        # seed_initial_data()
+        seed_initial_data()
 
     from app.routes import routes  
     app.register_blueprint(routes)

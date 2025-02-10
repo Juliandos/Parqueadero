@@ -30,3 +30,16 @@ def vehiculo_tipo_delete(id):
         return jsonify({'success': True, 'message': 'Vehículo eliminado'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# VehiculoTipo CREATE
+@routes.route('/vehiculo_tipo/add', methods=['POST'])
+def vehiculo_tipo_add():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    if not nombre:
+        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+    
+    nuevo_tipo = VehiculoTipo(nombre=nombre)
+    db.session.add(nuevo_tipo)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})

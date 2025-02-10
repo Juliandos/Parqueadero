@@ -3,6 +3,10 @@ block content %}
 <div class="sherah-adashboard sherah-show">
   <h2 class="mb-4">Tipos De Vehiculo</h2>
   <div class="example_wrapper">
+    <!-- Botón para abrir el modal -->
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
+      <i class="fas fa-plus"></i>
+    </button>
     <table
       id="TableVT"
       class="table table-striped table-bordered"
@@ -35,6 +39,27 @@ block content %}
   </div>
 </div>
 
+<!-- Modal para agregar VehículoTipo -->
+<div class="modal fade" id="addVehicleModal" tabindex="-1" aria-labelledby="addVehicleLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addVehicleLabel">Agregar Tipo de Vehículo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addVehicleForm">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" required>
+          </div>
+          <button type="submit" class="btn btn-success">Agregar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   $(document).ready(function () {
     $("#TableVT").DataTable({
@@ -58,46 +83,40 @@ block content %}
     });
 
     // Botón para agregar un nuevo tipo de vehículo
-      // $("#btnAddVehicle").click(function () {
-      //   Swal.fire({
-      //     title: "Agregar Tipo de Vehículo",
-      //     input: "text",
-      //     inputLabel: "Nombre del tipo de vehículo",
-      //     inputPlaceholder: "Ejemplo: Camioneta",
-      //     showCancelButton: true,
-      //     confirmButtonText: "Agregar",
-      //     cancelButtonText: "Cancelar",
-      //     preConfirm: (nombre) => {
-      //       if (!nombre) {
-      //         Swal.showValidationMessage("El nombre es obligatorio");
-      //       }
-      //       return nombre;
-      //     }
-      //   }).then((result) => {
-      //     if (result.isConfirmed) {
-      //       let nombre = result.value;
-  
-      //       fetch(`/vehiculo_tipo/add/${nombre}`, {
-      //         method: "POST",
-      //         headers: { "Content-Type": "application/json" },
-      //       })
-      //         .then((response) => response.json())
-      //         .then((data) => {
-      //           if (data.success) {
-      //             Swal.fire("Agregado", data.message, "success").then(() => {
-      //               location.reload(); // Recargar la tabla
-      //             });
-      //           } else {
-      //             Swal.fire("Error", data.message, "error");
-      //           }
-      //         })
-      //         .catch((error) => {
-      //           Swal.fire("Error", "No se pudo agregar.", "error");
-      //         });
-      //     }
-      //   });
-      // });
-  
+    // Enviar formulario al hacer submit
+    $("#addVehicleForm").submit(function (event) {
+      event.preventDefault(); // Evita recargar la página
+
+      $("#addVehicleModal").modal("hide"); // Cierra el modal
+      let nombre = $("#nombre").val().trim(); // Obtiene el valor del input
+
+      if (nombre === "") {
+        Swal.fire("Error", "El nombre es obligatorio.", "error");
+        return;
+      }
+
+      $.ajax({
+        url: "/vehiculo_tipo/add",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ nombre: nombre }), // Enviar como JSON
+        success: function (data) {
+          if (data.success) {
+            Swal.fire("Agregado", data.message, "success").then(() => {
+              // $("#TableVT tbody").append(newRow);
+            });
+            setTimeout(function () {
+              location.reload();
+            }, 1000);
+          } else {
+            Swal.fire("Error", data.message, "error");
+          }
+        },
+        error: function () {
+          Swal.fire("Error", "No se pudo agregar.", "error");
+        },
+      });
+    });
 
     $("#TableVT").on("click", ".btn-danger", function () {
       let row = $(this).closest("tr");
@@ -120,9 +139,8 @@ block content %}
             data: { _method: "DELETE" }, // Simulamos un DELETE
             success: function (response) {
               if (response.success) {
-                row.remove();
+                row.fadeOut(500, function () { $(this).remove(); });
                 Swal.fire("Eliminado", response.message, "success").then(() => {
-                location.reload();
                 });
               } else {
                 Swal.fire("Error", response.message, "error");
