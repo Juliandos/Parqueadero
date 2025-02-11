@@ -149,5 +149,16 @@ def seed_initial_data():
         db.session.bulk_save_objects(medios_pago)
         print("✅ Medios de pago insertados correctamente.")
 
+    if TarifaTipo.query.count() == 0:
+        tarifas_tipo = [
+            TarifaTipo(nombre='Joice', unidad=1, created_at=datetime.strptime('11/28/2024', '%m/%d/%Y'), updated_at=datetime.strptime('11/14/2024', '%m/%d/%Y')),
+            TarifaTipo(nombre='Lela', unidad=2, created_at=datetime.strptime('5/15/2024', '%m/%d/%Y'), updated_at=datetime.strptime('9/30/2024', '%m/%d/%Y')),
+            TarifaTipo(nombre='Salvatore', unidad=0, created_at=datetime.strptime('8/29/2024', '%m/%d/%Y'), updated_at=datetime.strptime('1/19/2025', '%m/%d/%Y')),
+            TarifaTipo(nombre='Iggie', unidad=0, created_at=datetime.strptime('3/3/2024', '%m/%d/%Y'), updated_at=datetime.strptime('5/13/2024', '%m/%d/%Y')),
+            TarifaTipo(nombre='Agustin', unidad=1, created_at=datetime.strptime('4/29/2024', '%m/%d/%Y'), updated_at=datetime.strptime('5/7/2024', '%m/%d/%Y')),
+        ]
+        db.session.bulk_save_objects(tarifas_tipo)
+        print("✅ Tipos de Tarifa insertados correctamente.")
+
     db.session.commit()
     print("✅ Todos los datos iniciales han sido cargados exitosamente.")

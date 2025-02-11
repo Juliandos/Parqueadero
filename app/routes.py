@@ -58,3 +58,11 @@ def vehiculo_tipo_edit(id):
     db.session.commit()  # Se actualiza automáticamente `updated_at`
     
     return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
+
+# TarifaTipo ALL
+@routes.route('/tarifa_tipo', methods=['GET'])
+def get_tarifa_tipos():
+    tarifas_tipo = TarifaTipo.query.all()
+    return render_template('tarifa_tipo.html', titulo='Tipo de Tarifa', tipos_tarifa = tarifas_tipo)
+
+#
