@@ -65,4 +65,17 @@ def get_tarifa_tipos():
     tarifas_tipo = TarifaTipo.query.all()
     return render_template('tarifa_tipo.html', titulo='Tipo de Tarifa', tipos_tarifa = tarifas_tipo)
 
-#
+# TarifaTipo CREATE
+
+@routes.route('/tarifa_tipo/add', methods=['POST'])
+def add_tarifa_tipo():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    unidad = data.get('unidad')
+    if not nombre or not unidad:
+        return jsonify({'success': False, 'message': 'Los campos nombre y unidad son obligatorios'}), 400
+    
+    nueva_tarifa = TarifaTipo(nombre=nombre, unidad=unidad)
+    db.session.add(nueva_tarifa)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
