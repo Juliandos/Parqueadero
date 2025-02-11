@@ -66,7 +66,6 @@ def get_tarifa_tipos():
     return render_template('tarifa_tipo.html', titulo='Tipo de Tarifa', tipos_tarifa = tarifas_tipo)
 
 # TarifaTipo CREATE
-
 @routes.route('/tarifa_tipo/add', methods=['POST'])
 def add_tarifa_tipo():
     data = request.get_json()
@@ -79,3 +78,32 @@ def add_tarifa_tipo():
     db.session.add(nueva_tarifa)
     db.session.commit()
     return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
+
+# TarifaTipo UPDATE
+@routes.route('/tarifa_tipo/edit/<int:id>', methods=['PUT'])
+def update_tarifa_tipo(id):
+    data = request.get_json()
+    nombre = data.get('nombre')
+    unidad = data.get('unidad')
+    if not nombre or not unidad:
+        return jsonify({'success': False, 'message': 'Los campos nombre y unidad son obligatorios'}), 400
+    
+    tarifa_tipo = TarifaTipo.query.get_or_404(id)
+    tarifa_tipo.nombre = nombre
+    tarifa_tipo.unidad = unidad
+    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'}), 200
+
+# TarifaTipo DELETE
+
+@routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
+def delete_tarifa_tipo(id):
+    tarifa_tipo = TarifaTipo.query.get_or_404(id)
+    
+    if request.form.get('_method') == 'DELETE':  # Simular DELETE
+        db.session.delete(tarifa_tipo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400

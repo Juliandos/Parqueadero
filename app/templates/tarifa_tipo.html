@@ -43,7 +43,7 @@ content %}
   </div>
 </div>
 
-<!-- Modal para agregar/editar VehículoTipo -->
+<!-- Modal para agregar/editar TarifaTipo -->
 <div
   class="modal fade"
   id="feeModal"
@@ -55,7 +55,7 @@ content %}
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="feeModalLabel">
-          Agregar Tipo de Vehículo
+          Agregar Tipo de Tarifa
         </h5>
         <button
           type="button"
@@ -107,7 +107,7 @@ content %}
 
     // 🟢 BOTÓN AGREGAR: Limpia el formulario y cambia el modal a modo "Crear"
     $(".btn-primary").click(function () {
-      $("#feeModalLabel").text("Agregar Tipo de Vehículo");
+      $("#feeModalLabel").text("Agregar Tipo de Tarifa");
       $("#feeForm").attr("data-action", "create");
       $("#feeId").val("");
       $("#nombre").val("");
@@ -120,7 +120,7 @@ content %}
       let id = row.find("td:eq(0)").text();
       let nombre = row.find("td:eq(1)").text();
 
-      $("#feeModalLabel").text("Editar Tipo de Vehículo");
+      $("#feeModalLabel").text("Editar Tipo de Tarifa");
       $("#feeForm").attr("data-action", "edit");
       $("#feeId").val(id);
       $("#nombre").val(nombre);
@@ -142,7 +142,7 @@ content %}
       }
 
       let url =
-        action === "edit" ? `/vehiculo_tipo/edit/${id}` : "/vehiculo_tipo/add";
+        action === "edit" ? `/tarifa_tipo/edit/${id}` : "/tarifa_tipo/add";
       let method = action === "edit" ? "PUT" : "POST";
 
       $.ajax({
@@ -153,7 +153,7 @@ content %}
         success: function (data) {
           if (data.success) {
             Swal.fire("Éxito", data.message, "success").then(() =>
-              location.reload()
+            location.reload()
             );
           } else {
             Swal.fire("Error", data.message, "error");
@@ -167,13 +167,13 @@ content %}
       $("#feeModal").modal("hide");
     });
 
-    // Peticción para borrar /vehiculo_tipo/delete/<int:id>
+    // Peticción para borrar /tarifa_tipo/delete/<int:id>
     $("#TableTT").on("click", ".btn-danger", function () {
       let row = $(this).closest("tr");
       let itemName = row.find("td:first").text();
 
       Swal.fire({
-        title: "¿Eliminar este vehículo?",
+        title: "¿Eliminar este Tarifa?",
         text: "Esta acción no se puede deshacer.",
         icon: "warning",
         showCancelButton: true,
@@ -184,7 +184,7 @@ content %}
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: `/vehiculo_tipo/delete/${itemName}`,
+            url: `/tarifa_tipo/delete/${itemName}`,
             type: "POST",
             data: { _method: "DELETE" }, // Simulamos un DELETE
             success: function (response) {
