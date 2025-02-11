@@ -64,6 +64,13 @@
 
 <script>
   $(document).ready(function () {
+
+    $(document).ajaxStart(function() {
+        $.LoadingOverlay("show");
+      }).ajaxStop(function() {
+        $.LoadingOverlay("hide");
+      });
+    
     $("#TableTT").DataTable({
       paging: true,
       searching: true,
