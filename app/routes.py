@@ -157,3 +157,11 @@ def delete_medio_pago(id):
 def get_clientes():
     clientes = Cliente.query.all()
     return render_template('clientes.html', titulo='Clientes', clientes = clientes)
+
+# Rol ALL
+@routes.route('/rol', methods=['GET'])
+def get_roles():
+    roles = Rol.query.all()
+    return render_template('rol.html', titulo='Roles', roles = roles)
+
+# Periodicidad ALL

@@ -48,7 +48,7 @@ content %}
   </div>
 </div>
 
-<!-- Modal para agregar/editar VehículoTipo -->
+<!-- Modal para agregar/editar clienteTipo -->
 <div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -59,8 +59,8 @@ content %}
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <form id="vehicleForm">
-          <input type="hidden" id="vehicleId" />
+        <form id="ClientesForm">
+          <input type="hidden" id="ClientesId" />
           <!-- ID oculto para edición -->
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
@@ -108,8 +108,8 @@ content %}
     // 🟢 BOTÓN AGREGAR: Limpia el formulario y cambia el modal a modo "Crear"
     $(".btn-primary").click(function () {
       $("#Modal1Label").text("Agregar Tipo de Vehículo");
-      $("#vehicleForm").attr("data-action", "create");
-      $("#vehicleId").val("");
+      $("#ClientesForm").attr("data-action", "create");
+      $("#ClientesId").val("");
       $("#nombre").val("");
       $("#Modal1").modal("show");
     });
@@ -121,18 +121,18 @@ content %}
       let nombre = row.find("td:eq(1)").text();
 
       $("#Modal1Label").text("Editar Tipo de Vehículo");
-      $("#vehicleForm").attr("data-action", "edit");
-      $("#vehicleId").val(id);
+      $("#ClientesForm").attr("data-action", "edit");
+      $("#ClientesId").val(id);
       $("#nombre").val(nombre);
       $("#Modal1").modal("show");
     });
 
-    $("#vehicleForm").submit(function (event) {
+    $("#ClientesForm").submit(function (event) {
       event.preventDefault();
 
       let action = $(this).attr("data-action");
       let nombre = $("#nombre").val().trim();
-      let id = $("#vehicleId").val();
+      let id = $("#ClientesId").val();
 
       if (nombre === "") {
         Swal.fire("Error", "El nombre es obligatorio.", "error");
