@@ -107,3 +107,48 @@ def delete_tarifa_tipo(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
+# MedioPago ALL
+@routes.route('/medio_pago', methods=['GET'])
+def get_medios_pagos():
+    medios_pagos = MedioPago.query.all()
+    return render_template('medio_pago.html', titulo='Medios de Pago', medios_pagos = medios_pagos)
+
+# MedioPago CREATE
+@routes.route('/medio_pago/add', methods=['POST'])
+def add_medio_pago():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    if not nombre:
+        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+    
+    nuevo_medio = MedioPago(nombre=nombre)
+    db.session.add(nuevo_medio)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Medio de pago agregado correctamente'})
+
+# MedioPago UPDATE
+@routes.route('/medio_pago/edit/<int:id>', methods=['PUT'])
+def update_medio_pago(id):
+    data = request.get_json()
+    nombre = data.get('nombre')
+    if not nombre:
+        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+    
+    medio_pago = MedioPago.query.get_or_404(id)
+    medio_pago.nombre = nombre
+    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    return jsonify({'success': True, 'message': 'Medio de pago actualizado correctamente'}), 200
+
+# MedioPago DELETE
+@routes.route('/medio_pago/delete/<int:id>', methods=['POST'])
+def delete_medio_pago(id):
+    medio_pago = MedioPago.query.get_or_404(id)
+    
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(medio_pago)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Medio de pago eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
