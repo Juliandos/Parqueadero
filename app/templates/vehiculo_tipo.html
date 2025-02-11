@@ -1,10 +1,10 @@
-{% extends 'base.html' %} {% block title %}Inicio - Sherah{% endblock %} {%
-block content %}
+{% extends 'base.html' %} {% block title %}Inicio - Sherah{% endblock %} 
+{%block content %}
 <div class="sherah-adashboard sherah-show">
   <h2 class="mb-4">Tipos De Vehiculo</h2>
   <div class="example_wrapper">
     <!-- Botón para abrir el modal -->
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
+    <button class="btn btn-primary mb-3" data-bs-toggle="modalCreate" data-bs-target="#addVehicleModal">
       <i class="fas fa-plus"></i>
     </button>
     <table
@@ -39,21 +39,22 @@ block content %}
   </div>
 </div>
 
-<!-- Modal para agregar VehículoTipo -->
-<div class="modal fade" id="addVehicleModal" tabindex="-1" aria-labelledby="addVehicleLabel" aria-hidden="true">
+<!-- Modal para agregar/editar VehículoTipo -->
+<div class="modal fade" id="vehicleModal" tabindex="-1" aria-labelledby="vehicleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addVehicleLabel">Agregar Tipo de Vehículo</h5>
+        <h5 class="modal-title" id="vehicleModalLabel">Agregar Tipo de Vehículo</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <form id="addVehicleForm">
+        <form id="vehicleForm">
+          <input type="hidden" id="vehicleId"> <!-- ID oculto para edición -->
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="nombre" required>
           </div>
-          <button type="submit" class="btn btn-success">Agregar</button>
+          <button type="submit" class="btn btn-success">Guardar</button>
         </form>
       </div>
     </div>
@@ -82,37 +83,64 @@ block content %}
       },
     });
 
-    // Enviar formulario para Crear
-    $("#addVehicleForm").submit(function (event) {
+    $("#TableVT").DataTable();
+
+    // 🟢 BOTÓN AGREGAR: Limpia el formulario y cambia el modal a modo "Crear"
+    $(".btn-primary").click(function () {
+      $("#vehicleModalLabel").text("Agregar Tipo de Vehículo");
+      $("#vehicleForm").attr("data-action", "create");
+      $("#vehicleId").val("");
+      $("#nombre").val("");
+      $("#vehicleModal").modal("show");
+    });
+
+    // ✏️ BOTÓN EDITAR: Carga los datos en el modal y cambia a modo "Editar"
+    $("#TableVT").on("click", ".btn-warning", function () {
+      let row = $(this).closest("tr");
+      let id = row.find("td:eq(0)").text();
+      let nombre = row.find("td:eq(1)").text();
+
+      $("#vehicleModalLabel").text("Editar Tipo de Vehículo");
+      $("#vehicleForm").attr("data-action", "edit");
+      $("#vehicleId").val(id);
+      $("#nombre").val(nombre);
+      $("#vehicleModal").modal("show");
+    });
+
+    // 🚀 SUBMIT: Crea o edita según el contexto
+    $("#vehicleForm").submit(function (event) {
       event.preventDefault();
 
-      $("#addVehicleModal").modal("hide");
+      let action = $(this).attr("data-action");
       let nombre = $("#nombre").val().trim();
+      let id = $("#vehicleId").val();
 
       if (nombre === "") {
         Swal.fire("Error", "El nombre es obligatorio.", "error");
         return;
       }
 
+      let url = action === "edit" ? `/vehiculo_tipo/edit/${id}` : "/vehiculo_tipo/add";
+      let method = action === "edit" ? "PUT" : "POST";
+
       $.ajax({
-        url: "/vehiculo_tipo/add",
-        type: "POST",
+        url: url,
+        type: method,
         contentType: "application/json",
-        data: JSON.stringify({ nombre: nombre }),
+        data: JSON.stringify({ nombre }),
         success: function (data) {
           if (data.success) {
-            Swal.fire("Agregado", data.message, "success")
-            setTimeout(function () {
-              location.reload();
-            }, 1000);
+            Swal.fire("Éxito", data.message, "success").then(() => location.reload());
           } else {
             Swal.fire("Error", data.message, "error");
           }
         },
         error: function () {
-          Swal.fire("Error", "No se pudo agregar.", "error");
+          Swal.fire("Error", "No se pudo completar la operación.", "error");
         },
       });
+
+      $("#vehicleModal").modal("hide");
     });
 
     // Peticción para borrar /vehiculo_tipo/delete/<int:id>
@@ -151,6 +179,7 @@ block content %}
         }
       });
     });
+    
   });
 </script>
 {% endblock %}

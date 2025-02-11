@@ -43,3 +43,18 @@ def vehiculo_tipo_add():
     db.session.add(nuevo_tipo)
     db.session.commit()
     return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})
+
+# VehiculoTipo EDIT
+@routes.route('/vehiculo_tipo/edit/<int:id>', methods=['PUT'])
+def vehiculo_tipo_edit(id):
+    data = request.get_json()
+    nombre = data.get('nombre')
+
+    tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
+    if not nombre:
+        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+
+    tipo_vehiculo.nombre = nombre
+    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
