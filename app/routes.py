@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, render_template, request
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero
 from app import db
+import bcrypt
 
 routes = Blueprint('routes', __name__)
 
@@ -164,4 +165,71 @@ def get_roles():
     roles = Rol.query.all()
     return render_template('rol.html', titulo='Roles', roles = roles)
 
-# Periodicidad ALL
+# Rol CREATE
+@routes.route('/rol/add', methods=['POST'])
+def add_rol():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    if not nombre:
+        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+    
+    nuevo_rol = Rol(nombre=nombre)
+    db.session.add(nuevo_rol)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Rol agregado correctamente'})
+
+# Rol UPDATE
+@routes.route('/rol/edit/<int:id>', methods=['PUT'])
+def update_rol(id):
+    data = request.get_json()
+    nombre = data.get('nombre')
+    if not nombre:
+        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+    
+    rol = Rol.query.get_or_404(id)
+    rol.nombre = nombre
+    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    return jsonify({'success': True, 'message': 'Rol actualizado correctamente'}), 200
+
+# Rol DELETE
+@routes.route('/rol/delete/<int:id>', methods=['POST'])
+def delete_rol(id):
+    rol = Rol.query.get_or_404(id)
+    
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(rol)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Rol eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Usiario ALL
+@routes.route('/usuario', methods=['GET'])
+def get_usuarios():
+    usuarios = Usuario.query.all()
+    return render_template('usuario.html', titulo='Usuarios', usuarios = usuarios)
+
+# Usiario CREATE
+@routes.route('/usuario/add', methods=['POST'])
+def add_usuario():
+    data = request.get_json()
+    documento = data.get('documento')
+    contrasena = data.get('contrasena')
+    nombres = data.get('nombres')
+    apellidos = data.get('apellidos')
+    telefono = data.get('telefono')
+    email = data.get('email')
+    direccion = data.get('direccion')
+    rol_id = data.get('rol_id')
+
+    if not documento or not contrasena or not nombres or not apellidos or not telefono or not email or not direccion or not rol_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    if Usuario.query.filter_by(documento=documento).first():   
+        return jsonify({'success': False, 'message': 'El documento ya existe'}), 400
+    
+    nuevo_usuario = Usuario(documento=documento, contrasena=bcrypt.generate_password_hash(contrasena), nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, direccion=direccion, rol_id=rol_id)
+    db.session.add(nuevo_usuario)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})

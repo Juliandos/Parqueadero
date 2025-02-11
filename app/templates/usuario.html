@@ -1,0 +1,189 @@
+{% extends 'base.html' %} 
+{% block title %}{{ titulo }}{% endblock %} 
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">Usuarios</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableUsuario" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>ID</th>
+          <th>Documento</th>
+          <th>Contraseña</th>
+          <th>Nombres</th>
+          <th>Apellidos</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Dirección</th>
+          <th>Rol ID</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+          <td>{{ usuario.id }}</td>
+          <td>{{ usuario.documento }}</td>
+          <td>{{ usuario.contrasena }}</td>
+          <td>{{ usuario.nombres }}</td>
+          <td>{{ usuario.apellidos }}</td>
+          <td>{{ usuario.telefono }}</td>
+          <td>{{ usuario.email }}</td>
+          <td>{{ usuario.direccion }}</td>
+          <td>{{ usuario.rol_id }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ usuario.id }}">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ usuario.id }}">
+              <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal1Label">Agregar Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="UsuarioForm">
+          <input type="hidden" id="UsuarioId" />
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="documento" class="form-label">Documento</label>
+              <input type="text" class="form-control" id="documento" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="contrasena" class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="contrasena" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="nombres" class="form-label">Nombres</label>
+              <input type="text" class="form-control" id="nombres" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="apellidos" class="form-label">Apellidos</label>
+              <input type="text" class="form-control" id="apellidos" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="direccion" class="form-label">Dirección</label>
+              <input type="text" class="form-control" id="direccion" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="rol_id" class="form-label">Rol ID</label>
+              <input type="number" class="form-control" id="rol_id" required />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+$(document).ready(function () {
+  $("#TableUsuario").DataTable();
+
+  $("#btnAgregar").click(function () {
+    $("#Modal1Label").text("Agregar Usuario");
+    $("#UsuarioForm").attr("data-action", "create");
+    $("#UsuarioForm")[0].reset();
+    $("#Modal1").modal("show");
+  });
+
+  $(".btnEditar").click(function () {
+    let id = $(this).data("id");
+    $.get(`/usuario/${id}`, function (data) {
+      $("#Modal1Label").text("Editar Usuario");
+      $("#UsuarioForm").attr("data-action", "edit");
+      $("#UsuarioId").val(data.id);
+      $("#documento").val(data.documento);
+      $("#contrasena").val(data.contrasena);
+      $("#nombres").val(data.nombres);
+      $("#apellidos").val(data.apellidos);
+      $("#telefono").val(data.telefono);
+      $("#email").val(data.email);
+      $("#direccion").val(data.direccion);
+      $("#rol_id").val(data.rol_id);
+      $("#Modal1").modal("show");
+    });
+  });
+
+  $("#UsuarioForm").submit(function (event) {
+    event.preventDefault();
+    let action = $(this).attr("data-action");
+    let url = action === "edit" ? `/usuario/update/${$("#UsuarioId").val()}` : "/usuario/add";
+    let method = action === "edit" ? "PUT" : "POST";
+
+    $.ajax({
+      url: url,
+      type: method,
+      contentType: "application/json",
+      data: JSON.stringify({
+        documento: $("#documento").val(),
+        contrasena: $("#contrasena").val(),
+        nombres: $("#nombres").val(),
+        apellidos: $("#apellidos").val(),
+        telefono: $("#telefono").val(),
+        email: $("#email").val(),
+        direccion: $("#direccion").val(),
+        rol_id: $("#rol_id").val(),
+      }),
+      success: function () {
+        Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
+      },
+      error: function () {
+        Swal.fire("Error", "No se pudo completar la operación", "error");
+      },
+    });
+  });
+
+  $(".btnEliminar").click(function () {
+    let id = $(this).data("id");
+    Swal.fire({
+      title: "¿Eliminar este Usuario?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: `/usuario/delete/${id}`,
+          type: "DELETE",
+          success: function () {
+            Swal.fire("Eliminado", "Usuario eliminado", "success").then(() => location.reload());
+          },
+          error: function () {
+            Swal.fire("Error", "No se pudo eliminar", "error");
+          },
+        });
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
