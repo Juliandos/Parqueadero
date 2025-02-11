@@ -131,6 +131,9 @@ content %}
     $("#feeForm").submit(function (event) {
       event.preventDefault();
 
+      $.LoadingOverlay("show");
+      console.log(typeof $.LoadingOverlay); 
+
       let action = $(this).attr("data-action");
       let nombre = $("#nombre").val().trim();
       let unidad = $("#unidad").val().trim();
@@ -145,12 +148,17 @@ content %}
         action === "edit" ? `/tarifa_tipo/edit/${id}` : "/tarifa_tipo/add";
       let method = action === "edit" ? "PUT" : "POST";
 
+      setTimeout(() => {
+        
+      }, 1000);
+
       $.ajax({
         url: url,
         type: method,
         contentType: "application/json",
         data: JSON.stringify({ nombre, unidad }),
         success: function (data) {
+          $.LoadingOverlay("hide");
           if (data.success) {
             Swal.fire("Éxito", data.message, "success").then(() =>
             location.reload()
@@ -161,6 +169,7 @@ content %}
         },
         error: function () {
           Swal.fire("Error", "No se pudo completar la operación.", "error");
+          $.LoadingOverlay("hide");
         },
       });
 
