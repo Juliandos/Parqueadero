@@ -5,28 +5,34 @@ content %}
   <h2 class="m-4">Medios de Pago</h2>
   <div class="example_wrapper">
     <!-- Botón para abrir el modal -->
-    <button
-      class="btn btn-primary mb-3"
-    >
+    <button class="btn btn-primary mb-3">
       <i class="fas fa-plus"></i>
     </button>
-    <table
-      id="TableMP"
-      class="table table-striped table-bordered"
-      style="width: 100%"
-    >
+    <table id="TableCli" class="table table-striped table-bordered" style="width: 100%">
       <thead class="table-blue">
         <tr>
           <th>ID</th>
-          <th>Nombre</th>
+          <th>Documento</th>
+          <th>Nombres</th>
+          <th>apellidos</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Dirección</th>
+          <th>Parqueadero ID</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {%for tipo in medios_pagos %}
+        {%for cliente in clientes %}
         <tr>
-          <td>{{tipo.id}}</td>
-          <td>{{tipo.nombre}}</td>
+          <td>{{cliente.id}}</td>
+          <td>{{cliente.documento}}</td>
+          <td>{{cliente.nombres}}</td>
+          <td>{{cliente.apellidos}}</td>
+          <td>{{cliente.telefono}}</td>
+          <td>{{cliente.email}}</td>
+          <td>{{cliente.direccion}}</td>
+          <td>{{cliente.parqueadero_id}}</td>
           <td>
             <button class="btn btn-warning btn-sm">
               <i class="fas fa-edit"></i> Editar
@@ -43,25 +49,14 @@ content %}
 </div>
 
 <!-- Modal para agregar/editar VehículoTipo -->
-<div
-  class="modal fade"
-  id="Modal1"
-  tabindex="-1"
-  aria-labelledby="Modal1Label"
-  aria-hidden="true"
->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="Modal1Label">
           Agregar Medio de Pago
         </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Cerrar"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
         <form id="vehicleForm">
@@ -88,7 +83,7 @@ content %}
         $.LoadingOverlay("hide");
       });
 
-    $("#TableMP").DataTable({
+    $("#TableCli").DataTable({
       paging: true,
       searching: true,
       ordering: true,
@@ -108,7 +103,7 @@ content %}
       },
     });
 
-    $("#TableMP").DataTable();
+    $("#TableCli").DataTable();
 
     // 🟢 BOTÓN AGREGAR: Limpia el formulario y cambia el modal a modo "Crear"
     $(".btn-primary").click(function () {
@@ -120,7 +115,7 @@ content %}
     });
 
     // ✏️ BOTÓN EDITAR: Carga los datos en el modal y cambia a modo "Editar"
-    $("#TableMP").on("click", ".btn-warning", function () {
+    $("#TableCli").on("click", ".btn-warning", function () {
       let row = $(this).closest("tr");
       let id = row.find("td:eq(0)").text();
       let nombre = row.find("td:eq(1)").text();
@@ -171,7 +166,7 @@ content %}
     });
 
     // Peticción para borrar /medio_pago/delete/<int:id>
-    $("#TableMP").on("click", ".btn-danger", function () {
+    $("#TableCli").on("click", ".btn-danger", function () {
       let row = $(this).closest("tr");
       let itemName = row.find("td:first").text();
 
@@ -196,7 +191,7 @@ content %}
                   $(this).remove();
                 });
                 Swal.fire("Eliminado", response.message, "success").then(
-                  () => {}
+                  () => { }
                 );
               } else {
                 Swal.fire("Error", response.message, "error");

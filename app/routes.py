@@ -152,3 +152,8 @@ def delete_medio_pago(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
+# Cliente ALL
+@routes.route('/cliente', methods=['GET'])
+def get_clientes():
+    clientes = Cliente.query.all()
+    return render_template('clientes.html', titulo='Clientes', clientes = clientes)
