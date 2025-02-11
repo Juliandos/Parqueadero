@@ -96,7 +96,6 @@ def update_tarifa_tipo(id):
     return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'}), 200
 
 # TarifaTipo DELETE
-
 @routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
 def delete_tarifa_tipo(id):
     tarifa_tipo = TarifaTipo.query.get_or_404(id)
@@ -107,3 +106,4 @@ def delete_tarifa_tipo(id):
         return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
