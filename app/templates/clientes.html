@@ -48,23 +48,55 @@ content %}
   </div>
 </div>
 
-<!-- Modal para agregar/editar clienteTipo -->
+<!-- Modal para agregar/editar cliente -->
 <div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="Modal1Label">
-          Agregar Medio de Pago
-        </h5>
+        <h5 class="modal-title" id="Modal1Label">Agregar Cliente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
         <form id="ClientesForm">
           <input type="hidden" id="ClientesId" />
-          <!-- ID oculto para edición -->
-          <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" required />
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="documento" class="form-label">Documento</label>
+                <input type="text" class="form-control" id="documento" required />
+              </div>
+              <div class="mb-3">
+                <label for="nombres" class="form-label">Nombres</label>
+                <input type="text" class="form-control" id="nombres" required />
+              </div>
+              <div class="mb-3">
+                <label for="apellidos" class="form-label">Apellidos</label>
+                <input type="text" class="form-control" id="apellidos" required />
+              </div>
+              <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="telefono" required />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required />
+              </div>
+              <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="direccion" required />
+              </div>
+              <div class="mb-3">
+                <label for="parqueadero_id" class="form-label">Parqueadero</label>
+                <select class="form-control" id="parqueadero_id" required>
+                  <option value="">Seleccione un parqueadero</option>
+                  {% for parqueadero in clientes %}
+                  <option value="{{ parqueadero.id }}">{{ parqueadero.cliente_nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>              
+            </div>
           </div>
           <button type="submit" class="btn btn-success">Guardar</button>
         </form>
@@ -72,6 +104,7 @@ content %}
     </div>
   </div>
 </div>
+
 
 <script>
   $(document).ready(function () {
@@ -107,10 +140,16 @@ content %}
 
     // 🟢 BOTÓN AGREGAR: Limpia el formulario y cambia el modal a modo "Crear"
     $(".btn-primary").click(function () {
-      $("#Modal1Label").text("Agregar Tipo de Vehículo");
+      $("#Modal1Label").text("Agregar Cliente");
       $("#ClientesForm").attr("data-action", "create");
       $("#ClientesId").val("");
-      $("#nombre").val("");
+      $("#documento").val("");
+      $("#nombres").val("");
+      $("#apellidos").val("");
+      $("#telefono").val("");
+      $("#email").val("");
+      $("#direccion").val("");
+      $("#cliente_nombre").val("");
       $("#Modal1").modal("show");
     });
 
@@ -118,41 +157,58 @@ content %}
     $("#TableCli").on("click", ".btn-warning", function () {
       let row = $(this).closest("tr");
       let id = row.find("td:eq(0)").text();
-      let nombre = row.find("td:eq(1)").text();
+      let documento = row.find("td:eq(1)").text();
+      let nombres = row.find("td:eq(2)").text();
+      let apellidos = row.find("td:eq(3)").text();
+      let telefono = row.find("td:eq(4)").text();
+      let email = row.find("td:eq(5)").text();
+      let direccion = row.find("td:eq(6)").text();
+      let cliente_nombre = row.find("td:eq(7)").text();
 
-      $("#Modal1Label").text("Editar Tipo de Vehículo");
+      $("#Modal1Label").text("Editar Cliente");
       $("#ClientesForm").attr("data-action", "edit");
       $("#ClientesId").val(id);
-      $("#nombre").val(nombre);
+      $("#documento").val(documento);
+      $("#nombres").val(nombres);
+      $("#apellidos").val(apellidos);
+      $("#telefono").val(telefono);
+      $("#email").val(email);
+      $("#direccion").val(direccion);
+      $("#cliente_nombre").val(cliente_nombre);
       $("#Modal1").modal("show");
     });
 
     $("#ClientesForm").submit(function (event) {
       event.preventDefault();
 
-      let action = $(this).attr("data-action");
-      let nombre = $("#nombre").val().trim();
+      let action = $(this).attr("data-action"); // "create" o "edit"
       let id = $("#ClientesId").val();
+      let clienteData = {
+        documento: $("#documento").val().trim(),
+        nombres: $("#nombres").val().trim(),
+        apellidos: $("#apellidos").val().trim(),
+        telefono: $("#telefono").val().trim(),
+        email: $("#email").val().trim(),
+        direccion: $("#direccion").val().trim(),
+        parqueadero_id: $("#parqueadero_id").val().trim(),
+      };
 
-      if (nombre === "") {
-        Swal.fire("Error", "El nombre es obligatorio.", "error");
+      if (Object.values(clienteData).some((val) => val === "")) {
+        Swal.fire("Error", "Todos los campos son obligatorios.", "error");
         return;
       }
 
-      let url =
-        action === "edit" ? `/medio_pago/edit/${id}` : "/medio_pago/add";
+      let url = action === "edit" ? `/cliente/edit/${id}` : "/cliente/add";
       let method = action === "edit" ? "PUT" : "POST";
 
       $.ajax({
         url: url,
         type: method,
         contentType: "application/json",
-        data: JSON.stringify({ nombre }),
+        data: JSON.stringify(clienteData),
         success: function (data) {
           if (data.success) {
-            Swal.fire("Éxito", data.message, "success").then(() =>
-              location.reload()
-            );
+            Swal.fire("Éxito", data.message, "success").then(() => location.reload());
           } else {
             Swal.fire("Error", data.message, "error");
           }
@@ -171,7 +227,7 @@ content %}
       let itemName = row.find("td:first").text();
 
       Swal.fire({
-        title: "¿Eliminar este vehículo?",
+        title: "¿Eliminar este Cliente?",
         text: "Esta acción no se puede deshacer.",
         icon: "warning",
         showCancelButton: true,
@@ -182,7 +238,7 @@ content %}
       }).then((result) => {
         if (result.isConfirmed) {
           $.ajax({
-            url: `/medio_pago/delete/${itemName}`,
+            url: `/cliente/delete/${itemName}`,
             type: "POST",
             data: { _method: "DELETE" }, // Simulamos un DELETE
             success: function (response) {

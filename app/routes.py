@@ -157,7 +157,7 @@ def delete_medio_pago(id):
 @routes.route('/cliente', methods=['GET'])
 def cliente():
     clientes = Cliente.query.join(Parqueadero).add_columns(
-        Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.nombre.label('cliente_nombre')
+        Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Cliente.parqueadero_id, Parqueadero.nombre.label('cliente_nombre')
     ).all()
 
     clientes_dict = [
@@ -169,11 +169,72 @@ def cliente():
             "telefono": u.telefono,
             "email": u.email,
             "direccion": u.direccion,
+            "parqueadero_id": u.parqueadero_id,
             "cliente_nombre": u.cliente_nombre
         }
         for u in clientes
     ]
     return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict)
+
+# Cliente CREATE
+@routes.route('/cliente/add', methods=['POST'])
+def add_cliente():
+    data = request.get_json()
+    documento = data.get('documento')
+    nombres = data.get('nombres')
+    apellidos = data.get('apellidos')
+    telefono = data.get('telefono')
+    email = data.get('email')
+    direccion = data.get('direccion')
+    parqueadero_id = data.get('parqueadero_id')
+
+    if not documento or not nombres or not apellidos or not telefono or not email or not direccion or not parqueadero_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    
+    nuevo_cliente = Cliente(documento=documento, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, direccion=direccion, parqueadero_id=parqueadero_id)
+    db.session.add(nuevo_cliente)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Cliente agregado correctamente'})
+
+# Cliente UPDATE
+@routes.route('/cliente/edit/<int:id>', methods=['PUT'])
+def update_cliente(id):
+    data = request.get_json()
+    documento = data.get('documento')
+    nombres = data.get('nombres')
+    apellidos = data.get('apellidos')
+    telefono = data.get('telefono')
+    email = data.get('email')
+    direccion = data.get('direccion')
+    parqueadero_id = data.get('parqueadero_id')
+    
+    if not documento or not nombres or not apellidos or not telefono or not email or not direccion or not parqueadero_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    
+    cliente = Cliente.query.get_or_404(id)
+    cliente.documento = documento
+    cliente.nombres = nombres
+    cliente.apellidos = apellidos
+    cliente.telefono = telefono
+    cliente.email = email
+    cliente.direccion = direccion
+    cliente.parqueadero_id = parqueadero_id
+    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    return jsonify({'success': True, 'message': 'Cliente actualizado correctamente'}), 200
+
+# Cliente DELETE
+
+@routes.route('/cliente/delete/<int:id>', methods=['POST'])
+def delete_cliente(id):
+    cliente = Cliente.query.get_or_404(id)
+    
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(cliente)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Cliente eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Rol ALL
 @routes.route('/rol', methods=['GET'])
