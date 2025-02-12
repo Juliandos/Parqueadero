@@ -157,8 +157,10 @@ def delete_medio_pago(id):
 @routes.route('/cliente', methods=['GET'])
 def cliente():
     clientes = Cliente.query.join(Parqueadero).add_columns(
-        Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Cliente.parqueadero_id, Parqueadero.nombre.label('cliente_nombre')
+        Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.id.label('parqueadero_id'), Parqueadero.nombre.label('parqueadero_nombre')
     ).all()
+
+    parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
 
     clientes_dict = [
         {
@@ -169,12 +171,11 @@ def cliente():
             "telefono": u.telefono,
             "email": u.email,
             "direccion": u.direccion,
-            "parqueadero_id": u.parqueadero_id,
-            "cliente_nombre": u.cliente_nombre
+            "parqueadero_nombre": u.parqueadero_nombre
         }
         for u in clientes
     ]
-    return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict)
+    return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict, parqueaderos=parqueaderos)
 
 # Cliente CREATE
 @routes.route('/cliente/add', methods=['POST'])
@@ -287,6 +288,8 @@ def usuario():
         Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.direccion, Usuario.rol_id, Rol.nombre.label('rol_nombre')
     ).all()
 
+    roles = Rol.query.order_by(Rol.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
+
     usuarios_dict = [
         {
             "id": u.id,
@@ -304,7 +307,7 @@ def usuario():
         for u in usuarios
     ]
 
-    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict)
+    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict, roles=roles)
 
 # Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])

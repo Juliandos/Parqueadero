@@ -32,7 +32,7 @@ content %}
           <td>{{cliente.telefono}}</td>
           <td>{{cliente.email}}</td>
           <td>{{cliente.direccion}}</td>
-          <td>{{cliente.cliente_nombre}}</td>
+          <td>{{cliente.parqueadero_nombre}}</td>
           <td>
             <button class="btn btn-warning btn-sm">
               <i class="fas fa-edit"></i> Editar
@@ -90,9 +90,9 @@ content %}
               <div class="mb-3">
                 <label for="parqueadero_id" class="form-label">Parqueadero</label>
                 <select class="form-control" id="parqueadero_id" required>
-                  <option value="">Seleccione un parqueadero</option>
-                  {% for cliente in clientes %}
-                  <option value="{{ cliente.id }}">{{ cliente.cliente_nombre }}</option>
+                  <option value="">Seleccione un Parqueadero</option>
+                  {% for cliente in parqueaderos %}
+                  <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
                   {% endfor %}
                 </select>
               </div>              

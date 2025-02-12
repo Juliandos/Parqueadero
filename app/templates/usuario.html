@@ -94,8 +94,8 @@
               <label for="rol_id" class="form-label">Rol ID</label>
               <select class="form-control" id="rol_id" required>
                 <option value="">Seleccione un Rol</option>
-                {% for usuario in usuarios %}
-                <option value="{{ usuario.rol_id }}">{{ usuario.rol_nombre }}</option>
+                {% for rol in roles %}
+                <option value="{{ rol.id }}">{{ rol.nombre }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -106,23 +106,50 @@
     </div>
   </div>
 </div>
-<p>{{usuarios[0].nombre}}</p>
-
 
 <script>
 $(document).ready(function () {
+  $(document)
+    .ajaxStart(function () {
+      $.LoadingOverlay("show");
+    })
+    .ajaxStop(function () {
+      $.LoadingOverlay("hide");
+    });
+
+  $("#TableUsuario").DataTable({
+    paging: true,
+    searching: true,
+    ordering: true,
+    lengthMenu: [5, 10, 25, 50],
+    language: {
+      lengthMenu: "Mostrar _MENU_ registros por página",
+      zeroRecords: "No se encontraron resultados",
+      info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+      infoEmpty: "No hay registros disponibles",
+      search: "Buscar:",
+      paginate: {
+        first: "Primero",
+        last: "Último",
+        next: "Siguiente",
+        previous: "Anterior",
+      },
+    },
+  });
   $("#TableUsuario").DataTable();
 
   $("#btnAgregar").click(function () {
     $("#Modal1Label").text("Agregar Usuario");
     $("#UsuarioForm").attr("data-action", "create");
     $("#UsuarioForm")[0].reset();
+    $("#UsuarioId").val("");
+    $("#rol_id").prop("selectedIndex", 0);
     $("#Modal1").modal("show");
-  });
+});
 
   $(".btnEditar").click(function () {
     let id = $(this).data("id");
-    $.get(`/usuario/${id}`, function (data) {
+    $.get(`/usuario/update/${id}`, function (data) {
       $("#Modal1Label").text("Editar Usuario");
       $("#UsuarioForm").attr("data-action", "edit");
       $("#UsuarioId").val(data.id);
