@@ -320,16 +320,16 @@
 
 
     // Chart Two
-    const canvas2 = document.getElementById('myChart_Total_Sales_Home')
+    const canvas2 = document.getElementById('myChart_Total_Sales_Home');
     if (canvas2) {
-      const ctx = canvas2.getContext('2d');
+      const ctx = canvas2.getContext('2d'); // ctx está correctamente definido aquí
 
-
-      const gradientBg = ctx_two.createLinearGradient(0, 0, 0, 190);
+      const gradientBg = ctx.createLinearGradient(0, 0, 0, 190); // Cambiar ctx_two por ctx
 
       gradientBg.addColorStop(0, 'rgba(97, 118, 254, 0.43)');
       gradientBg.addColorStop(1, 'rgba(97, 118, 254, 0)');
-      const myChart_Total_Sales_Home = new Chart(ctx_two, {
+
+      const myChart_Total_Sales_Home = new Chart(ctx, { // Cambiar ctx_two por ctx
         type: 'line',
 
         data: {
@@ -343,12 +343,10 @@
             tension: 0.5,
             borderWidth: 6,
             fill: true,
-            fillColor: '#fff',
           }]
         },
 
         options: {
-
           maintainAspectRatio: false,
           responsive: true,
           scales: {
@@ -358,19 +356,16 @@
                 color: '#c5c5c573',
               },
               suggestedMax: 80, suggestedMin: 80,
-
             },
             y: {
               suggestedMax: 80, suggestedMin: 80,
               grid: {
                 display: true,
-
                 color: '#c5c5c573',
                 borderDash: [10, 10]
               },
             },
           },
-
           plugins: {
             legend: {
               position: 'bottom',
@@ -382,7 +377,7 @@
           }
         }
       });
-
+  
       setInterval(() => {
         if (document.body.classList.contains('active')) {
           myChart_Total_Sales_Home.options.scales.x.grid.color = '#E2E7F11C ';
@@ -394,6 +389,7 @@
         myChart_Total_Sales_Home.update();
       }, 500);
     }
+    
 
     // Chart Revenue
     const canvasRevenue = document.getElementById('myChart_Revenue');

@@ -62,13 +62,13 @@ def vehiculo_tipo_edit(id):
 
 # TarifaTipo ALL
 @routes.route('/tarifa_tipo', methods=['GET'])
-def get_tarifa_tipos():
+def tarifa_tipo():
     tarifas_tipo = TarifaTipo.query.all()
     return render_template('tarifa_tipo.html', titulo='Tipo de Tarifa', tipos_tarifa = tarifas_tipo)
 
 # TarifaTipo CREATE
 @routes.route('/tarifa_tipo/add', methods=['POST'])
-def add_tarifa_tipo():
+def tarifa_tipo_add():
     data = request.get_json()
     nombre = data.get('nombre')
     unidad = data.get('unidad')
@@ -82,7 +82,7 @@ def add_tarifa_tipo():
 
 # TarifaTipo UPDATE
 @routes.route('/tarifa_tipo/edit/<int:id>', methods=['PUT'])
-def update_tarifa_tipo(id):
+def tarifa_tipo_update(id):
     data = request.get_json()
     nombre = data.get('nombre')
     unidad = data.get('unidad')
@@ -98,7 +98,7 @@ def update_tarifa_tipo(id):
 
 # TarifaTipo DELETE
 @routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
-def delete_tarifa_tipo(id):
+def tarifa_tipo_delete(id):
     tarifa_tipo = TarifaTipo.query.get_or_404(id)
     
     if request.form.get('_method') == 'DELETE':  # Simular DELETE
@@ -110,7 +110,7 @@ def delete_tarifa_tipo(id):
 
 # MedioPago ALL
 @routes.route('/medio_pago', methods=['GET'])
-def get_medios_pagos():
+def medio_pago():
     medios_pagos = MedioPago.query.all()
     return render_template('medio_pago.html', titulo='Medios de Pago', medios_pagos = medios_pagos)
 
@@ -155,13 +155,29 @@ def delete_medio_pago(id):
 
 # Cliente ALL
 @routes.route('/cliente', methods=['GET'])
-def get_clientes():
-    clientes = Cliente.query.all()
-    return render_template('clientes.html', titulo='Clientes', clientes = clientes)
+def cliente():
+    clientes = Cliente.query.join(Parqueadero).add_columns(
+        Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.nombre.label('cliente_nombre')
+    ).all()
+
+    clientes_dict = [
+        {
+            "id": u.id,
+            "documento": u.documento,
+            "nombres": u.nombres,
+            "apellidos": u.apellidos,
+            "telefono": u.telefono,
+            "email": u.email,
+            "direccion": u.direccion,
+            "cliente_nombre": u.cliente_nombre
+        }
+        for u in clientes
+    ]
+    return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict)
 
 # Rol ALL
 @routes.route('/rol', methods=['GET'])
-def get_roles():
+def rol():
     roles = Rol.query.all()
     return render_template('rol.html', titulo='Roles', roles = roles)
 
@@ -206,9 +222,27 @@ def delete_rol(id):
 
 # Usiario ALL
 @routes.route('/usuario', methods=['GET'])
-def get_usuarios():
-    usuarios = Usuario.query.all()
-    return render_template('usuario.html', titulo='Usuarios', usuarios = usuarios)
+def usuario():
+    usuarios = Usuario.query.join(Rol).add_columns(
+        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.direccion, Rol.nombre.label('rol_nombre')
+    ).all()
+
+    usuarios_dict = [
+        {
+            "id": u.id,
+            "documento": u.documento,
+            "contrasena": u.contrasena,
+            "nombres": u.nombres,
+            "apellidos": u.apellidos,
+            "telefono": u.telefono,
+            "email": u.email,
+            "direccion": u.direccion,
+            "rol_nombre": u.rol_nombre
+        }
+        for u in usuarios
+    ]
+
+    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict)
 
 # Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])
