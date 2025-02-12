@@ -1,2 +1,3 @@
 contraseña
 no se como hacer que el campo contrasena cambie su tamaño usuario
+falta arreglar los mensajes para saber si esta vinculado a otra tabla, usuarios ya lo tiene

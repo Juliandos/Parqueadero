@@ -27,6 +27,10 @@ def vehiculo_tipo():
 @routes.route('/vehiculo_tipo/delete/<int:id>', methods=['POST'])
 def vehiculo_tipo_delete(id):
     tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
+
+    # Verificar si el usuario está asociado a parqueadero
+    if VehiculoTipo.query.filter_by(vehiculo_tipo_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
     
     if request.form.get('_method') == 'DELETE':  # Simular DELETE
         db.session.delete(tipo_vehiculo)
@@ -340,3 +344,53 @@ def add_usuario():
     db.session.add(nuevo_usuario)
     db.session.commit()
     return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
+
+# Usiario UPDATE
+@routes.route('/usuario/edit/<int:id>', methods=['PUT'])
+def update_usuario(id):
+    data = request.get_json()
+    documento = data.get('documento')
+    contrasena = data.get('contrasena')
+    nombres = data.get('nombres')
+    apellidos = data.get('apellidos')
+    telefono = data.get('telefono')
+    email = data.get('email')
+    ciudad = data.get('ciudad')
+    direccion = data.get('direccion')
+    rol_id = data.get('rol_id')
+    
+    if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    
+    if contrasena:
+        contrasena = bcrypt.generate_password_hash(contrasena).decode('utf-8')
+    
+    usuario = Usuario.query.get_or_404(id)
+    usuario.documento = documento
+    usuario.contrasena = contrasena
+    usuario.nombres = nombres
+    usuario.apellidos = apellidos
+    usuario.telefono = telefono
+    usuario.email = email
+    usuario.ciudad = ciudad
+    usuario.direccion = direccion
+    usuario.rol_id = rol_id
+    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
+
+# Usiario DELETE
+@routes.route('/usuario/delete/<int:id>', methods=['POST'])
+def delete_usuario(id):
+    usuario = Usuario.query.get_or_404(id)
+
+    # Verificar si el usuario está asociado a parqueadero
+    if Parqueadero.query.filter_by(usuario_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
+    
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(usuario)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400

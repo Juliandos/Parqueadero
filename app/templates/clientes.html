@@ -63,33 +63,33 @@ content %}
             <div class="col-md-6">
               <div class="mb-3">
                 <label for="documento" class="form-label">Documento</label>
-                <input type="text" class="form-control" id="documento" required />
+                <input type="text" class="form-control  text-dark" id="documento" required />
               </div>
               <div class="mb-3">
                 <label for="nombres" class="form-label">Nombres</label>
-                <input type="text" class="form-control" id="nombres" required />
+                <input type="text" class="form-control  text-dark" id="nombres" required />
               </div>
               <div class="mb-3">
                 <label for="apellidos" class="form-label">Apellidos</label>
-                <input type="text" class="form-control" id="apellidos" required />
+                <input type="text" class="form-control  text-dark" id="apellidos" required />
               </div>
               <div class="mb-3">
                 <label for="telefono" class="form-label">Teléfono</label>
-                <input type="text" class="form-control" id="telefono" required />
+                <input type="text" class="form-control  text-dark" id="telefono" required />
               </div>
             </div>
             <div class="col-md-6">
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" required />
+                <input type="email" class="form-control  text-dark" id="email" required />
               </div>
               <div class="mb-3">
                 <label for="direccion" class="form-label">Dirección</label>
-                <input type="text" class="form-control" id="direccion" required />
+                <input type="text" class="form-control  text-dark" id="direccion" required />
               </div>
               <div class="mb-3">
                 <label for="parqueadero_id" class="form-label">Parqueadero</label>
-                <select class="form-control" id="parqueadero_id" required>
+                <select class="form-control  text-dark" id="parqueadero_id" required>
                   <option value="">Seleccione un Parqueadero</option>
                   {% for cliente in parqueaderos %}
                   <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>

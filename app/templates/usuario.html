@@ -1,5 +1,5 @@
-{% extends 'base.html' %} 
-{% block title %}{{ titulo }}{% endblock %} 
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
 {% block content %}
 
 <div class="sherah-adashboard sherah-show">
@@ -66,39 +66,39 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="documento" class="form-label">Documento</label>
-              <input type="text" class="form-control" id="documento" required />
+              <input type="text" class="form-control  text-dark" id="documento" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="contrasena" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="contrasena" required />
+              <input type="password" class="form-control  text-dark" id="contrasena" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="nombres" class="form-label">Nombres</label>
-              <input type="text" class="form-control" id="nombres" required />
+              <input type="text" class="form-control  text-dark" id="nombres" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="apellidos" class="form-label">Apellidos</label>
-              <input type="text" class="form-control" id="apellidos" required />
+              <input type="text" class="form-control  text-dark" id="apellidos" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="telefono" class="form-label">Teléfono</label>
-              <input type="tel" class="form-control" id="telefono" required />
+              <input type="tel" class="form-control  text-dark" id="telefono" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" required />
+              <input type="email" class="form-control  text-dark" id="email" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="ciudad" class="form-label">Ciudad</label>
-              <input type="text" class="form-control" id="ciudad" required />
+              <input type="text" class="form-control  text-dark" id="ciudad" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="direccion" class="form-label">Dirección</label>
-              <input type="text" class="form-control" id="direccion" required />
+              <input type="text" class="form-control  text-dark" id="direccion" required />
             </div>
             <div class="col-md-6 mb-3">
               <label for="rol_id" class="form-label">Rol ID</label>
-              <select class="form-control" id="rol_id" required>
+              <select class="form-control  text-dark" id="rol_id" required>
                 <option value="">Seleccione un Rol</option>
                 {% for rol in roles %}
                 <option value="{{ rol.id }}">{{ rol.nombre }}</option>
@@ -114,42 +114,39 @@
 </div>
 
 <script>
-$(document).ready(function () {
-  $(document)
-    .ajaxStart(function () {
-      $.LoadingOverlay("show");
-    })
-    .ajaxStop(function () {
-      $.LoadingOverlay("hide");
+  $(document).ready(function () {
+    $(document)
+      .ajaxStart(function () {
+        $.LoadingOverlay("show");
+      })
+      .ajaxStop(function () {
+        $.LoadingOverlay("hide");
+      });
+
+    $("#TableUsuario").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "Primero",
+          last: "Último",
+          next: "Siguiente",
+          previous: "Anterior",
+        },
+      },
     });
 
-  $("#TableUsuario").DataTable({
-    autoWidth: false,// como hacer que la tabla tenga el tamaño de 100% widthy que no se sobre salga 
-    columnDefs: [
-      { width: "10px", targets: 2 }, 
-    ],
-    paging: true,
-    searching: true,
-    ordering: true,
-    lengthMenu: [5, 10, 25, 50],
-    language: {
-      lengthMenu: "Mostrar _MENU_ registros por página",
-      zeroRecords: "No se encontraron resultados",
-      info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-      infoEmpty: "No hay registros disponibles",
-      search: "Buscar:",
-      paginate: {
-        first: "Primero",
-        last: "Último",
-        next: "Siguiente",
-        previous: "Anterior",
-      },
-    },
-  });
-  $("#TableUsuario").DataTable();
+    $("#TableUsuario").DataTable();
 
-  $("#btnAgregar").click(function () {
-    $("#Modal1Label").text("Crear Usuario");
+    $("#btnAgregar").click(function () {
+      $("#Modal1Label").text("Crear Usuario");
       $("#UsuarioForm").attr("data-action", "create");
       $("#UsuarioId").val();
       $("#documento").val();
@@ -161,82 +158,111 @@ $(document).ready(function () {
       $("#direccion").val();
       $("#rol_id").val();
       $("#Modal1").modal("show");
-});
+    });
 
-  $(".btnEditar").click(function () {
-    let id = $(this).data("id");
-    $.get(`/usuario/update/${id}`, function (data) {
-      $("#Modal1Label").text("Editar Usuario");
+    $("#TableUsuario").on("click", ".btnEditar", function () {
+      let row = $(this).closest("tr");
+      let id = row.find("td:eq(0)").text();
+      let documento = row.find("td:eq(1)").text();
+      let contrasena = row.find("td:eq(2)").text();
+      let nombres = row.find("td:eq(3)").text();
+      let apellidos = row.find("td:eq(4)").text();
+      let telefono = row.find("td:eq(5)").text();
+      let email = row.find("td:eq(6)").text();
+      let ciudad = row.find("td:eq(7)").text();
+      let direccion = row.find("td:eq(8)").text();
+      let rol_nombre = row.find("td:eq(9)").text().trim(); // Remover espacios extras
+
+      $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
-      $("#UsuarioId").val(data.id);
-      $("#documento").val(data.documento);
-      $("#contrasena").val(data.contrasena);
-      $("#nombres").val(data.nombres);
-      $("#apellidos").val(data.apellidos);
-      $("#telefono").val(data.telefono);
-      $("#email").val(data.email);
-      $("#direccion").val(data.direccion);
-      $("#rol_id").val(data.rol_id);
+      $("#UsuarioId").val(id);
+      $("#documento").val(documento);
+      $("#contrasena").val(contrasena);
+      $("#nombres").val(nombres);
+      $("#apellidos").val(apellidos);
+      $("#telefono").val(telefono);
+      $("#email").val(email);
+      $("#ciudad").val(ciudad);
+      $("#direccion").val(direccion);
+
+      // Buscar la opción en el select basada en el texto
+      let rol_id = $("#rol_id option").filter(function () {
+        return $(this).text().trim() === rol_nombre;
+      }).val();
+
+      $("#rol_id").val(rol_id);
+
       $("#Modal1").modal("show");
     });
-  });
 
-  $("#UsuarioForm").submit(function (event) {
-    event.preventDefault();
-    let action = $(this).attr("data-action");
-    let url = action === "edit" ? `/usuario/update/${$("#UsuarioId").val()}` : "/usuario/add";
-    let method = action === "edit" ? "PUT" : "POST";
+    $("#UsuarioForm").submit(function (event) {
+      event.preventDefault();
+      let action = $(this).attr("data-action");
+      let url = action === "edit" ? `/usuario/edit/${$("#UsuarioId").val()}` : "/usuario/add";
+      let method = action === "edit" ? "PUT" : "POST";
 
-    $.ajax({
-      url: url,
-      type: method,
-      contentType: "application/json",
-      data: JSON.stringify({
-        documento: $("#documento").val(),
-        contrasena: $("#contrasena").val(),
-        nombres: $("#nombres").val(),
-        apellidos: $("#apellidos").val(),
-        telefono: $("#telefono").val(),
-        email: $("#email").val(),
-        ciudad: $("#ciudad").val(),
-        direccion: $("#direccion").val(),
-        rol_id: $("#rol_id").val(),
-      }),
-      success: function () {
-        Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
-      },
-      error: function () {
-        Swal.fire("Error", "No se pudo completar la operación", "error");
-      },
+      $.ajax({
+        url: url,
+        type: method,
+        contentType: "application/json",
+        data: JSON.stringify({
+          documento: $("#documento").val(),
+          contrasena: $("#contrasena").val(),
+          nombres: $("#nombres").val(),
+          apellidos: $("#apellidos").val(),
+          telefono: $("#telefono").val(),
+          email: $("#email").val(),
+          ciudad: $("#ciudad").val(),
+          direccion: $("#direccion").val(),
+          rol_id: $("#rol_id").val(),
+        }),
+        success: function () {
+          Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
+        },
+        error: function () {
+          Swal.fire("Error", "No se pudo completar la operación", "error");
+        },
+      });
+
+      $("#Modal1").modal("hide");
     });
 
-    $("#Modal1").modal("hide");
-  });
-
-  $(".btnEliminar").click(function () {
-    let id = $(this).data("id");
-    Swal.fire({
-      title: "¿Eliminar este Usuario?",
-      text: "Esta acción no se puede deshacer.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          url: `/usuario/delete/${id}`,
-          type: "DELETE",
-          success: function () {
-            Swal.fire("Eliminado", "Usuario eliminado", "success").then(() => location.reload());
-          },
-          error: function () {
-            Swal.fire("Error", "No se pudo eliminar", "error");
-          },
-        });
-      }
+    $("#TableUsuario").on("click", ".btnEliminar", function () {
+      let row = $(this).closest("tr");
+      let id = $(this).data("id");
+      Swal.fire({
+        title: "¿Eliminar este Usuario?",
+        text: "Esta acción no se puede deshacer.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/usuario/delete/${id}`,
+            type: "POST",
+            data: { _method: "DELETE" },
+            success: function (response) {
+              if (response.success) {
+                row.fadeOut(500, function () {
+                  $(this).remove();
+                });
+                Swal.fire("Eliminado", response.message, "success").then(
+                  () => { }
+                );
+              } else {
+                Swal.fire("Error", response.message, "error");
+              }
+            },
+            error: function (error) {
+              Swal.fire("Error", response.message, "error");
+            },
+          });
+          $("#Modal1").modal("hide");
+        }
+      });
     });
-  });
 
-});
+  });
 </script>
 {% endblock %}
