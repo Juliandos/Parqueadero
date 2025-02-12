@@ -2,6 +2,9 @@ from flask import Blueprint, jsonify, render_template, request
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero
 from app import db
 import bcrypt
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt()
 
 routes = Blueprint('routes', __name__)
 
@@ -285,7 +288,7 @@ def delete_rol(id):
 @routes.route('/usuario', methods=['GET'])
 def usuario():
     usuarios = Usuario.query.join(Rol).add_columns(
-        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.direccion, Usuario.rol_id, Rol.nombre.label('rol_nombre')
+        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, Usuario.direccion, Usuario.rol_id, Rol.nombre.label('rol_nombre')
     ).all()
 
     roles = Rol.query.order_by(Rol.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
@@ -299,6 +302,7 @@ def usuario():
             "apellidos": u.apellidos,
             "telefono": u.telefono,
             "email": u.email,
+            "ciudad": u.ciudad,
             "direccion": u.direccion,
             "direccion": u.direccion,
             "rol_id": u.rol_id,
@@ -313,22 +317,26 @@ def usuario():
 @routes.route('/usuario/add', methods=['POST'])
 def add_usuario():
     data = request.get_json()
+    print(data)
     documento = data.get('documento')
-    contrasena = data.get('contrasena')
+    contrasena = bcrypt.generate_password_hash(data.get('contrasena')).decode('utf-8')
     nombres = data.get('nombres')
     apellidos = data.get('apellidos')
     telefono = data.get('telefono')
     email = data.get('email')
+    ciudad = data.get('ciudad')
     direccion = data.get('direccion')
     rol_id = data.get('rol_id')
 
-    if not documento or not contrasena or not nombres or not apellidos or not telefono or not email or not direccion or not rol_id:
+    print("contrasena", contrasena)
+
+    if not documento or not contrasena or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id:
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
     if Usuario.query.filter_by(documento=documento).first():   
         return jsonify({'success': False, 'message': 'El documento ya existe'}), 400
     
-    nuevo_usuario = Usuario(documento=documento, contrasena=bcrypt.generate_password_hash(contrasena), nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, direccion=direccion, rol_id=rol_id)
+    nuevo_usuario = Usuario(documento=documento, contrasena=contrasena, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, ciudad=ciudad, direccion=direccion, rol_id=rol_id)
     db.session.add(nuevo_usuario)
     db.session.commit()
     return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})

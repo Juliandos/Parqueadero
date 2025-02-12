@@ -162,7 +162,7 @@ class Usuario(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     documento = db.Column(db.String(16), nullable=False, unique=True)
-    contrasena = db.Column(db.String(45), nullable=False)
+    contrasena = db.Column(db.String(100), nullable=False)
     nombres = db.Column(db.String(32), nullable=False)
     apellidos = db.Column(db.String(32), nullable=False)
     telefono = db.Column(db.String(16), nullable=False)

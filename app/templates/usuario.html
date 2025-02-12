@@ -18,6 +18,7 @@
           <th>Apellidos</th>
           <th>Teléfono</th>
           <th>Email</th>
+          <th>Ciudad</th>
           <th>Dirección</th>
           <th>Rol ID</th>
           <th>Acciones</th>
@@ -28,11 +29,12 @@
         <tr>
           <td>{{ usuario.id }}</td>
           <td>{{ usuario.documento }}</td>
-          <td>{{ usuario.contrasena }}</td>
+          <td style="width: 10px;">{{ usuario.contrasena }}</td>
           <td>{{ usuario.nombres }}</td>
           <td>{{ usuario.apellidos }}</td>
           <td>{{ usuario.telefono }}</td>
           <td>{{ usuario.email }}</td>
+          <td>{{ usuario.ciudad }}</td>
           <td>{{ usuario.direccion }}</td>
           <td>{{ usuario.rol_nombre }}</td>
           <td>
@@ -87,6 +89,10 @@
               <input type="email" class="form-control" id="email" required />
             </div>
             <div class="col-md-6 mb-3">
+              <label for="ciudad" class="form-label">Ciudad</label>
+              <input type="text" class="form-control" id="ciudad" required />
+            </div>
+            <div class="col-md-6 mb-3">
               <label for="direccion" class="form-label">Dirección</label>
               <input type="text" class="form-control" id="direccion" required />
             </div>
@@ -118,6 +124,10 @@ $(document).ready(function () {
     });
 
   $("#TableUsuario").DataTable({
+    autoWidth: false,// como hacer que la tabla tenga el tamaño de 100% widthy que no se sobre salga 
+    columnDefs: [
+      { width: "10px", targets: 2 }, 
+    ],
     paging: true,
     searching: true,
     ordering: true,
@@ -139,12 +149,18 @@ $(document).ready(function () {
   $("#TableUsuario").DataTable();
 
   $("#btnAgregar").click(function () {
-    $("#Modal1Label").text("Agregar Usuario");
-    $("#UsuarioForm").attr("data-action", "create");
-    $("#UsuarioForm")[0].reset();
-    $("#UsuarioId").val("");
-    $("#rol_id").prop("selectedIndex", 0);
-    $("#Modal1").modal("show");
+    $("#Modal1Label").text("Crear Usuario");
+      $("#UsuarioForm").attr("data-action", "create");
+      $("#UsuarioId").val();
+      $("#documento").val();
+      $("#contrasena").val();
+      $("#nombres").val();
+      $("#apellidos").val();
+      $("#telefono").val();
+      $("#email").val();
+      $("#direccion").val();
+      $("#rol_id").val();
+      $("#Modal1").modal("show");
 });
 
   $(".btnEditar").click(function () {
@@ -182,6 +198,7 @@ $(document).ready(function () {
         apellidos: $("#apellidos").val(),
         telefono: $("#telefono").val(),
         email: $("#email").val(),
+        ciudad: $("#ciudad").val(),
         direccion: $("#direccion").val(),
         rol_id: $("#rol_id").val(),
       }),
@@ -192,6 +209,8 @@ $(document).ready(function () {
         Swal.fire("Error", "No se pudo completar la operación", "error");
       },
     });
+
+    $("#Modal1").modal("hide");
   });
 
   $(".btnEliminar").click(function () {
