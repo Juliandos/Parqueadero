@@ -92,7 +92,12 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="rol_id" class="form-label">Rol ID</label>
-              <input type="number" class="form-control" id="rol_id" required />
+              <select class="form-control" id="rol_id" required>
+                <option value="">Seleccione un Rol</option>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.rol_id }}">{{ usuario.rol_nombre }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
           <button type="submit" class="btn btn-success">Guardar</button>

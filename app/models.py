@@ -9,7 +9,7 @@ class TarifaTipo(db.Model):
     __tablename__ = 'tarifa_tipo'
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nombre = db.Column(db.String(64), nullable=False)
+    nombre = db.Column(db.String(64), nullable=False, unique=True)
     unidad = db.Column(db.SmallInteger, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -161,7 +161,7 @@ class Usuario(db.Model):
     __tablename__ = 'usuario'
 
     id = db.Column(db.Integer, primary_key=True)
-    documento = db.Column(db.String(16), nullable=False)
+    documento = db.Column(db.String(16), nullable=False, unique=True)
     contrasena = db.Column(db.String(45), nullable=False)
     nombres = db.Column(db.String(32), nullable=False)
     apellidos = db.Column(db.String(32), nullable=False)
@@ -179,7 +179,7 @@ class Rol(db.Model):
     __tablename__ = 'rol'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(32), nullable=False)
+    nombre = db.Column(db.String(32), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
 
@@ -215,11 +215,10 @@ class MedioPago(db.Model):
     __tablename__ = 'medio_pago'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(64), nullable=False)
+    nombre = db.Column(db.String(64), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
 
-    # Relaciones faltantes
     parqueos = db.relationship('Parqueo', back_populates='medio_pago')
     arrendamientos = db.relationship('Arrendamiento', back_populates='medio_pago')
 
@@ -227,7 +226,7 @@ class VehiculoTipo(db.Model):
     __tablename__ = 'vehiculo_tipo'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(64), nullable=False)
+    nombre = db.Column(db.String(64), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
 
@@ -236,7 +235,7 @@ class Parqueadero(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     rut = db.Column(db.String(32), nullable=False, unique=True)
-    nombre = db.Column(db.String(64), nullable=False)
+    nombre = db.Column(db.String(64), nullable=False, unique=True)
     direccion = db.Column(db.String(255), nullable=False)
     telefono = db.Column(db.String(16), nullable=False)
     email = db.Column(db.String(64), nullable=False)

@@ -38,7 +38,7 @@ def vehiculo_tipo_add():
     data = request.get_json()
     nombre = data.get('nombre')
     if not nombre:
-        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+        return jsonify({'error': False, 'message': 'El nombre es obligatorio o es igual a otro'}), 400
     
     nuevo_tipo = VehiculoTipo(nombre=nombre)
     db.session.add(nuevo_tipo)
@@ -224,7 +224,6 @@ def update_cliente(id):
     return jsonify({'success': True, 'message': 'Cliente actualizado correctamente'}), 200
 
 # Cliente DELETE
-
 @routes.route('/cliente/delete/<int:id>', methods=['POST'])
 def delete_cliente(id):
     cliente = Cliente.query.get_or_404(id)
@@ -285,7 +284,7 @@ def delete_rol(id):
 @routes.route('/usuario', methods=['GET'])
 def usuario():
     usuarios = Usuario.query.join(Rol).add_columns(
-        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.direccion, Rol.nombre.label('rol_nombre')
+        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.direccion, Usuario.rol_id, Rol.nombre.label('rol_nombre')
     ).all()
 
     usuarios_dict = [
@@ -298,6 +297,8 @@ def usuario():
             "telefono": u.telefono,
             "email": u.email,
             "direccion": u.direccion,
+            "direccion": u.direccion,
+            "rol_id": u.rol_id,
             "rol_nombre": u.rol_nombre
         }
         for u in usuarios

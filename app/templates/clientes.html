@@ -91,8 +91,8 @@ content %}
                 <label for="parqueadero_id" class="form-label">Parqueadero</label>
                 <select class="form-control" id="parqueadero_id" required>
                   <option value="">Seleccione un parqueadero</option>
-                  {% for parqueadero in clientes %}
-                  <option value="{{ parqueadero.id }}">{{ parqueadero.cliente_nombre }}</option>
+                  {% for cliente in clientes %}
+                  <option value="{{ cliente.id }}">{{ cliente.cliente_nombre }}</option>
                   {% endfor %}
                 </select>
               </div>              
