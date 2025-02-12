@@ -53,7 +53,7 @@ class Modulo(db.Model):
 class Vehiculo(db.Model):
     __tablename__ = 'vehiculo'
 
-    placa = db.Column(db.Integer, primary_key=True)
+    placa = db.Column(db.String(12), primary_key=True, unique=True)
     marca = db.Column(db.String(12))
     modelo = db.Column(db.String(32))
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)

@@ -394,3 +394,35 @@ def delete_usuario(id):
         return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Vehículo ALL
+@routes.route('/vehiculo', methods=['GET'])
+def vehiculo():
+    vehiculos = Vehiculo.query \
+        .join(VehiculoTipo) \
+        .join(Cliente, Vehiculo.cliente_id == Cliente.id) \
+        .add_columns(
+            Vehiculo.placa, 
+            Vehiculo.marca, 
+            Vehiculo.modelo, 
+            Vehiculo.vehiculo_tipo_id, 
+            Vehiculo.cliente_id, 
+            VehiculoTipo.nombre.label('vehiculo_tipo_nombre'),
+            Cliente.nombres.label('cliente_nombre')
+        ) \
+        .all()
+
+    vehiculos_dict = [
+        {
+            "placa": v.placa,
+            "marca": v.marca,
+            "modelo": v.modelo,
+            "vehiculo_id": v.vehiculo_tipo_id,
+            "cliente_id": v.cliente_id,
+            "vehiculo_tipo_nombre": v.vehiculo_tipo_nombre,
+            "cliente_nombre": v.cliente_nombre
+        }
+        for v in vehiculos
+    ]
+    
+    return render_template('vehiculo.html', titulo='Vehículos', vehiculos=vehiculos_dict)

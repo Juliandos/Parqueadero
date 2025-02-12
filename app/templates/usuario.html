@@ -13,13 +13,11 @@
         <tr>
           <th>ID</th>
           <th>Documento</th>
-          <th>Contraseña</th>
           <th>Nombres</th>
           <th>Apellidos</th>
           <th>Teléfono</th>
           <th>Email</th>
           <th>Ciudad</th>
-          <th>Dirección</th>
           <th>Rol ID</th>
           <th>Acciones</th>
         </tr>
@@ -29,13 +27,11 @@
         <tr>
           <td>{{ usuario.id }}</td>
           <td>{{ usuario.documento }}</td>
-          <td class="password-column">{{ usuario.contrasena }}</td>
           <td>{{ usuario.nombres }}</td>
           <td>{{ usuario.apellidos }}</td>
           <td>{{ usuario.telefono }}</td>
           <td>{{ usuario.email }}</td>
           <td>{{ usuario.ciudad }}</td>
-          <td>{{ usuario.direccion }}</td>
           <td>{{ usuario.rol_nombre }}</td>
           <td>
             <button class="btn btn-warning btn-sm btnEditar" data-id="{{ usuario.id }}">
@@ -70,7 +66,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="contrasena" class="form-label">Contraseña</label>
-              <input type="password" class="form-control  text-dark" id="contrasena" required />
+              <input type="password" class="form-control  text-dark" id="contrasena" required style="font-size: 20px; letter-spacing: 5px;"/>
             </div>
             <div class="col-md-6 mb-3">
               <label for="nombres" class="form-label">Nombres</label>
