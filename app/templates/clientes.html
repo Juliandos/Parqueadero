@@ -149,7 +149,7 @@ content %}
       $("#telefono").val("");
       $("#email").val("");
       $("#direccion").val("");
-      $("#cliente_nombre").val("");
+      $("#parqueadero_nombre").val("");
       $("#Modal1").modal("show");
     });
 
@@ -163,8 +163,12 @@ content %}
       let telefono = row.find("td:eq(4)").text();
       let email = row.find("td:eq(5)").text();
       let direccion = row.find("td:eq(6)").text();
-      let cliente_nombre = row.find("td:eq(7)").text();
+      let parqueadero_nombre = row.find("td:eq(7)").text();
 
+      let parqueadero_id = $("#parqueadero_id option").filter(function () {
+        return $(this).text().trim() === parqueadero_nombre;
+      }).val();
+    
       $("#Modal1Label").text("Editar Cliente");
       $("#ClientesForm").attr("data-action", "edit");
       $("#ClientesId").val(id);
@@ -174,7 +178,10 @@ content %}
       $("#telefono").val(telefono);
       $("#email").val(email);
       $("#direccion").val(direccion);
-      $("#cliente_nombre").val(cliente_nombre);
+      $("#parqueadero_nombre").val(parqueadero_nombre);
+
+      $("#parqueadero_id").val(parqueadero_id);
+
       $("#Modal1").modal("show");
     });
 
