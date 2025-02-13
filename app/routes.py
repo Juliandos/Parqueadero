@@ -412,12 +412,15 @@ def vehiculo():
         ) \
         .all()
 
+    vTipos = VehiculoTipo.query.order_by(VehiculoTipo.id).all()
+    clientes = Cliente.query.order_by(Cliente.id).all()
+
     vehiculos_dict = [
         {
             "placa": v.placa,
             "marca": v.marca,
             "modelo": v.modelo,
-            "vehiculo_id": v.vehiculo_tipo_id,
+            "vehiculo_tipo_id": v.vehiculo_tipo_id,
             "cliente_id": v.cliente_id,
             "vehiculo_tipo_nombre": v.vehiculo_tipo_nombre,
             "cliente_nombre": v.cliente_nombre
@@ -425,4 +428,4 @@ def vehiculo():
         for v in vehiculos
     ]
     
-    return render_template('vehiculo.html', titulo='Vehículos', vehiculos=vehiculos_dict)
+    return render_template('vehiculo.html', titulo='Vehículos', vehiculos=vehiculos_dict, clientes=clientes, vTipos=vTipos)

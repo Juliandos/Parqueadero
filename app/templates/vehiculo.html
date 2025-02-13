@@ -29,8 +29,8 @@
           <td>{{ vehiculo.modelo }}</td>
           <td>{{ vehiculo.created_at }}</td>
           <td>{{ vehiculo.updated_at }}</td>
-          <td>{{ vehiculo.vehiculo_tipo_id }}</td>
-          <td>{{ vehiculo.cliente_id }}</td>
+          <td>{{ vehiculo.vehiculo_tipo_nombre }}</td>
+          <td>{{ vehiculo.cliente_nombre }}</td>
           <td>
             <button class="btn btn-warning btn-sm btnEditar" data-id="{{ vehiculo.placa }}">
               <i class="fas fa-edit"></i>
@@ -74,14 +74,19 @@
               <label for="vehiculo_tipo_id" class="form-label">Tipo de Vehículo</label>
               <select class="form-control text-dark" id="vehiculo_tipo_id" required>
                 <option value="">Seleccione un Tipo</option>
-                {% for tipo in tipos_vehiculo %}
-                <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                {% for vTipos in vTipos %}
+                <option value="{{ vTipos.id }}">{{ vTipos.nombre }}</option>
                 {% endfor %}
               </select>
             </div>
             <div class="col-md-6 mb-3">
-              <label for="cliente_id" class="form-label">Cliente ID</label>
-              <input type="text" class="form-control text-dark" id="cliente_id" required />
+              <label for="cliente_id" class="form-label">Cliente</label>
+              <select class="form-control text-dark" id="cliente_id" required>
+                <option value="">Seleccione un Cliente</option>
+                {% for cliente in clientes %}
+                <option value="{{ cliente.id }}">{{ cliente.nombres }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
           <button type="submit" class="btn btn-success">Guardar</button>
@@ -100,6 +105,41 @@
       $("#VehiculoForm")[0].reset();
       $("#Modal1").modal("show");
     });
+
+    $("#TableVehiculo").on("click", ".btnEditar", function () {
+      let row = $(this).closest("tr");
+      let placa = row.find("td:eq(0)").text();
+      let marca = row.find("td:eq(1)").text();
+      let modelo = row.find("td:eq(2)").text();
+      let vehiculo_tipo_nombre = row.find("td:eq(5)").text();
+      let cliente_nombre = row.find("td:eq(6)").text();
+
+      console.log(row.html());
+
+      $("#Modal1Label").text("Editar Vehículo");
+      $("#UsuarioForm").attr("data-action", "edit");
+      $("#placa").val(placa);
+      $("#marca").val(marca);
+      $("#modelo").val(modelo);
+
+      // Buscar la opción en el select basada en el texto
+      let vehiculo_tipo_id = $("#vehiculo_tipo_id option").filter(function () {
+        return $(this).text().trim() === vehiculo_tipo_nombre;
+      }).val();
+
+      let cliente_id = $("#cliente_id option").filter(function () {
+        return $(this).text().trim() === cliente_nombre;
+      }).val();
+
+      console.log("vehiculo_tipo_id", vehiculo_tipo_nombre, "cliente_id", cliente_nombre);
+      
+
+      $("#vehiculo_tipo_id").val(vehiculo_tipo_id);
+      $("#cliente_id").val(cliente_id);
+
+      $("#Modal1").modal("show");
+    });
+
 
     $("#VehiculoForm").submit(function (event) {
       event.preventDefault();

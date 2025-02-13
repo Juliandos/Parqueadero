@@ -19,7 +19,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-        seed_initial_data()
+        # seed_initial_data()
 
     from app.routes import routes  
     app.register_blueprint(routes)
@@ -159,6 +159,19 @@ def seed_initial_data():
         ]
         db.session.bulk_save_objects(tarifas_tipo)
         print("✅ Tipos de Tarifa insertados correctamente.")
+
+    if Vehiculo.query.count() == 0:
+        vehiculos = [
+            Vehiculo(placa='qwe123', marca='Hummer', modelo='H3', created_at=datetime.strptime('12/4/2024', '%m/%d/%Y'), updated_at=datetime.strptime('7/24/2024', '%m/%d/%Y'), vehiculo_tipo_id=3, cliente_id=5),
+            Vehiculo(placa='et234', marca='Oldsmobile', modelo='Ciera', created_at=datetime.strptime('4/22/2024', '%m/%d/%Y'), updated_at=datetime.strptime('12/5/2024', '%m/%d/%Y'), vehiculo_tipo_id=8, cliente_id=4),
+            Vehiculo(placa='tyu456', marca='GMC', modelo='3500 Club Coupe', created_at=datetime.strptime('12/14/2024', '%m/%d/%Y'), updated_at=datetime.strptime('12/26/2024', '%m/%d/%Y'), vehiculo_tipo_id=3, cliente_id=1),
+            Vehiculo(placa='uio567', marca='Chevrolet', modelo='LUV', created_at=datetime.strptime('8/7/2024', '%m/%d/%Y'), updated_at=datetime.strptime('1/17/2025', '%m/%d/%Y'), vehiculo_tipo_id=7, cliente_id=5),
+            Vehiculo(placa='lkj876', marca='Ford', modelo='Edge', created_at=datetime.strptime('5/7/2024', '%m/%d/%Y'), updated_at=datetime.strptime('6/17/2024', '%m/%d/%Y'), vehiculo_tipo_id=5, cliente_id=1)
+        ]
+        
+        db.session.bulk_save_objects(vehiculos)
+        db.session.commit()
+        print("✅ Datos iniciales de vehiculos cargados")
 
     db.session.commit()
     print("✅ Todos los datos iniciales han sido cargados exitosamente.")

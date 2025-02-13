@@ -45,6 +45,7 @@
         {% endfor %}
       </tbody>
     </table>
+    <div id="usuariosData" data-usuarios='{{ usuarios | tojson | safe }}'></div>
   </div>
 </div>
 
@@ -93,7 +94,7 @@
               <input type="text" class="form-control  text-dark" id="direccion" required />
             </div>
             <div class="col-md-6 mb-3">
-              <label for="rol_id" class="form-label">Rol ID</label>
+              <label for="rol_id" class="form-label">Rol</label>
               <select class="form-control  text-dark" id="rol_id" required>
                 <option value="">Seleccione un Rol</option>
                 {% for rol in roles %}
@@ -158,6 +159,7 @@
 
     $("#TableUsuario").on("click", ".btnEditar", function () {
       let row = $(this).closest("tr");
+      let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
       let id = row.find("td:eq(0)").text();
       let documento = row.find("td:eq(1)").text();
       let contrasena = row.find("td:eq(2)").text();
@@ -165,9 +167,9 @@
       let apellidos = row.find("td:eq(4)").text();
       let telefono = row.find("td:eq(5)").text();
       let email = row.find("td:eq(6)").text();
-      let ciudad = row.find("td:eq(7)").text();
-      let direccion = row.find("td:eq(8)").text();
-      let rol_nombre = row.find("td:eq(9)").text().trim(); // Remover espacios extras
+      let rol_nombre = row.find("td:eq(7)").text().trim(); // Remover espacios extras      
+      let ciudad = usuarios[id].ciudad;
+      let direccion = usuarios[id].direccion;
 
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
