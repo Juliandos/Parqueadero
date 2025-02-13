@@ -486,3 +486,85 @@ def delete_vehiculo(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
+# Tarifa ALL
+@routes.route('/tarifa', methods=['GET'])
+def tarifa():
+    tarifas = Tarifa.query \
+        .join(TarifaTipo) \
+        .add_columns(
+            Tarifa.id,
+            Tarifa.nombre, 
+            Tarifa.costo, 
+            Tarifa.tarifacol,
+            Tarifa.tarifa_tipo_id,
+            TarifaTipo.nombre.label('tarifa_tipo_nombre')
+        ) \
+        .all()
+
+    tarifa_tipos = TarifaTipo.query.order_by(TarifaTipo.id).all()
+
+    tarifas_dict = [
+        {
+            "id": t.id,
+            "nombre": t.nombre,
+            "costo": t.costo,
+            "tarifacol": t.tarifacol,
+            "tarifa_tipo_id": t.tarifa_tipo_id,
+            "tarifa_tipo_nombre": t.tarifa_tipo_nombre
+        }
+        for t in tarifas
+    ]
+    
+    return render_template('tarifa.html', titulo='Tarifas', tarifas=tarifas_dict, tarifa_tipos=tarifa_tipos)
+
+# Tarifa CREATE
+@routes.route('/tarifa/add', methods=['POST'])
+def add_tarifa():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    costo = data.get('costo')
+    tarifacol = data.get('tarifacol')
+    tarifa_tipo_id = data.get('tarifa_tipo_id')
+
+    if not nombre or not costo or not tarifa_tipo_id:
+        return jsonify({'success': False, 'message': 'Todos los campos obligatorios'}), 400
+
+    nueva_tarifa = Tarifa(
+        nombre=nombre, costo=costo, tarifacol=tarifacol, tarifa_tipo_id=tarifa_tipo_id
+    )
+    db.session.add(nueva_tarifa)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
+
+# Tarifa UPDATE
+@routes.route('/tarifa/edit/<int:id>', methods=['PUT'])
+def update_tarifa(id):
+    data = request.get_json()
+    nombre = data.get('nombre')
+    costo = data.get('costo')
+    tarifacol = data.get('tarifacol')
+    tarifa_tipo_id = data.get('tarifa_tipo_id')
+
+    if not nombre or not costo or not tarifa_tipo_id:
+        return jsonify({'success': False, 'message': 'Todos los campos obligatorios'}), 400
+
+    tarifa = Tarifa.query.get_or_404(id)
+    tarifa.nombre = nombre
+    tarifa.costo = costo
+    tarifa.tarifacol = tarifacol
+    tarifa.tarifa_tipo_id = tarifa_tipo_id
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'})
+
+# Tarifa DELETE
+@routes.route('/tarifa/delete/<int:id>', methods=['POST'])
+def delete_tarifa(id):
+    tarifa = Tarifa.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(tarifa)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
+
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400

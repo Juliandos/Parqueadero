@@ -173,5 +173,18 @@ def seed_initial_data():
         db.session.commit()
         print("✅ Datos iniciales de vehiculos cargados")
 
+    if Tarifa.query.count() == 0:
+        tarifas = [
+        Tarifa(nombre='T1', costo=84, created_at=datetime(2024, 12, 16), updated_at=datetime(2024, 7, 30), tarifa_tipo_id=5),
+        Tarifa(nombre='T2', costo=81, created_at=datetime(2024, 5, 27), updated_at=datetime(2024, 12, 6), tarifa_tipo_id=3),
+        Tarifa(nombre='T3', costo=72, created_at=datetime(2025, 2, 11), updated_at=datetime(2025, 2, 2), tarifa_tipo_id=2),
+        Tarifa(nombre='T4', costo=45, created_at=datetime(2024, 4, 29), updated_at=datetime(2024, 9, 11), tarifa_tipo_id=4),
+        Tarifa(nombre='T5', costo=79, created_at=datetime(2024, 7, 12), updated_at=datetime(2024, 10, 28), tarifa_tipo_id=4),
+        ]
+
+        db.session.bulk_save_objects(tarifas)
+        db.session.commit()
+        print("Datos iniciales insertados en la tabla tarifa.")
+
     db.session.commit()
     print("✅ Todos los datos iniciales han sido cargados exitosamente.")

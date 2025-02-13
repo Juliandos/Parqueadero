@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">Tarifas</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableTarifa" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>Nombre</th>
+          <th>Costo</th>
+          <th>Tipo de Tarifa</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tarifa in tarifas %}
+        <tr>
+          <td>{{ tarifa.nombre }}</td>
+          <td>{{ tarifa.costo }}</td>
+          <td>{{ tarifa.tarifa_tipo_nombre }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ tarifa.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ tarifa.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="tarifasData" data-tarifas='{{ tarifas | tojson | safe }}'></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ModalTarifa" tabindex="-1" aria-labelledby="ModalTarifaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalTarifaLabel">Agregar Tarifa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="TarifaForm">
+          <input type="hidden" id="TarifaId" />
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control text-dark" id="nombre" required />
+          </div>
+          <div class="mb-3">
+            <label for="costo" class="form-label">Costo</label>
+            <input type="number" step="0.01" class="form-control text-dark" id="costo" required />
+          </div>
+          <div class="mb-3">
+            <label for="tarifa_tipo_id" class="form-label">Tipo de Tarifa</label>
+            <select class="form-control text-dark" id="tarifa_tipo_id" required>
+              <option value="">Seleccione un Tipo</option>
+              {% for tarifa_tipo in tarifa_tipos %}
+              <option value="{{ tarifa_tipo.id }}">{{ tarifa_tipo.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#TableTarifa").DataTable();
+
+    $("#btnAgregar").click(function () {
+      $("#ModalTarifaLabel").text("Crear Tarifa");
+      $("#TarifaForm").attr("data-action", "create");
+      $("#TarifaForm")[0].reset();
+      $("#ModalTarifa").modal("show");
+    });
+
+    $("#TableTarifa").on("click", ".btnEditar", function () {
+      let row = $(this).closest("tr");
+      let id = $(this).data("id");
+      let nombre = row.find("td:eq(0)").text();
+      let costo = row.find("td:eq(1)").text();
+      let tarifa_tipo_nombre = row.find("td:eq(2)").text();
+
+      $("#ModalTarifaLabel").text("Editar Tarifa");
+      $("#TarifaForm").attr("data-action", "edit");
+      $("#TarifaId").val(id);
+      $("#nombre").val(nombre);
+      $("#costo").val(costo);
+      $("#tarifa_tipo_id option").filter(function () {
+        return $(this).text().trim() === tarifa_tipo_nombre;
+      }).prop("selected", true);
+
+      $("#ModalTarifa").modal("show");
+    });
+
+    $("#TarifaForm").submit(function (event) {
+      event.preventDefault();
+      let action = $(this).attr("data-action");
+      let url = action === "edit" ? `/tarifa/edit/${$("#TarifaId").val()}` : "/tarifa/add";
+      let method = action === "edit" ? "PUT" : "POST";
+
+      $.ajax({
+        url: url,
+        type: method,
+        contentType: "application/json",
+        data: JSON.stringify({
+          nombre: $("#nombre").val(),
+          costo: $("#costo").val(),
+          tarifa_tipo_id: $("#tarifa_tipo_id").val(),
+        }),
+        success: function () {
+          Swal.fire("Éxito", "Tarifa guardada", "success").then(() => location.reload());
+        }
+      });
+      $("#ModalTarifa").modal("hide");
+    });
+
+    $("#TableTarifa").on("click", ".btnEliminar", function () {
+      let id = $(this).data("id");
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/tarifa/delete/${id}`,
+            type: "POST",
+            data: { _method: "DELETE" },
+            success: function () {
+              Swal.fire("Eliminado", "Tarifa eliminada", "success").then(() => location.reload());
+            },
+            error: function () {
+              Swal.fire("Error", "No se pudo eliminar la tarifa", "error");
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock %}
