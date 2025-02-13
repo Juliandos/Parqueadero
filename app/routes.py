@@ -412,8 +412,8 @@ def vehiculo():
         ) \
         .all()
 
-    vTipos = VehiculoTipo.query.order_by(VehiculoTipo.id).all()
     clientes = Cliente.query.order_by(Cliente.id).all()
+    vTipos = VehiculoTipo.query.order_by(VehiculoTipo.id).all()
 
     vehiculos_dict = [
         {
@@ -429,3 +429,60 @@ def vehiculo():
     ]
     
     return render_template('vehiculo.html', titulo='Vehículos', vehiculos=vehiculos_dict, clientes=clientes, vTipos=vTipos)
+
+# Vehículo CREATE
+@routes.route('/vehiculo/add', methods=['POST'])
+def add_vehiculo():
+    data = request.get_json()
+    placa = data.get('placa')
+    marca = data.get('marca')
+    modelo = data.get('modelo')
+    vehiculo_tipo_id = data.get('vehiculo_tipo_id')
+    cliente_id = data.get('cliente_id')
+    
+    if not placa or not marca or not modelo or not vehiculo_tipo_id or not cliente_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    
+    if Vehiculo.query.filter_by(placa=placa).first():
+        return jsonify({'success': False, 'message': 'La placa ya existe'}), 400
+    
+    nuevo_vehiculo = Vehiculo(placa=placa, marca=marca, modelo=modelo, vehiculo_tipo_id=vehiculo_tipo_id, cliente_id=cliente_id)
+    db.session.add(nuevo_vehiculo)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})
+
+# Vehiculo UPDATE
+@routes.route('/vehiculo/edit/<int:id>', methods=['PUT'])
+def update_vehiculo(id):
+    data = request.get_json()
+    placa = data.get('placa')
+    marca = data.get('marca')
+    modelo = data.get('modelo')
+    vehiculo_tipo_id = data.get('vehiculo_tipo_id')
+    cliente_id = data.get('cliente_id')
+    
+    if not placa or not marca or not modelo or not vehiculo_tipo_id or not cliente_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    
+    vehiculo = Vehiculo.query.get_or_404(id)
+    vehiculo.placa = placa
+    vehiculo.marca = marca
+    vehiculo.modelo = modelo
+    vehiculo.vehiculo_tipo_id = vehiculo_tipo_id
+    vehiculo.cliente_id = cliente_id
+    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
+
+# Vehículo DELETE
+@routes.route('/vehiculo/delete/<string:id>', methods=['POST'])
+def delete_vehiculo(id):
+    vehiculo = Vehiculo.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(vehiculo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Vehículo eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+

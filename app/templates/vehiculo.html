@@ -14,8 +14,6 @@
           <th>Placa</th>
           <th>Marca</th>
           <th>Modelo</th>
-          <th>Fecha Creación</th>
-          <th>Última Actualización</th>
           <th>Tipo Vehículo</th>
           <th>Cliente ID</th>
           <th>Acciones</th>
@@ -27,8 +25,6 @@
           <td>{{ vehiculo.placa }}</td>
           <td>{{ vehiculo.marca }}</td>
           <td>{{ vehiculo.modelo }}</td>
-          <td>{{ vehiculo.created_at }}</td>
-          <td>{{ vehiculo.updated_at }}</td>
           <td>{{ vehiculo.vehiculo_tipo_nombre }}</td>
           <td>{{ vehiculo.cliente_nombre }}</td>
           <td>
@@ -43,6 +39,7 @@
         {% endfor %}
       </tbody>
     </table>
+    <div id="vehiculosData" data-vehiculos='{{ vehiculos | tojson | safe }}'></div>
   </div>
 </div>
 
@@ -101,20 +98,20 @@
     $("#TableVehiculo").DataTable();
 
     $("#btnAgregar").click(function () {
-      $("#Modal1Label").text("Agregar Vehículo");
+      $("#Modal1Label").text("Crear Vehículo");
+      $("#UsuarioForm").attr("data-action", "create");
       $("#VehiculoForm")[0].reset();
       $("#Modal1").modal("show");
     });
 
     $("#TableVehiculo").on("click", ".btnEditar", function () {
       let row = $(this).closest("tr");
+      let vehiculos = JSON.parse(document.getElementById("vehiculosData").dataset.vehiculos);
       let placa = row.find("td:eq(0)").text();
       let marca = row.find("td:eq(1)").text();
       let modelo = row.find("td:eq(2)").text();
-      let vehiculo_tipo_nombre = row.find("td:eq(5)").text();
-      let cliente_nombre = row.find("td:eq(6)").text();
-
-      console.log(row.html());
+      let vehiculo_tipo_nombre = row.find("td:eq(3)").text();
+      let cliente_nombre = row.find("td:eq(4)").text();
 
       $("#Modal1Label").text("Editar Vehículo");
       $("#UsuarioForm").attr("data-action", "edit");
@@ -131,15 +128,11 @@
         return $(this).text().trim() === cliente_nombre;
       }).val();
 
-      console.log("vehiculo_tipo_id", vehiculo_tipo_nombre, "cliente_id", cliente_nombre);
-      
-
       $("#vehiculo_tipo_id").val(vehiculo_tipo_id);
       $("#cliente_id").val(cliente_id);
 
       $("#Modal1").modal("show");
     });
-
 
     $("#VehiculoForm").submit(function (event) {
       event.preventDefault();
