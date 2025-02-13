@@ -95,6 +95,26 @@
 
 <script>
   $(document).ready(function () {
+
+    $("#TableVehiculo").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
+    });
     $("#TableVehiculo").DataTable();
 
     $("#btnAgregar").click(function () {

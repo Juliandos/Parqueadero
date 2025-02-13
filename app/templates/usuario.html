@@ -132,10 +132,10 @@
         infoEmpty: "No hay registros disponibles",
         search: "Buscar:",
         paginate: {
-          first: "Primero",
-          last: "Último",
-          next: "Siguiente",
-          previous: "Anterior",
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
         },
       },
     });
@@ -145,15 +145,16 @@
     $("#btnAgregar").click(function () {
       $("#Modal1Label").text("Crear Usuario");
       $("#UsuarioForm").attr("data-action", "create");
-      $("#UsuarioId").val();
-      $("#documento").val();
-      $("#contrasena").val();
-      $("#nombres").val();
-      $("#apellidos").val();
-      $("#telefono").val();
-      $("#email").val();
-      $("#direccion").val();
-      $("#rol_id").val();
+      $("#UsuarioId").val("");
+      $("#documento").val("");
+      $("#contrasena").val("");
+      $("#nombres").val("");
+      $("#apellidos").val("");
+      $("#telefono").val("");
+      $("#email").val("");
+      $("#ciudad").val("");
+      $("#direccion").val("");
+      $("#rol_id").val("");
       $("#Modal1").modal("show");
     });
 
