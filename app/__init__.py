@@ -186,5 +186,21 @@ def seed_initial_data():
         db.session.commit()
         print("Datos iniciales insertados en la tabla tarifa.")
 
+    if Parqueo.query.count() == 0:
+        parqueos = [
+            Parqueo(id=1, fecha_entrada=datetime(2024, 5, 11, 8, 29, 47), fecha_salida=datetime(2024, 5, 17, 4, 53, 57), 
+                    modulo_id=1, vehiculo_placa='qwe123', medio_pago_id=2, tarifa_id=3, 
+                    created_at=datetime(2024, 10, 31, 7, 17, 30), updated_at=datetime(2025, 2, 11, 5, 54, 35)),
+            Parqueo(id=2, fecha_entrada=datetime(2024, 9, 17, 21, 14, 33), fecha_salida=datetime(2024, 12, 31, 0, 49, 56), 
+                    modulo_id=2, vehiculo_placa='et234', medio_pago_id=1, tarifa_id=2, 
+                    created_at=datetime(2024, 4, 8, 1, 27, 21), updated_at=datetime(2025, 2, 11, 5, 54, 35)),
+            Parqueo(id=3, fecha_entrada=datetime(2024, 8, 3, 4, 17, 28), fecha_salida=datetime(2024, 9, 11, 14, 53, 59), 
+                    modulo_id=3, vehiculo_placa='tyu456', medio_pago_id=3, tarifa_id=1, 
+                    created_at=datetime(2024, 6, 12, 12, 36, 51), updated_at=datetime(2025, 2, 11, 5, 54, 35))
+        ]
+        db.session.bulk_save_objects(parqueos)
+        db.session.commit()
+        print("Datos iniciales insertados en la tabla Parqueo.")
+
     db.session.commit()
     print("✅ Todos los datos iniciales han sido cargados exitosamente.")

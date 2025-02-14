@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">Parqueos</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableParqueo" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>Id</th>
+          <th>Fecha Entrada</th>
+          <th>Fecha Salida</th>
+          <th>Módulo</th>
+          <th>Vehículo</th>
+          <th>Medio de Pago</th>
+          <th>Tarifa</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for parqueo in parqueos %}
+        <tr>
+          <td>{{ parqueo.id }}</td>
+          <td>{{ parqueo.fecha_entrada }}</td>
+          <td>{{ parqueo.fecha_salida or 'En curso' }}</td>
+          <td>{{ parqueo.modulo_nombre }}</td>
+          <td>{{ parqueo.vehiculo }}</td>
+          <td>{{ parqueo.medio_pago_nombre }}</td>
+          <td>{{ parqueo.tarifa_nombre }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ parqueo.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ parqueo.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="parqueosData" data-parqueos='{{ parqueos | tojson | safe }}'></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal1Label">Agregar Parqueo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="ParqueoForm">
+          <input type="hidden" id="ParqueoId" />
+          <div class="mb-3">
+            <label for="modulo_id" class="form-label">Módulo</label>
+            <select class="form-control text-dark" id="modulo_id" required>
+              <option value="">Seleccione un módulo</option>
+              {% for modulo in modulos %}
+              <option value="{{ modulo.id }}">{{ modulo.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="vehiculo_placa" class="form-label">Placa</label>
+            <select class="form-control text-dark" id="vehiculo_placa" required>
+              <option value="">Seleccione una Placa</option>
+              {% for vehiculo in vehiculos %}
+              <option value="{{ vehiculo.placa }}">{{ vehiculo.placa }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="medio_pago_id" class="form-label">Medio de Pago</label>
+            <select class="form-control text-dark" id="medio_pago_id" required>
+              <option value="">Seleccione un medio de pago</option>
+              {% for medioPago in medioPagos %}
+              <option value="{{ medioPago.id }}">{{ medioPago.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="tarifa_id" class="form-label">Tarifa</label>
+            <select class="form-control text-dark" id="tarifa_id" required>
+              <option value="">Seleccione una tarifa</option>
+              {% for tarifa in tarifas %}
+              <option value="{{ tarifa.id }}">{{ tarifa.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Fecha de Entrada -->
+          <div class="mb-3">
+            <label for="fecha_entrada" class="form-label">Fecha de Entrada</label>
+            <input type="datetime-local" class="form-control text-dark" id="fecha_entrada" required>
+          </div>
+
+          <!-- Fecha de Salida -->
+          <div class="mb-3">
+            <label for="fecha_salida" class="form-label">Fecha de Salida</label>
+            <input type="datetime-local" class="form-control text-dark" id="fecha_salida" step="1">
+          </div>
+
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#TableParqueo").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
+    });
+
+    $("#TableParqueo").DataTable();
+    
+    $("#btnAgregar").click(function () {
+      $("#Modal1Label").text("Crear Parqueo");
+      $("#ParqueoForm").attr("data-action", "create");
+      $("#fecha_entrada").val("");
+      $("#fecha_salida").val("");
+      $("#modulo_id").val("");
+      $("#vehiculo_placa").val("");
+      $("#medio_pago_id").val("");
+      $("#tarifa_id").val("");
+      $("#fecha_entrada").prop("disabled", false);
+      $("#fecha_salida").prop("disabled", true);
+      $("#Modal1").modal("show");
+    });
+
+    $("#TableParqueo").on("click", ".btnEditar", function () {
+      let row = $(this).closest("tr");
+      let parqueos = JSON.parse(document.getElementById("parqueosData").dataset.parqueos);
+      let parqueoId = row.find("td:eq(0)").text();
+      let fecha_entrada = row.find("td:eq(1)").text();
+      let fecha_salida = row.find("td:eq(2)").text();
+      let modulo = parqueos.find(p => p.modulo_nombre === row.find("td:eq(3)").text())?.modulo || null;
+      let medio_pago = parqueos.find(p => p.medio_pago_nombre === row.find("td:eq(5)").text())?.medio_pago || null;
+      let tarifa = parqueos.find(p => p.tarifa_nombre === row.find("td:eq(6)").text())?.tarifa || null;
+      let vehiculo = row.find("td:eq(4)").text();
+
+      $("#Modal1Label").text("Editar Parqueo");
+      $("#ParqueoForm").attr("data-action", "edit");
+      $("#ParqueoId").val(parqueoId);
+      $("#modulo_id").val(modulo);
+      $("#vehiculo_placa").val(vehiculo);
+      $("#medio_pago_id").val(medio_pago);
+      $("#tarifa_id").val(tarifa);
+      $("#fecha_salida").val(fecha_salida);
+      $("#fecha_entrada").val(fecha_entrada);
+      $("#fecha_entrada").prop("disabled", true);
+      $("#fecha_salida").prop("disabled", false);
+
+      $("#Modal1").modal("show");
+    });
+
+    $("#ParqueoForm").submit(function (event) {
+      event.preventDefault();
+      let action = $(this).attr("data-action");
+      let url = action === "edit" ? `/parqueo/edit/${$("#ParqueoId").val()}` : "/parqueo/add";
+      let method = action === "edit" ? "PUT" : "POST";
+
+      $.ajax({
+        url: url,
+        type: method,
+        contentType: "application/json",
+        data: JSON.stringify({
+          modulo_id: $("#modulo_id").val(),
+          vehiculo_placa: $("#vehiculo_placa").val(),
+          medio_pago_id: $("#medio_pago_id").val(),
+          tarifa_id: $("#tarifa_id").val(),
+          fecha_entrada: $("#fecha_entrada").val(),
+          fecha_salida: $("#fecha_salida").val(),
+        }),
+        success: function () {
+          Swal.fire("Éxito", "Parqueo guardado", "success").then(() => location.reload());
+        }
+      });
+      $("#Modal1").modal("hide");
+    });
+
+    $("#TableParqueo").on("click", ".btnEliminar", function () {
+      let id = $(this).data("id");
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/parqueo/delete/${id}`,
+            type: "POST",
+            data: { _method: "DELETE" },
+            success: function () {
+              Swal.fire("Eliminado", "Parqueo eliminado", "success").then(() => location.reload());
+            }
+          });
+        }
+      });
+    });
+  
+  });
+</script>
+{% endblock %}

@@ -61,28 +61,25 @@ class Vehiculo(db.Model):
     vehiculo_tipo_id = db.Column(db.Integer, db.ForeignKey('vehiculo_tipo.id'), nullable=False)
     cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
 
-    # Relaciones faltantes
     parqueos = db.relationship('Parqueo', back_populates='vehiculo')
     arrendamientos = db.relationship('Arrendamiento', back_populates='vehiculo')
 
 class Parqueo(db.Model):
-    __tablename__ = 'parqueo'  # Nombre de la tabla en la base de datos
+    __tablename__ = 'parqueo'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    fecha_entrada = db.Column(db.DateTime, default=current_time, nullable=False)
+    fecha_salida = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=current_time, nullable=False)
+    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
+    modulo_id = db.Column(db.Integer, db.ForeignKey('modulo.id'), nullable=False)
+    vehiculo_placa = db.Column(db.String(12), db.ForeignKey('vehiculo.placa'), nullable=False)
+    medio_pago_id = db.Column(db.Integer, db.ForeignKey('medio_pago.id'), nullable=False)
+    tarifa_id = db.Column(db.Integer, db.ForeignKey('tarifa.id'), nullable=False)
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Clave primaria
-    fecha_entrada = db.Column(db.DateTime, default=current_time, nullable=False)  # Fecha de entrada
-    fecha_salida = db.Column(db.DateTime, nullable=True)  # Fecha de salida (puede ser nulo)
-    created_at = db.Column(db.DateTime, default=current_time, nullable=False)  # Fecha de creación
-    updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)  # Fecha de actualización
-
-    modulo_id = db.Column(db.Integer, db.ForeignKey('modulo.id'), nullable=False)  # Relación con 'modulo'
-    vehiculo_placa = db.Column(db.Integer, db.ForeignKey('vehiculo.placa'), nullable=False)  # Relación con 'vehiculo'
-    medio_pago_id = db.Column(db.Integer, db.ForeignKey('medio_pago.id'), nullable=False)  # Relación con 'medio_pago'
-    tarifa_id = db.Column(db.Integer, db.ForeignKey('tarifa.id'), nullable=False)  # Relación con 'tarifa'
-
-    modulo = db.relationship('Modulo', back_populates='parqueos')  # Relación con 'modulo'
-    vehiculo = db.relationship('Vehiculo', back_populates='parqueos')  # Relación con 'vehiculo'
-    medio_pago = db.relationship('MedioPago', back_populates='parqueos')  # Relación con 'medio_pago'
-    tarifa = db.relationship('Tarifa', back_populates='parqueos')  # Relación con 'tarifa'
+    modulo = db.relationship('Modulo', back_populates='parqueos')
+    vehiculo = db.relationship('Vehiculo', back_populates='parqueos')
+    medio_pago = db.relationship('MedioPago', back_populates='parqueos')
+    tarifa = db.relationship('Tarifa', back_populates='parqueos')
 
 class Punto(db.Model):
     __tablename__ = 'punto'

@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, jsonify, render_template, request
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero
 from app import db
@@ -427,7 +428,6 @@ def vehiculo():
         }
         for v in vehiculos
     ]
-    
     return render_template('vehiculo.html', titulo='Vehículos', vehiculos=vehiculos_dict, clientes=clientes, vTipos=vTipos)
 
 # Vehículo CREATE
@@ -567,4 +567,209 @@ def delete_tarifa(id):
         db.session.commit()
         return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
 
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Parqueo ALL
+@routes.route('/parqueo', methods=['GET'])
+def listar_parqueos():
+    parqueos = Parqueo.query \
+        .join(Modulo) \
+        .join(MedioPago) \
+        .join(Tarifa) \
+        .add_columns(
+            Parqueo.id,
+            Parqueo.fecha_entrada,
+            Parqueo.fecha_salida,
+            Parqueo.modulo_id,
+            Parqueo.vehiculo_placa,
+            Parqueo.medio_pago_id,
+            Parqueo.tarifa_id,
+            Modulo.nombre.label('modulo_nombre'),
+            MedioPago.nombre.label('medio_pago_nombre'),
+            Tarifa.nombre.label('tarifa_nombre')
+        ) \
+        .all()
+    
+    modulos = Modulo.query.order_by(Modulo.id).all()
+    vehiculos = Vehiculo.query.order_by(Vehiculo.placa).all()
+    medioPagos = MedioPago.query.order_by(MedioPago.id).all()
+    tarifas = Tarifa.query.order_by(Tarifa.id).all()
+
+    parqueos_dict = [
+        {
+            "id": p.id,
+            "fecha_entrada": p.fecha_entrada,
+            "fecha_salida": p.fecha_salida,
+            "modulo": p.modulo_id,
+            "vehiculo": p.vehiculo_placa,
+            "medio_pago": p.medio_pago_id,
+            "tarifa": p.tarifa_id,
+            "modulo_nombre": p.modulo_nombre,
+            "medio_pago_nombre": p.medio_pago_nombre,
+            "tarifa_nombre": p.tarifa_nombre
+        }
+        for p in parqueos
+    ]
+
+    return render_template('parqueo.html', titulo='Parqueos', parqueos=parqueos_dict, modulos=modulos, vehiculos=vehiculos, medioPagos=medioPagos, tarifas=tarifas)
+
+# Parqueo CREATE
+@routes.route('/parqueo/add', methods=['POST'])
+def agregar_parqueo():
+    data = request.get_json()
+    modulo_id = data.get('modulo_id')
+    vehiculo_placa = data.get('vehiculo_placa')
+    medio_pago_id = data.get('medio_pago_id')
+    tarifa_id = data.get('tarifa_id')
+    fecha_entrada = data.get('fecha_entrada')
+
+    if not modulo_id or not vehiculo_placa or not medio_pago_id or not tarifa_id or not fecha_entrada:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    nuevo_parqueo = Parqueo(
+        fecha_entrada=datetime.now(),
+        modulo_id=modulo_id,
+        vehiculo_placa=vehiculo_placa,
+        medio_pago_id=medio_pago_id,
+        tarifa_id=tarifa_id
+    )
+
+    db.session.add(nuevo_parqueo)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Parqueo registrado correctamente'})
+
+# Parqueo UPDATE
+@routes.route('/parqueo/edit/<int:id>', methods=['PUT'])
+def actualizar_parqueo(id):
+    data = request.get_json()
+    print(data)
+    modulo_id = data.get('modulo_id')
+    vehiculo_placa = data.get('vehiculo_placa')
+    medio_pago_id = data.get('medio_pago_id')
+    tarifa_id = data.get('tarifa_id')
+    fecha_salida = data.get('fecha_salida')
+
+    parqueo = Parqueo.query.get_or_404(id)
+    parqueo.fecha_salida = datetime.fromisoformat(fecha_salida)
+    parqueo.modulo_id = modulo_id
+    parqueo.vehiculo_placa = vehiculo_placa
+    parqueo.medio_pago_id = medio_pago_id
+    parqueo.tarifa_id = tarifa_id
+    print(parqueo)
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Parqueo actualizado correctamente'})
+
+# Parqueo DELETE
+@routes.route('/parqueo/delete/<int:id>', methods=['POST'])
+def eliminar_parqueo(id):
+    parqueo = Parqueo.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(parqueo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Parqueo eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Arrendamiento ALL
+@routes.route('/arrendamiento', methods=['GET'])
+def listar_arrendamientos():
+    arrendamientos = Arrendamiento.query \
+        .join(Periodicidad) \
+        .join(Vehiculo) \
+        .join(MedioPago) \
+        .add_columns(
+            Arrendamiento.id,
+            Arrendamiento.descripcion,
+            Arrendamiento.created_at,
+            Arrendamiento.updated_at,
+            Arrendamiento.periodicidad_id,
+            Arrendamiento.vehiculo_placa,
+            Arrendamiento.medio_pago_id,
+            Periodicidad.nombre.label('periodicidad_nombre'),
+            Vehiculo.placa.label('vehiculo_placa'),
+            MedioPago.nombre.label('medio_pago_nombre')
+        ) \
+        .all()
+    
+    periodicidades = Periodicidad.query.order_by(Periodicidad.id).all()
+    vehiculos = Vehiculo.query.order_by(Vehiculo.placa).all()
+    medioPagos = MedioPago.query.order_by(MedioPago.id).all()
+
+    arrendamientos_dict = [
+        {
+            "id": a.id,
+            "descripcion": a.descripcion,
+            "created_at": a.created_at,
+            "updated_at": a.updated_at,
+            "periodicidad_id": a.periodicidad_id,
+            "vehiculo_placa": a.vehiculo_placa,
+            "medio_pago_id": a.medio_pago_id,
+            "periodicidad_nombre": a.periodicidad_nombre,
+            "vehiculo_placa": a.vehiculo_placa,
+            "medio_pago_nombre": a.medio_pago_nombre
+        }
+        for a in arrendamientos
+    ]
+
+    return render_template('arrendamiento.html', 
+                        titulo='Arrendamientos', 
+                        arrendamientos=arrendamientos_dict,
+                        periodicidades=periodicidades,
+                        vehiculos=vehiculos,
+                        medioPagos=medioPagos)
+
+# Arrendamiento CREATE
+@routes.route('/arrendamiento/add', methods=['POST'])
+def agregar_arrendamiento():
+    data = request.get_json()
+    descripcion = data.get('descripcion')
+    periodicidad_id = data.get('periodicidad_id')
+    vehiculo_placa = data.get('vehiculo_placa')
+    medio_pago_id = data.get('medio_pago_id')
+
+    if not descripcion or not periodicidad_id or not vehiculo_placa or not medio_pago_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    nuevo_arrendamiento = Arrendamiento(
+        descripcion=descripcion,
+        periodicidad_id=periodicidad_id,
+        vehiculo_placa=vehiculo_placa,
+        medio_pago_id=medio_pago_id
+    )
+
+    db.session.add(nuevo_arrendamiento)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Arrendamiento creado correctamente'})
+
+# Arrendamiento UPDATE
+@routes.route('/arrendamiento/edit/<int:id>', methods=['PUT'])
+def actualizar_arrendamiento(id):
+    data = request.get_json()
+    descripcion = data.get('descripcion')
+    periodicidad_id = data.get('periodicidad_id')
+    vehiculo_placa = data.get('vehiculo_placa')
+    medio_pago_id = data.get('medio_pago_id')
+
+    arrendamiento = Arrendamiento.query.get_or_404(id)
+    arrendamiento.descripcion = descripcion
+    arrendamiento.periodicidad_id = periodicidad_id
+    arrendamiento.vehiculo_placa = vehiculo_placa
+    arrendamiento.medio_pago_id = medio_pago_id
+    arrendamiento.updated_at = datetime.now()
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Arrendamiento actualizado correctamente'})
+
+# Arrendamiento DELETE
+@routes.route('/arrendamiento/delete/<int:id>', methods=['POST'])
+def eliminar_arrendamiento(id):
+    arrendamiento = Arrendamiento.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(arrendamiento)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Arrendamiento eliminado'}), 200
+    
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
