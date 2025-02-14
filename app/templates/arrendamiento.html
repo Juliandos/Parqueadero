@@ -192,7 +192,8 @@
         if (result.isConfirmed) {
           $.ajax({
             url: `/arrendamiento/delete/${arrendamientoId}`,
-            type: "DELETE",
+            type: "POST",
+            data: { _method: "DELETE" },
             success: function () {
               Swal.fire("Eliminado", "El arrendamiento ha sido eliminado", "success").then(() => location.reload());
             }
