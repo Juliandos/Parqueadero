@@ -682,8 +682,6 @@ def listar_arrendamientos():
         .add_columns(
             Arrendamiento.id,
             Arrendamiento.descripcion,
-            Arrendamiento.created_at,
-            Arrendamiento.updated_at,
             Arrendamiento.periodicidad_id,
             Arrendamiento.vehiculo_placa,
             Arrendamiento.medio_pago_id,
@@ -701,8 +699,6 @@ def listar_arrendamientos():
         {
             "id": a.id,
             "descripcion": a.descripcion,
-            "created_at": a.created_at,
-            "updated_at": a.updated_at,
             "periodicidad_id": a.periodicidad_id,
             "vehiculo_placa": a.vehiculo_placa,
             "medio_pago_id": a.medio_pago_id,

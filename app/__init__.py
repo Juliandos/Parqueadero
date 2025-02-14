@@ -236,7 +236,21 @@ def seed_initial_data():
         db.session.bulk_save_objects(arrendamientos)
         db.session.commit()
 
-        print("Datos iniciales insertados en la tabla Arrendamiento.")
+        print("✅ Datos iniciales insertados en la tabla Arrendamiento.")
+
+    if Periodicidad.query.count() == 0:
+        periodicidades = [
+            Periodicidad(id=1, nombre='Ambrosius', dias=7),
+            Periodicidad(id=2, nombre='Roobbie', dias=13),
+            Periodicidad(id=3, nombre='Lynnelle', dias=11),
+            Periodicidad(id=4, nombre='Ingeborg', dias=24),
+            Periodicidad(id=5, nombre='Reggi', dias=19)
+        ]
+        
+        db.session.bulk_save_objects(periodicidades)
+        db.session.commit()
+        
+        print("✅ Datos iniciales insertados en la tabla Periodicidad.")
 
     db.session.commit()
     print("✅ Todos los datos iniciales han sido cargados exitosamente.")

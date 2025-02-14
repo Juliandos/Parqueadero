@@ -13,8 +13,6 @@
         <tr>
           <th>Id</th>
           <th>Descripción</th>
-          <th>Fecha Creación</th>
-          <th>Última Actualización</th>
           <th>Periodicidad</th>
           <th>Vehículo</th>
           <th>Medio de Pago</th>
@@ -26,8 +24,6 @@
         <tr>
           <td>{{ arrendamiento.id }}</td>
           <td>{{ arrendamiento.descripcion }}</td>
-          <td>{{ arrendamiento.created_at }}</td>
-          <td>{{ arrendamiento.updated_at or 'Sin actualizar' }}</td>
           <td>{{ arrendamiento.periodicidad_nombre }}</td>
           <td>{{ arrendamiento.vehiculo_placa }}</td>
           <td>{{ arrendamiento.medio_pago_nombre }}</td>
@@ -103,6 +99,8 @@
 <script>
   $(document).ready(function () {
 
+    console.log(JSON.parse(document.getElementById("arrendamientosData").dataset.arrendamientos));
+
     $("#TableArrendamiento").DataTable({
       paging: true,
       searching: true,
@@ -139,12 +137,12 @@
       let row = $(this).closest("tr");
       let arrendamientos = JSON.parse(document.getElementById("arrendamientosData").dataset.arrendamientos);
       let arrendamientoId = row.find("td:eq(0)").text();
-
       let descripcion = row.find("td:eq(1)").text();
-      let periodicidad = arrendamientos.find(a => a.periodicidad_nombre === row.find("td:eq(4)").text())?.periodicidad_id || null;
-      let vehiculo = row.find("td:eq(5)").text();
-      let medio_pago = arrendamientos.find(a => a.medio_pago_nombre === row.find("td:eq(6)").text())?.medio_pago_id || null;
-
+      let periodicidad = arrendamientos.find(a => a.periodicidad_nombre === row.find("td:eq(2)").text())?.periodicidad_id || null;
+      let vehiculo = row.find("td:eq(3)").text();
+      let medio_pago = arrendamientos.find(a => a.medio_pago_nombre === row.find("td:eq(4)").text())?.medio_pago_id || null;
+      // console.log(row.html);
+      
       $("#Modal1Label").text("Editar Arrendamiento");
       $("#ArrendamientoForm").attr("data-action", "edit");
       $("#ArrendamientoId").val(arrendamientoId);
