@@ -769,3 +769,91 @@ def eliminar_arrendamiento(id):
         return jsonify({'success': True, 'message': 'Arrendamiento eliminado'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Modulo ALL
+@routes.route('/modulo', methods=['GET'])
+def listar_modulos():
+    modulos = Modulo.query \
+        .join(Sede) \
+        .add_columns(
+            Modulo.id,
+            Modulo.nombre,
+            Modulo.habilitado,
+            Modulo.descripcion,
+            Modulo.created_at,
+            Modulo.updated_at,
+            Modulo.sede_id,
+            Sede.nombre.label('sede_nombre')
+        ) \
+        .all()
+    
+    sedes = Sede.query.order_by(Sede.id).all()
+
+    modulos_dict = [
+        {
+            "id": m.id,
+            "nombre": m.nombre,
+            "habilitado": m.habilitado,
+            "descripcion": m.descripcion,
+            "created_at": m.created_at,
+            "updated_at": m.updated_at,
+            "sede_id": m.sede_id,
+            "sede_nombre": m.sede_nombre
+        }
+        for m in modulos
+    ]
+
+    return render_template('modulo.html', 
+                        titulo='Módulos', 
+                        modulos=modulos_dict,
+                        sedes=sedes)
+
+# Modulo CREATE
+@routes.route('/modulo/add', methods=['POST'])
+def agregar_modulo():
+    data = request.get_json()
+    nombre = data.get('nombre')
+    habilitado = data.get('habilitado')
+    descripcion = data.get('descripcion')
+    sede_id = data.get('sede_id')
+
+    if not nombre or not sede_id or habilitado is None:
+        return jsonify({'success': False, 'message': 'Nombre, Habilitado y Sede son obligatorios'}), 400
+
+    nuevo_modulo = Modulo(
+        nombre=nombre,
+        habilitado=habilitado,
+        descripcion=descripcion,
+        sede_id=sede_id
+    )
+
+    db.session.add(nuevo_modulo)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Módulo creado correctamente'})
+
+# Modulo UPDATE
+@routes.route('/modulo/edit/<int:id>', methods=['PUT'])
+def actualizar_modulo(id):
+    data = request.get_json()
+    modulo = Modulo.query.get_or_404(id)
+    
+    modulo.nombre = data.get('nombre', modulo.nombre)
+    modulo.habilitado = data.get('habilitado', modulo.habilitado)
+    modulo.descripcion = data.get('descripcion', modulo.descripcion)
+    modulo.sede_id = data.get('sede_id', modulo.sede_id)
+    modulo.updated_at = datetime.now()
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Módulo actualizado correctamente'})
+
+# Modulo DELETE
+@routes.route('/modulo/delete/<int:id>', methods=['POST'])
+def eliminar_modulo(id):
+    modulo = Modulo.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(modulo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Módulo eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400

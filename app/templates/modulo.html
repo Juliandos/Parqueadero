@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">{{ titulo }}</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableModulo" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>Id</th>
+          <th>Nombre</th>
+          <th>Habilitado</th>
+          <th>Descripción</th>
+          <th>Fecha Creación</th>
+          <th>Última Actualización</th>
+          <th>Sede</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for modulo in modulos %}
+        <tr>
+          <td>{{ modulo.id }}</td>
+          <td>{{ modulo.nombre }}</td>
+          <td>{{ 'Sí' if modulo.habilitado else 'No' }}</td>
+          <td>{{ modulo.descripcion or '' }}</td>
+          <td>{{ modulo.created_at }}</td>
+          <td>{{ modulo.updated_at or 'Sin actualizar' }}</td>
+          <td>{{ modulo.sede_nombre }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ modulo.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ modulo.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="modulosData" data-modulos='{{ modulos | tojson | safe }}'></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal1Label">Agregar Módulo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="ModuloForm">
+          <input type="hidden" id="ModuloId" />
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control text-dark" id="nombre" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="habilitado" class="form-label">Habilitado</label>
+            <select class="form-control text-dark" id="habilitado" required>
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control text-dark" id="descripcion"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="sede_id" class="form-label">Sede</label>
+            <select class="form-control text-dark" id="sede_id" required>
+              <option value="">Seleccione una sede</option>
+              {% for sede in sedes %}
+              <option value="{{ sede.id }}">{{ sede.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#TableModulo").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
+    });
+
+    $("#btnAgregar").click(function () {
+      $("#Modal1Label").text("Crear Módulo");
+      $("#ModuloForm").attr("data-action", "create");
+      $("#nombre").val("");
+      $("#habilitado").val("true");
+      $("#descripcion").val("");
+      $("#sede_id").val("");
+      $("#Modal1").modal("show");
+    });
+
+    $("#TableModulo").on("click", ".btnEditar", function () {
+      let row = $(this).closest("tr");
+      let modulos = JSON.parse(document.getElementById("modulosData").dataset.modulos);
+      let moduloId = row.find("td:eq(0)").text();
+
+      let modulo = modulos.find(m => m.id == moduloId);
+
+      $("#Modal1Label").text("Editar Módulo");
+      $("#ModuloForm").attr("data-action", "edit");
+      $("#ModuloId").val(moduloId);
+      $("#nombre").val(modulo.nombre);
+      $("#habilitado").val(modulo.habilitado ? "true" : "false");
+      $("#descripcion").val(modulo.descripcion);
+      $("#sede_id").val(modulo.sede_id);
+
+      $("#Modal1").modal("show");
+    });
+
+    $("#ModuloForm").submit(function (event) {
+      event.preventDefault();
+      let action = $(this).attr("data-action");
+      let url = action === "edit" ? `/modulo/edit/${$("#ModuloId").val()}` : "/modulo/add";
+      let method = action === "edit" ? "PUT" : "POST";
+
+      $.ajax({
+        url: url,
+        type: method,
+        contentType: "application/json",
+        data: JSON.stringify({
+          nombre: $("#nombre").val(),
+          habilitado: $("#habilitado").val() === "true",
+          descripcion: $("#descripcion").val(),
+          sede_id: $("#sede_id").val()
+        }),
+        success: function () {
+          Swal.fire("Éxito", "Módulo guardado", "success").then(() => location.reload());
+        }
+      });
+      $("#Modal1").modal("hide");
+    });
+
+    $("#TableModulo").on("click", ".btnEliminar", function () {
+      let id = $(this).data("id");
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/modulo/delete/${id}`,
+            type: "POST",
+            data: { _method: "DELETE" },
+            success: function () {
+              Swal.fire("Eliminado", "Módulo eliminado", "success").then(() => location.reload());
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
