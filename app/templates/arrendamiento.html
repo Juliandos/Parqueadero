@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">{{ titulo }}</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableArrendamiento" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>Id</th>
+          <th>Descripción</th>
+          <th>Fecha Creación</th>
+          <th>Última Actualización</th>
+          <th>Periodicidad</th>
+          <th>Vehículo</th>
+          <th>Medio de Pago</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for arrendamiento in arrendamientos %}
+        <tr>
+          <td>{{ arrendamiento.id }}</td>
+          <td>{{ arrendamiento.descripcion }}</td>
+          <td>{{ arrendamiento.created_at }}</td>
+          <td>{{ arrendamiento.updated_at or 'Sin actualizar' }}</td>
+          <td>{{ arrendamiento.periodicidad_nombre }}</td>
+          <td>{{ arrendamiento.vehiculo_placa }}</td>
+          <td>{{ arrendamiento.medio_pago_nombre }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ arrendamiento.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ arrendamiento.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="arrendamientosData" data-arrendamientos='{{ arrendamientos | tojson | safe }}'></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal1Label">Agregar Arrendamiento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="ArrendamientoForm">
+          <input type="hidden" id="ArrendamientoId" />
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control text-dark" id="descripcion" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="periodicidad_id" class="form-label">Periodicidad</label>
+            <select class="form-control text-dark" id="periodicidad_id" required>
+              <option value="">Seleccione una periodicidad</option>
+              {% for periodicidad in periodicidades %}
+              <option value="{{ periodicidad.id }}">{{ periodicidad.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="vehiculo_placa" class="form-label">Vehículo</label>
+            <select class="form-control text-dark" id="vehiculo_placa" required>
+              <option value="">Seleccione un vehículo</option>
+              {% for vehiculo in vehiculos %}
+              <option value="{{ vehiculo.placa }}">{{ vehiculo.placa }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="medio_pago_id" class="form-label">Medio de Pago</label>
+            <select class="form-control text-dark" id="medio_pago_id" required>
+              <option value="">Seleccione un medio de pago</option>
+              {% for medioPago in medioPagos %}
+              <option value="{{ medioPago.id }}">{{ medioPago.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    $("#TableArrendamiento").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
+    });
+
+    $("#TableArrendamiento").DataTable()
+
+    $("#btnAgregar").click(function () {
+      $("#Modal1Label").text("Crear Arrendamiento");
+      $("#ArrendamientoForm").attr("data-action", "create");
+      $("#descripcion").val("");
+      $("#periodicidad_id").val("");
+      $("#vehiculo_placa").val("");
+      $("#medio_pago_id").val("");
+      $("#Modal1").modal("show");
+    });
+
+    $("#TableArrendamiento").on("click", ".btnEditar", function () {
+      let row = $(this).closest("tr");
+      let arrendamientos = JSON.parse(document.getElementById("arrendamientosData").dataset.arrendamientos);
+      let arrendamientoId = row.find("td:eq(0)").text();
+
+      let descripcion = row.find("td:eq(1)").text();
+      let periodicidad = arrendamientos.find(a => a.periodicidad_nombre === row.find("td:eq(4)").text())?.periodicidad_id || null;
+      let vehiculo = row.find("td:eq(5)").text();
+      let medio_pago = arrendamientos.find(a => a.medio_pago_nombre === row.find("td:eq(6)").text())?.medio_pago_id || null;
+
+      $("#Modal1Label").text("Editar Arrendamiento");
+      $("#ArrendamientoForm").attr("data-action", "edit");
+      $("#ArrendamientoId").val(arrendamientoId);
+      $("#descripcion").val(descripcion);
+      $("#periodicidad_id").val(periodicidad);
+      $("#vehiculo_placa").val(vehiculo);
+      $("#medio_pago_id").val(medio_pago);
+
+      $("#Modal1").modal("show");
+    });
+
+    $("#ArrendamientoForm").submit(function (event) {
+      event.preventDefault();
+      let action = $(this).attr("data-action");
+      let url = action === "edit" ? `/arrendamiento/edit/${$("#ArrendamientoId").val()}` : "/arrendamiento/add";
+      let method = action === "edit" ? "PUT" : "POST";
+
+      $.ajax({
+        url: url,
+        type: method,
+        contentType: "application/json",
+        data: JSON.stringify({
+          descripcion: $("#descripcion").val(),
+          periodicidad_id: $("#periodicidad_id").val(),
+          vehiculo_placa: $("#vehiculo_placa").val(),
+          medio_pago_id: $("#medio_pago_id").val()
+        }),
+        success: function () {
+          Swal.fire("Éxito", "Arrendamiento guardado", "success").then(() => location.reload());
+        }
+      });
+      $("#Modal1").modal("hide");
+    });
+
+    $("#TableArrendamiento").on("click", ".btnEliminar", function () {
+      let row = $(this).closest("tr");
+      let arrendamientoId = row.find("td:eq(0)").text();
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "No se podrá revertir esta acción!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, eliminar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/arrendamiento/delete/${arrendamientoId}`,
+            type: "DELETE",
+            success: function () {
+              Swal.fire("Eliminado", "El arrendamiento ha sido eliminado", "success").then(() => location.reload());
+            }
+          });
+        }
+      });
+  
+      });
+  
+  });
+</script>
+{% endblock %}

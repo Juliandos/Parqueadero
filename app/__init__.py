@@ -184,7 +184,7 @@ def seed_initial_data():
 
         db.session.bulk_save_objects(tarifas)
         db.session.commit()
-        print("Datos iniciales insertados en la tabla tarifa.")
+        print("✅ Datos iniciales insertados en la tabla tarifa.")
 
     if Parqueo.query.count() == 0:
         parqueos = [
@@ -200,7 +200,43 @@ def seed_initial_data():
         ]
         db.session.bulk_save_objects(parqueos)
         db.session.commit()
-        print("Datos iniciales insertados en la tabla Parqueo.")
+        print("✅ Datos iniciales insertados en la tabla Parqueo.")
+
+    if Arrendamiento.query.count() == 0:
+        arrendamientos = [
+            Arrendamiento(
+                id=1,
+                descripcion="Arriendo mensual camioneta",
+                periodicidad_id=1,
+                vehiculo_placa='qwe123',
+                medio_pago_id=2,
+                created_at=datetime(2024, 1, 15, 9, 30, 0),
+                updated_at=datetime(2024, 12, 1, 14, 15, 0)
+            ),
+            Arrendamiento(
+                id=2,
+                descripcion="Contrato leasing anual",
+                periodicidad_id=2,
+                vehiculo_placa='et234',
+                medio_pago_id=1,
+                created_at=datetime(2024, 3, 10, 8, 45, 0),
+                updated_at=datetime(2024, 11, 20, 10, 30, 0)
+            ),
+            Arrendamiento(
+                id=3,
+                descripcion="Acuerdo de arrendamiento trimestral",
+                periodicidad_id=3,
+                vehiculo_placa='tyu456',
+                medio_pago_id=3,
+                created_at=datetime(2024, 2, 5, 12, 0, 0),
+                updated_at=datetime(2024, 10, 10, 16, 45, 0)
+            )
+        ]
+        
+        db.session.bulk_save_objects(arrendamientos)
+        db.session.commit()
+
+        print("Datos iniciales insertados en la tabla Arrendamiento.")
 
     db.session.commit()
     print("✅ Todos los datos iniciales han sido cargados exitosamente.")
