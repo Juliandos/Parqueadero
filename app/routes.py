@@ -1006,3 +1006,63 @@ def eliminar_pais(id):
         return jsonify({'success': True, 'message': 'País eliminado'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Periodicidad ALL
+@routes.route('/periodicidad', methods=['GET'])
+def listar_periodicidades():
+    periodicidades = Periodicidad.query.all()
+    
+    periodicidades_dict = [
+        {
+            "id": p.id,
+            "nombre": p.nombre,
+            "dias": p.dias
+        }
+        for p in periodicidades
+    ]
+    return render_template('periodicidad.html', 
+                        titulo='Periodicidades', 
+                        periodicidades=periodicidades_dict)
+
+# Periodicidad CREATE
+@routes.route('/periodicidad/add', methods=['POST'])
+def agregar_periodicidad():
+    data = request.get_json()
+    
+    if not data.get('nombre') or not data.get('dias'):
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    nueva_periodicidad = Periodicidad(
+        nombre=data['nombre'],
+        dias=data['dias']
+    )
+
+    db.session.add(nueva_periodicidad)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Periodicidad creada correctamente'})
+
+# Periodicidad UPDATE
+@routes.route('/periodicidad/edit/<int:id>', methods=['PUT'])
+def actualizar_periodicidad(id):
+    data = request.get_json()
+    periodicidad = Periodicidad.query.get_or_404(id)
+    
+    periodicidad.nombre = data.get('nombre', periodicidad.nombre)
+    periodicidad.dias = data.get('dias', periodicidad.dias)
+    periodicidad.updated_at = datetime.now()
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Periodicidad actualizada correctamente'})
+
+# Periodicidad DELETE
+@routes.route('/periodicidad/delete/<int:id>', methods=['POST'])
+def eliminar_periodicidad(id):
+    periodicidad = Periodicidad.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(periodicidad)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Periodicidad eliminada'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
