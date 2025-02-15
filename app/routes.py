@@ -876,7 +876,7 @@ def listar_sedes():
     
     parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()
     usuarios = Usuario.query.order_by(Usuario.id).all()
-    print(usuarios, parqueaderos)
+
     sedes_dict = [
         {
             "id": s.id,
@@ -1066,3 +1066,70 @@ def eliminar_periodicidad(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
+# Puntos ALL
+@routes.route('/puntos')
+def obtener_puntos():
+    puntos = Punto.query.join(Cliente).add_columns(
+        Punto.id,
+        Punto.cantidad,
+        Cliente.nombres.label('cliente_nombre'),
+    ).all()
+
+    clientes = Cliente.query.order_by(Cliente.id).all()
+
+    puntos_data = [{
+        'id': p.id,
+        'cantidad': p.cantidad,
+        'cliente': p.cliente_nombre
+    } for p in puntos]
+
+    return render_template('puntos.html', 
+                        titulo="Administración de Puntos",
+                        puntos=puntos_data,
+                        clientes=clientes)
+
+# Puntos CREATE
+@routes.route('/punto/add', methods=['POST'])
+def agregar_punto():
+    data = request.get_json()
+    cantidad = data.get('cantidad')
+    cliente_id = data.get('cliente_id')
+    
+    if not cantidad or not cliente_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    nuevo_punto = Punto(
+        cantidad=cantidad,
+        cliente_id=cliente_id,
+        created_at=datetime.now(),
+        updated_at=datetime.now()
+    )
+
+    db.session.add(nuevo_punto)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Punto creado correctamente'})
+
+# Puntos UPDATE
+@routes.route('/punto/edit/<int:id>', methods=['PUT'])
+def actualizar_punto(id):
+    data = request.get_json()
+    punto = Punto.query.get_or_404(id)
+    
+    punto.cantidad = data.get('cantidad', punto.cantidad)
+    punto.cliente_id = data.get('cliente_id', punto.cliente_id)
+    punto.updated_at = datetime.now()
+    
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Punto actualizado correctamente'})
+
+# Puntos DELETE
+@routes.route('/punto/delete/<int:id>', methods=['POST'])
+def eliminar_punto(id):
+    punto = Punto.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(punto)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Punto eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400

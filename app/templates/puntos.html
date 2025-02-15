@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">Puntos</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TablePunto" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>ID</th>
+          <th>Cantidad</th>
+          <th>Cliente</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for punto in puntos %}
+        <tr>
+          <td>{{ punto.id }}</td>
+          <td>{{ punto.cantidad }}</td>
+          <td>{{ punto.cliente }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ punto.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ punto.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div id="puntosData" data-puntos='{{ puntos | tojson | safe }}'></div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal1Label">Gestión de Puntos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="PuntoForm">
+          <input type="hidden" id="PuntoId">
+          <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="cantidad" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Cliente</label>
+            <select class="form-select" id="cliente_id" required>
+              <option value="">Seleccionar cliente</option>
+              {% for cliente in clientes %}
+              <option value="{{ cliente.id }}">{{ cliente.nombres }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    
+    $("#TablePunto").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
+    });
+
+    $("#TablePunto").DataTable();
+    
+
+    $('#btnAgregar').click(() => {
+      $('#Modal1Label').text('Nuevo Punto');
+      $('#PuntoId').val("");
+      $('#cantidad').val("");
+      $('#cliente_id').val("");
+      $('#Modal1').modal('show');
+    });
+
+    $('#TablePunto').on('click', '.btnEditar', function () {
+      const row = $(this).closest("tr");
+      let puntos = JSON.parse(document.getElementById("puntosData").dataset.puntos);
+      let puntosId = row.find("td:eq(0)").text();
+      let cantidad = row.find("td:eq(1)").text();
+      // let cliente = row.find("td:eq(2)").text();
+      let cliente = puntos.find(p => p.cliente === row.find("td:eq(2)").text())?.id || null;
+      console.log(cliente);
+      
+      $('#Modal1Label').text('Editar Punto');
+      $('#PuntoId').val(puntosId);
+      $('#cantidad').val(cantidad);
+      $('#cliente_id').val(cliente);
+      $('#Modal1').modal('show');
+    });
+
+    $('#PuntoForm').submit(function (e) {
+      e.preventDefault();
+      const formData = {
+        cantidad: $('#cantidad').val(),
+        cliente_id: $('#cliente_id').val()
+      };
+
+      const puntoId = $('#PuntoId').val();
+      const method = puntoId ? 'PUT' : 'POST';
+      const url = puntoId ? `/punto/edit/${puntoId}` : '/punto/add';
+
+      $.ajax({
+        url: url,
+        method: method,
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: () => {
+          $('#Modal1').modal('hide');
+          window.location.reload();
+        }
+      });
+    });
+
+    $('#TablePunto').on('click', '.btnEliminar', function () {
+      const id = $(this).data('id');
+      Swal.fire({
+        title: '¿Eliminar punto?',
+        text: 'Esta acción no se puede deshacer',
+        icon: 'warning',
+        showCancelButton: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.post(`/punto/delete/${id}`, { _method: 'DELETE' }, () => {
+            window.location.reload();
+          });
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
