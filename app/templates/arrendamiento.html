@@ -99,8 +99,6 @@
 <script>
   $(document).ready(function () {
 
-    console.log(JSON.parse(document.getElementById("arrendamientosData").dataset.arrendamientos));
-
     $("#TableArrendamiento").DataTable({
       paging: true,
       searching: true,
@@ -121,7 +119,7 @@
       },
     });
 
-    $("#TableArrendamiento").DataTable()
+    $("#TableArrendamiento").DataTable();
 
     $("#btnAgregar").click(function () {
       $("#Modal1Label").text("Crear Arrendamiento");

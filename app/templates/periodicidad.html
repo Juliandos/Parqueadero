@@ -54,12 +54,12 @@
           
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" required>
+            <input type="text" class="form-control text-dark" id="nombre" required>
           </div>
 
           <div class="mb-3">
             <label for="dias" class="form-label">Días</label>
-            <input type="number" class="form-control" id="dias" min="1" required>
+            <input type="number" class="form-control text-dark" id="dias" min="1" required>
           </div>
 
           <button type="submit" class="btn btn-success">Guardar</button>
@@ -89,6 +89,8 @@
         },
       },
     });
+
+    $("#TablePeriodicidad").DataTable();
 
     $("#btnAgregar").click(function () {
       $("#Modal1Label").text("Crear Periodicidad");
@@ -133,7 +135,6 @@
       $("#Modal1").modal("hide");
     });
 
-    // Eliminar
     $("#TablePeriodicidad").on("click", ".btnEliminar", function () {
       let id = $(this).data("id");
       Swal.fire({

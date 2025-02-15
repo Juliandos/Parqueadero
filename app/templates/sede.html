@@ -65,36 +65,36 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="nombre" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nombre" required>
+              <input type="text" class="form-control text-dark" id="nombre" required>
             </div>
             
             <div class="col-md-6 mb-3">
               <label for="ciudad" class="form-label">Ciudad</label>
-              <input type="text" class="form-control" id="ciudad" required>
+              <input type="text" class="form-control text-dark" id="ciudad" required>
             </div>
           </div>
 
           <div class="mb-3">
             <label for="direccion" class="form-label">Dirección</label>
-            <input type="text" class="form-control" id="direccion" required>
+            <input type="text" class="form-control text-dark" id="direccion" required>
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="telefono" class="form-label">Teléfono</label>
-              <input type="tel" class="form-control" id="telefono" required>
+              <input type="tel" class="form-control text-dark" id="telefono" required>
             </div>
             
             <div class="col-md-6 mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" required>
+              <input type="email" class="form-control text-dark" id="email" required>
             </div>
           </div>
 
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="parqueadero_id" class="form-label">Parqueadero</label>
-              <select class="form-control" id="parqueadero_id" required>
+              <select class="form-control text-dark" id="parqueadero_id" required>
                 <option value="">Seleccione un parqueadero</option>
                 {% for parqueadero in parqueaderos %}
                 <option value="{{ parqueadero.id }}">{{ parqueadero.nombre }}</option>
@@ -104,7 +104,7 @@
             
             <div class="col-md-6 mb-3">
               <label for="usuario_id" class="form-label">Responsable</label>
-              <select class="form-control" id="usuario_id" required>
+              <select class="form-control text-dark" id="usuario_id" required>
                 <option value="">Seleccione un usuario</option>
                 {% for usuario in usuarios %}
                 <option value="{{ usuario.id }}">{{ usuario.nombres }}</option>
@@ -141,6 +141,8 @@
         },
       },
     });
+
+    $("#TableSede").DataTable();
 
     $("#btnAgregar").click(function () {
       $("#Modal1Label").text("Crear Sede");
