@@ -1133,3 +1133,71 @@ def eliminar_punto(id):
         return jsonify({'success': True, 'message': 'Punto eliminado'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Redimir ALL
+@routes.route('/redimir')
+def obtener_redenciones():
+    redenciones = Redimir.query.join(Punto).add_columns(
+        Redimir.id,
+        Redimir.cantidad,
+        Punto.id.label('punto_id'),
+    ).all()
+
+    puntos = Punto.query.order_by(Punto.id).all()
+
+    redenciones_data = [{
+        'id': r.id,
+        'cantidad': r.cantidad,
+        'punto_id': r.punto_id,
+    } for r in redenciones]
+
+    return render_template('redimir.html', 
+                        titulo="Administración de Redenciones",
+                        redenciones=redenciones_data,
+                        puntos=puntos)
+
+# Redimir CREATE
+@routes.route('/redimir/add', methods=['POST'])
+def agregar_redencion():
+    data = request.get_json()
+    cantidad = data.get('cantidad')
+    puntos_id = data.get('puntos_id')
+    
+    if not cantidad or not puntos_id:
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    nuevo_redimir = Redimir(
+        cantidad=cantidad,
+        puntos_id=puntos_id,
+        created_at=datetime.now(),
+        updated_at=datetime.now()
+    )
+
+    db.session.add(nuevo_redimir)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Redención registrada correctamente'})
+
+# Redimir UPDATE
+@routes.route('/redimir/edit/<int:id>', methods=['PUT'])
+def actualizar_redencion(id):
+    data = request.get_json()
+    redimir = Redimir.query.get_or_404(id)
+    
+    redimir.cantidad = data.get('cantidad', redimir.cantidad)
+    redimir.puntos_id = data.get('puntos_id', redimir.puntos_id)
+    redimir.updated_at = datetime.now()
+    
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Redención actualizada correctamente'})
+
+# Redimir DELETE
+@routes.route('/redimir/delete/<int:id>', methods=['POST'])
+def eliminar_redencion(id):
+    redimir = Redimir.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(redimir)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Redención eliminada'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400

@@ -4,3 +4,4 @@ falta arreglar los mensajes para saber si esta vinculado a otra tabla, usuarios 
 login
 agregar validación de fechas como en parqueo
 agregar validaciones de borrado cuando ya hay un id de uno a muchos, ej: usuarios
+agregar .show y .hide, desde usuarios ya lo tiene

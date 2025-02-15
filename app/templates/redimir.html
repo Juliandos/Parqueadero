@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">Redenciones de Puntos</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableRedimir" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>ID</th>
+          <th>Cantidad</th>
+          <th>Cliente</th>
+          <th>Puntos ID</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for redencion in redenciones %}
+        <tr>
+          <td>{{ redencion.id }}</td>
+          <td>{{ redencion.cantidad }}</td>
+          <td>{{ redencion.cliente }}</td>
+          <td>{{ redencion.punto_id }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ redencion.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ redencion.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="redencionesData" data-redenciones='{{ redenciones | tojson | safe }}'></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ModalRedimir" tabindex="-1" aria-labelledby="ModalRedimirLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalRedimirLabel">Gestión de Redenciones</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="RedimirForm">
+          <input type="hidden" id="RedimirId">
+          <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="cantidad" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Puntos a Redimir</label>
+            <select class="form-select" id="puntos_id" required>
+              <option value="">Seleccionar puntos</option>
+              {% for punto in puntos %}
+              <option value="{{ punto.id }}">
+                Cliente: {{ punto.cliente.nombres }} - Disponibles: {{ punto.cantidad }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    const table = $('#TableRedimir').DataTable({
+      order: [[4, 'desc']],
+      language: {
+        url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+      }
+    });
+
+    $('#btnAgregar').click(() => {
+      $('#ModalRedimirLabel').text('Nueva Redención');
+      $('#RedimirForm').trigger('reset');
+      $('#ModalRedimir').modal('show');
+    });
+
+    $('#TableRedimir').on('click', '.btnEditar', function () {
+      const data = table.row($(this).parents('tr')).data();
+      $('#ModalRedimirLabel').text('Editar Redención');
+      $('#RedimirId').val(data[0]);
+      $('#cantidad').val(data[1]);
+      $('#puntos_id').val(data[3]);
+      $('#ModalRedimir').modal('show');
+    });
+
+    $('#RedimirForm').submit(function (e) {
+      e.preventDefault();
+      const formData = {
+        cantidad: $('#cantidad').val(),
+        puntos_id: $('#puntos_id').val()
+      };
+
+      const redimirId = $('#RedimirId').val();
+      const method = redimirId ? 'PUT' : 'POST';
+      const url = redimirId ? `/redimir/edit/${redimirId}` : '/redimir/add';
+
+      $.ajax({
+        url: url,
+        method: method,
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        success: () => {
+          $('#ModalRedimir').modal('hide');
+          window.location.reload();
+        }
+      });
+    });
+
+    $('#TableRedimir').on('click', '.btnEliminar', function () {
+      const id = $(this).data('id');
+      Swal.fire({
+        title: '¿Eliminar redención?',
+        text: 'Esta acción afectará los puntos asociados',
+        icon: 'warning',
+        showCancelButton: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.post(`/redimir/delete/${id}`, { _method: 'DELETE' }, () => {
+            window.location.reload();
+          });
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
