@@ -950,3 +950,59 @@ def eliminar_sede(id):
         return jsonify({'success': True, 'message': 'Sede eliminada'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Pais LIST
+@routes.route('/pais', methods=['GET'])
+def listar_paises():
+    paises = Pais.query.all()
+    
+    paises_dict = [
+        {
+            "id": p.id,
+            "nombre": p.nombre
+        }
+        for p in paises
+    ]
+    return render_template('pais.html', 
+                        titulo='Países', 
+                        paises=paises_dict)
+
+# Pais CREATE
+@routes.route('/pais/add', methods=['POST'])
+def agregar_pais():
+    data = request.get_json()
+    
+    if not data.get('nombre'):
+        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+
+    nuevo_pais = Pais(
+        nombre=data['nombre']
+    )
+
+    db.session.add(nuevo_pais)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'País creado correctamente'})
+
+# Pais UPDATE
+@routes.route('/pais/edit/<int:id>', methods=['PUT'])
+def actualizar_pais(id):
+    data = request.get_json()
+    pais = Pais.query.get_or_404(id)
+    
+    pais.nombre = data.get('nombre', pais.nombre)
+    pais.updated_at = datetime.now()
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'País actualizado correctamente'})
+
+# Pais DELETE
+@routes.route('/pais/delete/<int:id>', methods=['POST'])
+def eliminar_pais(id):
+    pais = Pais.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(pais)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'País eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
