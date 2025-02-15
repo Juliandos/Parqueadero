@@ -15,8 +15,6 @@
           <th>Nombre</th>
           <th>Habilitado</th>
           <th>Descripción</th>
-          <th>Fecha Creación</th>
-          <th>Última Actualización</th>
           <th>Sede</th>
           <th>Acciones</th>
         </tr>
@@ -28,8 +26,6 @@
           <td>{{ modulo.nombre }}</td>
           <td>{{ 'Sí' if modulo.habilitado else 'No' }}</td>
           <td>{{ modulo.descripcion or '' }}</td>
-          <td>{{ modulo.created_at }}</td>
-          <td>{{ modulo.updated_at or 'Sin actualizar' }}</td>
           <td>{{ modulo.sede_nombre }}</td>
           <td>
             <button class="btn btn-warning btn-sm btnEditar" data-id="{{ modulo.id }}">

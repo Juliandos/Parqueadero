@@ -780,8 +780,6 @@ def listar_modulos():
             Modulo.nombre,
             Modulo.habilitado,
             Modulo.descripcion,
-            Modulo.created_at,
-            Modulo.updated_at,
             Modulo.sede_id,
             Sede.nombre.label('sede_nombre')
         ) \
@@ -795,8 +793,6 @@ def listar_modulos():
             "nombre": m.nombre,
             "habilitado": m.habilitado,
             "descripcion": m.descripcion,
-            "created_at": m.created_at,
-            "updated_at": m.updated_at,
             "sede_id": m.sede_id,
             "sede_nombre": m.sede_nombre
         }
@@ -855,5 +851,102 @@ def eliminar_modulo(id):
         db.session.delete(modulo)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Módulo eliminado'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Sede ALL
+@routes.route('/sede', methods=['GET'])
+def listar_sedes():
+    sedes = Sede.query \
+        .join(Parqueadero, Sede.parqueadero) \
+        .join(Usuario, Sede.usuario) \
+        .add_columns(
+            Sede.id,
+            Sede.nombre,
+            Sede.direccion,
+            Sede.telefono,
+            Sede.email,
+            Sede.ciudad,
+            Sede.parqueadero_id,
+            Sede.usuario_id,
+            Parqueadero.nombre.label('parqueadero_nombre'),
+            Usuario.nombres.label('usuario_nombre')
+        ) \
+        .all()
+    
+    parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()
+    usuarios = Usuario.query.order_by(Usuario.id).all()
+    print(usuarios, parqueaderos)
+    sedes_dict = [
+        {
+            "id": s.id,
+            "nombre": s.nombre,
+            "direccion": s.direccion,
+            "telefono": s.telefono,
+            "email": s.email,
+            "ciudad": s.ciudad,
+            "parqueadero_id": s.parqueadero_id,
+            "usuario_id": s.usuario_id,
+            "parqueadero_nombre": s.parqueadero_nombre,
+            "usuario_nombre": s.usuario_nombre
+        }
+        for s in sedes
+    ]
+    return render_template('sede.html', 
+                        titulo='Sedes', 
+                        sedes=sedes_dict,
+                        parqueaderos=parqueaderos,
+                        usuarios=usuarios)
+
+# Sede CREATE
+@routes.route('/sede/add', methods=['POST'])
+def agregar_sede():
+    data = request.get_json()
+    required_fields = ['nombre', 'direccion', 'telefono', 'email', 'ciudad', 'parqueadero_id', 'usuario_id']
+    
+    if not all(data.get(field) for field in required_fields):
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    nueva_sede = Sede(
+        nombre=data['nombre'],
+        direccion=data['direccion'],
+        telefono=data['telefono'],
+        email=data['email'],
+        ciudad=data['ciudad'],
+        parqueadero_id=data['parqueadero_id'],
+        usuario_id=data['usuario_id']
+    )
+
+    db.session.add(nueva_sede)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Sede creada correctamente'})
+
+# Sede UPDATE
+@routes.route('/sede/edit/<int:id>', methods=['PUT'])
+def actualizar_sede(id):
+    data = request.get_json()
+    sede = Sede.query.get_or_404(id)
+    
+    sede.nombre = data.get('nombre', sede.nombre)
+    sede.direccion = data.get('direccion', sede.direccion)
+    sede.telefono = data.get('telefono', sede.telefono)
+    sede.email = data.get('email', sede.email)
+    sede.ciudad = data.get('ciudad', sede.ciudad)
+    sede.parqueadero_id = data.get('parqueadero_id', sede.parqueadero_id)
+    sede.usuario_id = data.get('usuario_id', sede.usuario_id)
+    sede.updated_at = datetime.now()
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Sede actualizada correctamente'})
+
+# Sede DELETE
+@routes.route('/sede/delete/<int:id>', methods=['POST'])
+def eliminar_sede(id):
+    sede = Sede.query.get_or_404(id)
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(sede)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Sede eliminada'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400

@@ -1,0 +1,224 @@
+<!-- sede.html -->
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">{{ titulo }}</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableSede" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Ciudad</th>
+          <th>Parqueadero</th>
+          <th>Responsable</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sede in sedes %}
+        <tr>
+          <td>{{ sede.id }}</td>
+          <td>{{ sede.nombre }}</td>
+          <td>{{ sede.direccion }}</td>
+          <td>{{ sede.telefono }}</td>
+          <td>{{ sede.email }}</td>
+          <td>{{ sede.ciudad }}</td>
+          <td>{{ sede.parqueadero_nombre }}</td>
+          <td>{{ sede.usuario_nombre }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ sede.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ sede.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="sedesData" data-sedes='{{ sedes | tojson | safe }}'></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal1Label">Agregar Sede</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="SedeForm">
+          <input type="hidden" id="SedeId" />
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="ciudad" class="form-label">Ciudad</label>
+              <input type="text" class="form-control" id="ciudad" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" id="direccion" required>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="parqueadero_id" class="form-label">Parqueadero</label>
+              <select class="form-control" id="parqueadero_id" required>
+                <option value="">Seleccione un parqueadero</option>
+                {% for parqueadero in parqueaderos %}
+                <option value="{{ parqueadero.id }}">{{ parqueadero.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="usuario_id" class="form-label">Responsable</label>
+              <select class="form-control" id="usuario_id" required>
+                <option value="">Seleccione un usuario</option>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}">{{ usuario.nombres }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#TableSede").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
+    });
+
+    $("#btnAgregar").click(function () {
+      $("#Modal1Label").text("Crear Sede");
+      $("#SedeForm").attr("data-action", "create");
+      $("#SedeForm")[0].reset();
+      $("#Modal1").modal("show");
+    });
+
+    $("#TableSede").on("click", ".btnEditar", function () {
+      let row = $(this).closest("tr");
+      let sedes = JSON.parse(document.getElementById("sedesData").dataset.sedes);
+      let sedeId = row.find("td:eq(0)").text();
+      let sede = sedes.find(s => s.id == sedeId);
+
+      $("#Modal1Label").text("Editar Sede");
+      $("#SedeForm").attr("data-action", "edit");
+      $("#SedeId").val(sedeId);
+      $("#nombre").val(sede.nombre);
+      $("#direccion").val(sede.direccion);
+      $("#telefono").val(sede.telefono);
+      $("#email").val(sede.email);
+      $("#ciudad").val(sede.ciudad);
+      $("#parqueadero_id").val(sede.parqueadero_id);
+      $("#usuario_id").val(sede.usuario_id);
+
+      $("#Modal1").modal("show");
+    });
+
+    $("#SedeForm").submit(function (event) {
+      event.preventDefault();
+      let action = $(this).attr("data-action");
+      let url = action === "edit" ? `/sede/edit/${$("#SedeId").val()}` : "/sede/add";
+      let method = action === "edit" ? "PUT" : "POST";
+
+      $.ajax({
+        url: url,
+        type: method,
+        contentType: "application/json",
+        data: JSON.stringify({
+          nombre: $("#nombre").val(),
+          direccion: $("#direccion").val(),
+          telefono: $("#telefono").val(),
+          email: $("#email").val(),
+          ciudad: $("#ciudad").val(),
+          parqueadero_id: $("#parqueadero_id").val(),
+          usuario_id: $("#usuario_id").val()
+        }),
+        success: function () {
+          Swal.fire("Éxito", "Sede guardada", "success").then(() => location.reload());
+        }
+      });
+      $("#Modal1").modal("hide");
+    });
+
+    // Eliminar (misma lógica que ejemplos anteriores)
+    $("#TableSede").on("click", ".btnEliminar", function () {
+      let id = $(this).data("id");
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/sede/delete/${id}`,
+            type: "POST",
+            data: { _method: "DELETE" },
+            success: function () {
+              Swal.fire("Eliminado", "Sede eliminada", "success").then(() => location.reload());
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
