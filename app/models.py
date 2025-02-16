@@ -88,7 +88,6 @@ class Punto(db.Model):
     cantidad = db.Column(db.Integer, nullable=True) 
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
-    puntoscol = db.Column(db.String(45), nullable=True)
     cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
 
     cliente = db.relationship('Cliente', back_populates='puntos')

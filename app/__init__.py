@@ -10,12 +10,11 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
-    # Cargar configuración desde la clase
     app.config.from_object(Config) 
 
     db.init_app(app)
 
-    from app import models  # Importar modelos
+    from app import models
 
     with app.app_context():
         db.create_all()
@@ -295,6 +294,50 @@ def seed_initial_data():
         db.session.commit()
         
         print("✅ Datos iniciales insertados en la tabla Puntos.")
+
+    if Redimir.query.count() == 0:
+        redenciones = [
+            Redimir(
+                id=1,
+                cantidad=9,
+                created_at=datetime.strptime('2024-03-14 14:54:47', '%Y-%m-%d %H:%M:%S'),
+                updated_at=datetime.strptime('2024-11-25 22:20:44', '%Y-%m-%d %H:%M:%S'),
+                punto_id=1
+            ),
+            Redimir(
+                id=2,
+                cantidad=60,
+                created_at=datetime.strptime('2024-02-19 02:49:02', '%Y-%m-%d %H:%M:%S'),
+                updated_at=datetime.strptime('2024-05-12 05:53:27', '%Y-%m-%d %H:%M:%S'),
+                punto_id=2
+            ),
+            Redimir(
+                id=3,
+                cantidad=51,
+                created_at=datetime.strptime('2024-08-29 09:27:42', '%Y-%m-%d %H:%M:%S'),
+                updated_at=datetime.strptime('2024-11-19 15:50:45', '%Y-%m-%d %H:%M:%S'),
+                punto_id=3
+            ),
+            Redimir(
+                id=4,
+                cantidad=43,
+                created_at=datetime.strptime('2024-04-25 09:41:20', '%Y-%m-%d %H:%M:%S'),
+                updated_at=datetime.strptime('2024-12-21 01:23:51', '%Y-%m-%d %H:%M:%S'),
+                punto_id=4
+            ),
+            Redimir(
+                id=5,
+                cantidad=17,
+                created_at=datetime.strptime('2024-05-18 05:04:36', '%Y-%m-%d %H:%M:%S'),
+                updated_at=datetime.strptime('2025-02-11 15:05:48', '%Y-%m-%d %H:%M:%S'),
+                punto_id=5
+            )
+        ]
+        
+        db.session.bulk_save_objects(redenciones)
+        db.session.commit()
+        
+        print("✅ Datos iniciales insertados en la tabla Redimir.")
 
     db.session.commit()
     print("✅ Todos los datos iniciales han sido cargados exitosamente.")

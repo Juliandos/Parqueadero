@@ -1141,6 +1141,7 @@ def obtener_redenciones():
         Redimir.id,
         Redimir.cantidad,
         Punto.id.label('punto_id'),
+        Punto.cantidad.label('punto_cantidad')
     ).all()
 
     puntos = Punto.query.order_by(Punto.id).all()
@@ -1149,6 +1150,7 @@ def obtener_redenciones():
         'id': r.id,
         'cantidad': r.cantidad,
         'punto_id': r.punto_id,
+        'punto_cantidad': r.punto_cantidad  
     } for r in redenciones]
 
     return render_template('redimir.html', 
@@ -1168,9 +1170,7 @@ def agregar_redencion():
 
     nuevo_redimir = Redimir(
         cantidad=cantidad,
-        puntos_id=puntos_id,
-        created_at=datetime.now(),
-        updated_at=datetime.now()
+        punto_id=puntos_id
     )
 
     db.session.add(nuevo_redimir)
@@ -1184,8 +1184,7 @@ def actualizar_redencion(id):
     redimir = Redimir.query.get_or_404(id)
     
     redimir.cantidad = data.get('cantidad', redimir.cantidad)
-    redimir.puntos_id = data.get('puntos_id', redimir.puntos_id)
-    redimir.updated_at = datetime.now()
+    redimir.punto_id = data.get('puntos_id', redimir.punto_id)
     
     db.session.commit()
     return jsonify({'success': True, 'message': 'Redención actualizada correctamente'})

@@ -13,8 +13,7 @@
         <tr>
           <th>ID</th>
           <th>Cantidad</th>
-          <th>Cliente</th>
-          <th>Puntos ID</th>
+          <th>Puntos</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -23,8 +22,7 @@
         <tr>
           <td>{{ redencion.id }}</td>
           <td>{{ redencion.cantidad }}</td>
-          <td>{{ redencion.cliente }}</td>
-          <td>{{ redencion.punto_id }}</td>
+          <td>{{ redencion.punto_cantidad }}</td>
           <td>
             <button class="btn btn-warning btn-sm btnEditar" data-id="{{ redencion.id }}">
               <i class="fas fa-edit"></i>
@@ -63,7 +61,7 @@
               <option value="">Seleccionar puntos</option>
               {% for punto in puntos %}
               <option value="{{ punto.id }}">
-                Cliente: {{ punto.cliente.nombres }} - Disponibles: {{ punto.cantidad }}
+                {{ punto.cantidad }}
               </option>
               {% endfor %}
             </select>
@@ -78,12 +76,29 @@
 
 <script>
   $(document).ready(function () {
-    const table = $('#TableRedimir').DataTable({
-      order: [[4, 'desc']],
+    
+    $("#TableRedimir").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
       language: {
-        url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-      }
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
     });
+
+    $("#TableRedimir").DataTable();
+
 
     $('#btnAgregar').click(() => {
       $('#ModalRedimirLabel').text('Nueva Redención');
@@ -92,11 +107,23 @@
     });
 
     $('#TableRedimir').on('click', '.btnEditar', function () {
-      const data = table.row($(this).parents('tr')).data();
+
+      let row = $(this).closest("tr");
+      let redimir = JSON.parse(document.getElementById("redencionesData").dataset.redenciones);
+
+      let redimirId = row.find("td:eq(0)").text();
+      let cantidad = row.find("td:eq(1)").text();
+      const cantidadText = row.find("td:eq(2)").text();
+      const cantidadValue = parseInt(cantidadText, 10);
+
+      const redimirEncontrado = redimir.find(p => p.punto_cantidad === cantidadValue);
+
+      const puntos_id = redimirEncontrado ? redimirEncontrado.punto_id : null;
+
       $('#ModalRedimirLabel').text('Editar Redención');
-      $('#RedimirId').val(data[0]);
-      $('#cantidad').val(data[1]);
-      $('#puntos_id').val(data[3]);
+      $('#RedimirId').val(redimirId);
+      $('#cantidad').val(cantidad);
+      $('#puntos_id').val(puntos_id);
       $('#ModalRedimir').modal('show');
     });
 
@@ -106,7 +133,8 @@
         cantidad: $('#cantidad').val(),
         puntos_id: $('#puntos_id').val()
       };
-
+      console.log(formData);
+      
       const redimirId = $('#RedimirId').val();
       const method = redimirId ? 'PUT' : 'POST';
       const url = redimirId ? `/redimir/edit/${redimirId}` : '/redimir/add';

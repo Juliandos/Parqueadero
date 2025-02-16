@@ -113,7 +113,6 @@
       let cantidad = row.find("td:eq(1)").text();
       // let cliente = row.find("td:eq(2)").text();
       let cliente = puntos.find(p => p.cliente === row.find("td:eq(2)").text())?.id || null;
-      console.log(cliente);
       
       $('#Modal1Label').text('Editar Punto');
       $('#PuntoId').val(puntosId);
