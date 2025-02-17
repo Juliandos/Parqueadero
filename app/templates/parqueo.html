@@ -165,7 +165,6 @@
       let medio_pago = parqueos.find(p => p.medio_pago_nombre === row.find("td:eq(5)").text())?.medio_pago || null;
       let tarifa = parqueos.find(p => p.tarifa_nombre === row.find("td:eq(6)").text())?.tarifa || null;
       let vehiculo = row.find("td:eq(4)").text();
-      console.log(parqueos.find(p => p.modulo_nombre === row.find("td:eq(3)").text()));
       
       $("#Modal1Label").text("Editar Parqueo");
       $("#ParqueoForm").attr("data-action", "edit");

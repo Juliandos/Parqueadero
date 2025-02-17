@@ -1200,3 +1200,110 @@ def eliminar_redencion(id):
         return jsonify({'success': True, 'message': 'Redención eliminada'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Parqueadero ALL
+@routes.route('/parqueadero', methods=['GET'])
+def listar_parqueaderos():
+    parqueaderos = Parqueadero.query \
+        .join(Usuario) \
+        .join(Pais) \
+        .add_columns(
+            Parqueadero.id,
+            Parqueadero.rut,
+            Parqueadero.nombre,
+            Parqueadero.direccion,
+            Parqueadero.telefono,
+            Parqueadero.email,
+            Parqueadero.ciudad,
+            Parqueadero.pais_id,
+            Parqueadero.usuario_id,
+            Parqueadero.created_at,
+            Parqueadero.updated_at,
+            Usuario.nombres.label('usuario_nombre'),
+            Pais.nombre.label('pais_nombre')
+        ) \
+        .all()
+    
+    usuarios = Usuario.query.order_by(Usuario.nombres).all()
+    paises = Pais.query.order_by(Pais.nombre).all()
+
+    parqueaderos_dict = [
+        {
+            "id": p.id,
+            "rut": p.rut,
+            "nombre": p.nombre,
+            "direccion": p.direccion,
+            "telefono": p.telefono,
+            "email": p.email,
+            "ciudad": p.ciudad,
+            "created_at": p.created_at,
+            "updated_at": p.updated_at,
+            "usuario_id": p.usuario_id,
+            "pais_id": p.pais_id,
+            "usuario_nombre": p.usuario_nombre,
+            "pais_nombre": p.pais_nombre
+        }
+        for p in parqueaderos
+    ]
+
+    return render_template('parqueadero.html', 
+                        titulo='Parqueaderos',
+                        parqueaderos=parqueaderos_dict,
+                        usuarios=usuarios,
+                        paises=paises)
+
+# Parqueadero CREATE
+@routes.route('/parqueadero/add', methods=['POST'])
+def agregar_parqueadero():
+    data = request.get_json()
+    
+    required_fields = ['rut', 'nombre', 'direccion', 'telefono', 'email', 'ciudad', 'usuario_id', 'pais_id']
+    if not all(data.get(field) for field in required_fields):
+        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    if Parqueadero.query.filter_by(rut=data['rut']).first():
+        return jsonify({'success': False, 'message': 'RUT ya registrado'}), 400
+
+    nuevo_parqueadero = Parqueadero(
+        rut=data['rut'],
+        nombre=data['nombre'],
+        direccion=data['direccion'],
+        telefono=data['telefono'],
+        email=data['email'],
+        ciudad=data['ciudad'],
+        usuario_id=data['usuario_id'],
+        pais_id=data['pais_id']
+    )
+
+    db.session.add(nuevo_parqueadero)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Parqueadero registrado correctamente'})
+
+# Parqueadero UPDATE
+@routes.route('/parqueadero/edit/<int:id>', methods=['PUT'])
+def actualizar_parqueadero(id):
+    data = request.get_json()
+    parqueadero = Parqueadero.query.get_or_404(id)
+    
+    if Parqueadero.query.filter(Parqueadero.rut == data['rut'], Parqueadero.id != id).first():
+        return jsonify({'success': False, 'message': 'RUT ya está en uso'}), 400
+
+    parqueadero.rut = data['rut']
+    parqueadero.nombre = data['nombre']
+    parqueadero.direccion = data['direccion']
+    parqueadero.telefono = data['telefono']
+    parqueadero.email = data['email']
+    parqueadero.ciudad = data['ciudad']
+    parqueadero.usuario_id = data['usuario_id']
+    parqueadero.pais_id = data['pais_id']
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Parqueadero actualizado correctamente'})
+
+# Parqueadero DELETE
+@routes.route('/parqueadero/delete/<int:id>', methods=['DELETE'])
+def eliminar_parqueadero(id):
+    parqueadero = Parqueadero.query.get_or_404(id)
+    db.session.delete(parqueadero)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Parqueadero eliminado'}), 200

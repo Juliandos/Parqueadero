@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+
+<div class="sherah-adashboard sherah-show">
+  <h2 class="m-4">Parqueaderos</h2>
+  <div class="example_wrapper">
+    <button class="btn btn-primary m-3" id="btnAgregar">
+      <i class="fas fa-plus"></i>
+    </button>
+    <table id="TableParqueadero" class="table table-striped table-bordered">
+      <thead class="table-blue">
+        <tr>
+          <th>ID</th>
+          <th>RUT</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Ciudad</th>
+          <th>Usuario</th>
+          <th>País</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in parqueaderos %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.rut }}</td>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.direccion }}</td>
+          <td>{{ p.telefono }}</td>
+          <td>{{ p.email }}</td>
+          <td>{{ p.ciudad }}</td>
+          <td>{{ p.usuario_nombre }}</td>
+          <td>{{ p.pais_nombre }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm btnEditar" data-id="{{ p.id }}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btnEliminar" data-id="{{ p.id }}">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="parqueaderosData" data-parqueaderos='{{ parqueaderos | tojson | safe }}'></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="Modal1Label" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal1Label">Gestión de Parqueadero</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="ParqueaderoForm">
+          <input type="hidden" id="ParqueaderoId" />
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="rut" class="form-label">RUT</label>
+                <input type="text" class="form-control text-dark" id="rut" required>
+              </div>
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control text-dark" id="nombre" required>
+              </div>
+              <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control text-dark" id="direccion" required>
+              </div>
+              <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control text-dark" id="telefono" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control text-dark" id="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="ciudad" class="form-label">Ciudad</label>
+                <input type="text" class="form-control text-dark" id="ciudad" required>
+              </div>
+              <div class="mb-3">
+                <label for="usuario_id" class="form-label">Usuario</label>
+                <select class="form-control text-dark" id="usuario_id" required>
+                  <option value="">Seleccione un usuario</option>
+                  {% for usuario in usuarios %}
+                  <option value="{{ usuario.id }}">{{ usuario.nombres }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="pais_id" class="form-label">País</label>
+                <select class="form-control text-dark" id="pais_id" required>
+                  <option value="">Seleccione un país</option>
+                  {% for pais in paises %}
+                  <option value="{{ pais.id }}">{{ pais.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    $("#TableParqueadero").DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthMenu: [5, 10, 25, 50],
+      language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "No se encontraron resultados",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "No hay registros disponibles",
+        search: "Buscar:",
+        paginate: {
+          first: "<<",
+          last: ">>",
+          next: ">",
+          previous: "<",
+        },
+      },
+    });
+    
+    $("#TableParqueadero").DataTable();
+
+    $("#btnAgregar").click(function () {
+      // Resetear formulario
+      $("#ParqueaderoForm")[0].reset();
+      $("#Modal1Label").text("Nuevo Parqueadero");
+      $("#ParqueaderoForm").attr("data-action", "create");
+      $("#Modal1").modal("show");
+    });
+
+    $("#TableParqueadero").on("click", ".btnEditar", function () {
+      const parqueaderoId = $(this).data('id');
+      const parqueadero = JSON.parse(document.getElementById('parqueaderosData').dataset.parqueaderos)
+        .find(p => p.id == parqueaderoId);
+
+      // Llenar formulario con datos existentes
+      $("#ParqueaderoId").val(parqueadero.id);
+      $("#rut").val(parqueadero.rut);
+      $("#nombre").val(parqueadero.nombre);
+      $("#direccion").val(parqueadero.direccion);
+      $("#telefono").val(parqueadero.telefono);
+      $("#email").val(parqueadero.email);
+      $("#ciudad").val(parqueadero.ciudad);
+      $("#usuario_id").val(parqueadero.usuario_id);
+      $("#pais_id").val(parqueadero.pais_id);
+
+      $("#Modal1Label").text("Editar Parqueadero");
+      $("#ParqueaderoForm").attr("data-action", "edit");
+      $("#Modal1").modal("show");
+    });
+
+    $("#ParqueaderoForm").submit(function (e) {
+      e.preventDefault();
+
+      const data = {
+        rut: $("#rut").val(),
+        nombre: $("#nombre").val(),
+        direccion: $("#direccion").val(),
+        telefono: $("#telefono").val(),
+        email: $("#email").val(),
+        ciudad: $("#ciudad").val(),
+        usuario_id: $("#usuario_id").val(),
+        pais_id: $("#pais_id").val()
+      };
+
+      const url = $(this).attr('data-action') === 'edit'
+        ? `/parqueadero/edit/${$("#ParqueaderoId").val()}`
+        : '/parqueadero/add';
+
+      const method = $(this).attr('data-action') === 'edit' ? 'PUT' : 'POST';
+
+      $.ajax({
+        url: url,
+        method: method,
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (response) {
+          // Manejar respuesta exitosa
+          location.reload();
+        }
+      });
+    });
+
+    $("#TableParqueadero").on("click", ".btnEliminar", function () {
+      let id = $(this).data("id");
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/parqueadero/delete/${id}`,
+            type: "POST",
+            data: { _method: "DELETE" },
+            success: function () {
+              Swal.fire("Eliminado", "Parqueadero eliminado", "success").then(() => location.reload());
+            }
+          });
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

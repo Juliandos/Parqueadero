@@ -1,7 +1,4 @@
 contraseña
-no se como hacer que el campo contrasena cambie su tamaño usuario
-falta arreglar los mensajes para saber si esta vinculado a otra tabla, usuarios ya lo tiene y vehículo
-login
 agregar validación de fechas como en parqueo
 agregar validaciones de borrado cuando ya hay un id de uno a muchos, ej: usuarios
 agregar .show y .hide, desde usuarios ya lo tiene
