@@ -1301,9 +1301,13 @@ def actualizar_parqueadero(id):
     return jsonify({'success': True, 'message': 'Parqueadero actualizado correctamente'})
 
 # Parqueadero DELETE
-@routes.route('/parqueadero/delete/<int:id>', methods=['DELETE'])
+@routes.route('/parqueadero/delete/<int:id>', methods=['POST'])
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
-    db.session.delete(parqueadero)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Parqueadero eliminado'}), 200
+
+    if request.form.get('_method') == 'DELETE':
+        db.session.delete(parqueadero)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Parqueadero eliminada'}), 200
+    
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
