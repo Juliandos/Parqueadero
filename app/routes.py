@@ -322,7 +322,6 @@ def usuario():
 @routes.route('/usuario/add', methods=['POST'])
 def add_usuario():
     data = request.get_json()
-    print(data)
     documento = data.get('documento')
     contrasena = bcrypt.generate_password_hash(data.get('contrasena')).decode('utf-8')
     nombres = data.get('nombres')
