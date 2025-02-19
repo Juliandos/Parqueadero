@@ -1,12 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'base_login_registro.html' %}
 {% block title %}Login{% endblock %}
 {% block content %}
 <div class="container-fluid vh-100">
   <div class="row h-100 justify-content-center align-items-center">
-    <div class="col-md-6 d-none d-md-block">
+    <div class="col-md-4 d-none d-md-block">
       <img src="{{ url_for('static', filename='images/login-image.jpg') }}" alt="Login Image" class="img-fluid">
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div class="card shadow">
         <div class="card-body">
           <h2 class="card-title text-center mb-4">Iniciar Sesión</h2>

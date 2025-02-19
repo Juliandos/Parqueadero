@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, render_template, request
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero
 from app import db
-import bcrypt
+# import bcrypt
 from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
@@ -16,7 +16,7 @@ info_template = {
 
 @routes.route('/')
 def index():
-    return render_template('index.html', info_template=info_template)
+    return render_template('index.html')
 
 # VehiculoTipo all
 @routes.route('/vehiculo_tipo')
@@ -339,6 +339,8 @@ def add_usuario():
 
     if Usuario.query.filter_by(documento=documento).first():   
         return jsonify({'success': False, 'message': 'El documento ya existe'}), 400
+    if Usuario.query.filter_by(email=email).first():
+        return jsonify({'success': False, 'message': 'El email ya existe'}), 400
     
     nuevo_usuario = Usuario(documento=documento, contrasena=contrasena, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, ciudad=ciudad, direccion=direccion, rol_id=rol_id)
     db.session.add(nuevo_usuario)
@@ -1314,10 +1316,10 @@ def eliminar_parqueadero(id):
 # Login
 @routes.route('/login', methods=['GET'])
 def login():
-    return render_template('login.html')
+    return render_template('login.html', title="Login")
 
 # Register
-@app.route('/register', methods=['GET'])
+@routes.route('/register', methods=['GET'])
 def register():
     roles = Rol.query.all()
     return render_template('register.html', roles=roles)
