@@ -1310,3 +1310,14 @@ def eliminar_parqueadero(id):
         return jsonify({'success': True, 'message': 'Parqueadero eliminada'}), 200
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+# Login
+@routes.route('/login', methods=['GET'])
+def login():
+    return render_template('login.html')
+
+# Register
+@app.route('/register', methods=['GET'])
+def register():
+    roles = Rol.query.all()
+    return render_template('register.html', roles=roles)
