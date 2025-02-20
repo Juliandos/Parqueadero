@@ -71,11 +71,82 @@
 
 <script>
   $(document).ready(function () {
-    // Manejar el envío del formulario de registro
-    $('#registerForm').submit(function (event) {
-      event.preventDefault(); // Evitar el envío tradicional del formulario
+    $('#registerForm').validate({
+      rules: {
+        documento: {
+          required: true,
+          minlength: 8,
+          maxlength: 15,
+        },
+        contrasena: {
+          required: true,
+          minlength: 8,
+        },
+        nombres: {
+          required: true,
+        },
+        apellidos: {
+          required: true,
+        },
+        telefono: {
+          required: true,
+          minlength: 7,
+          maxlength: 15,
+        },
+        email: {
+          required: true,
+          email: true,
+        },
+        ciudad: {
+          required: true,
+        },
+        direccion: {
+          required: true,
+        },
+        rol_id: {
+          required: true,
+        },
+      },
+      messages: {
+        documento: {
+            required: "El documento es obligatorio.",
+            minlength: "Debe tener al menos 8 caracteres.",
+            maxlength: "No puede tener más de 15 caracteres."
+        },
+        contrasena: {
+            required: "La contraseña es obligatoria.",
+            minlength: "Debe tener al menos 8 caracteres."
+        },
+        nombres: {
+            required: "El nombre es obligatorio."
+        },
+        apellidos: {
+            required: "El apellido es obligatorio."
+        },
+        telefono: {
+            required: "El teléfono es obligatorio.",
+            minlength: "Debe tener al menos 7 caracteres.",
+            maxlength: "No puede tener más de 15 caracteres."
+        },
+        email: {
+            required: "El correo es obligatorio.",
+            email: "Debe ser un correo válido."
+        },
+        ciudad: {
+            required: "La ciudad es obligatoria."
+        },
+        direccion: {
+            required: "La dirección es obligatoria."
+        },
+        rol_id: {
+            required: "El rol es obligatorio."
+        }
+    }
+    });
 
-      // Obtener los datos del formulario
+    $('#registerForm').submit(function (event) {
+      event.preventDefault();
+
       const formData = {
         documento: $('#documento').val(),
         contrasena: $('#contrasena').val(),
@@ -101,7 +172,7 @@
               title: 'Éxito',
               text: response.message,
             }).then(() => {
-              window.location.href = "{{ url_for('routes.login') }}"; // Redirigir al login
+              window.location.href = "{{ url_for('routes.login') }}";
             });
           } else {
             Swal.fire({

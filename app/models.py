@@ -165,6 +165,7 @@ class Usuario(db.Model):
     email = db.Column(db.String(64), nullable=False)
     ciudad = db.Column(db.String(64), nullable=False)
     direccion = db.Column(db.String(255), nullable=False)
+    es_propietario = db.Column(db.Boolean(), default=False, nullable=True)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
     rol_id = db.Column(db.Integer, db.ForeignKey('rol.id'), nullable=False)
