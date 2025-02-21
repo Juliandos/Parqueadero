@@ -46,6 +46,7 @@
       </tbody>
     </table>
     <div id="usuariosData" data-usuarios='{{ usuarios | tojson | safe }}'></div>
+    <div id="asociacionesData" data-asociaciones='{{ asociaciones | tojson | safe }}'></div>
   </div>
 </div>
 
@@ -102,6 +103,15 @@
                 {% endfor %}
               </select>
             </div>
+            <div class="col-md-6 mb-3">
+              <label for="parqueadero_id" class="form-label">Parqueadero</label>
+              <select class="form-control  text-dark" id="parqueadero_id" required>
+                <option value="">Seleccione un Parqueadero</option>
+                {% for parqueadero in parqueaderos %}
+                <option value="{{ parqueadero.id }}">{{ parqueadero.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
           <button type="submit" class="btn btn-success">Guardar</button>
         </form>
@@ -155,24 +165,26 @@
       $("#ciudad").val("");
       $("#direccion").val("");
       $("#rol_id").val("");
+      $("#parqueadero_id").val("");
       $("#Modal1").modal("show");
     });
 
     $("#TableUsuario").on("click", ".btnEditar", function () {
       let row = $(this).closest("tr");
       let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
+      let asociaciones = JSON.parse(document.getElementById("asociacionesData").dataset.asociaciones);
+      let contrasena = usuarios[id].contrasena;
+      let direccion = usuarios[id].direccion;
       let id = row.find("td:eq(0)").text();
       let documento = row.find("td:eq(1)").text();
-      let contrasena = usuarios[id].contrasena;
       let nombres = row.find("td:eq(2)").text();
       let apellidos = row.find("td:eq(3)").text();
       let telefono = row.find("td:eq(4)").text();
       let email = row.find("td:eq(5)").text();
-      let rol_nombre = row.find("td:eq(8)").text().trim();    
-      let ciudad = usuarios[id].ciudad;
-      let direccion = usuarios[id].direccion;
-      console.log(usuarios);
-      
+      let ciudad = row.find("td:eq(6)").text();
+      let rol_nombre = row.find("td:eq(7)").text().trim();    
+      // let rol_nombre = row.find("td:eq(7)").text().trim();    
+      console.log(row.html());
 
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
@@ -216,6 +228,7 @@
           ciudad: $("#ciudad").val(),
           direccion: $("#direccion").val(),
           rol_id: $("#rol_id").val(),
+          parqueadero_id: $("#parqueadero_id").val()
         }),
         success: function () {
           Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());

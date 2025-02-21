@@ -1,9 +1,10 @@
 from datetime import datetime
 from flask import Blueprint, jsonify, render_template, request
-from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero
+from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero, parqueadero_usuario
 from app import db
 # import bcrypt
 from flask_bcrypt import Bcrypt
+from sqlalchemy import select
 
 bcrypt = Bcrypt()
 
@@ -292,11 +293,12 @@ def delete_rol(id):
 # Usiario ALL
 @routes.route('/usuario', methods=['GET'])
 def usuario():
-    usuarios = Usuario.query.join(Rol).add_columns(
-        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, Usuario.direccion, Usuario.rol_id, Rol.nombre.label('rol_nombre')
+    usuarios = Usuario.query.join(Rol).join(Parqueadero).add_columns(
+        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, Usuario.direccion, Rol.nombre.label('rol_nombre')
     ).all()
 
-    roles = Rol.query.order_by(Rol.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
+    roles = Rol.query.order_by(Rol.id).all()
+    parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()
 
     usuarios_dict = [
         {
@@ -310,13 +312,21 @@ def usuario():
             "ciudad": u.ciudad,
             "direccion": u.direccion,
             "direccion": u.direccion,
-            "rol_id": u.rol_id,
             "rol_nombre": u.rol_nombre
         }
         for u in usuarios
     ]
 
-    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict, roles=roles)
+    asociaciones = db.session.execute(
+        select(parqueadero_usuario)
+    ).fetchall()
+
+    asociaciones_dict = [
+        {"parqueadero_id": row[0], "usuario_id": row[1]}
+        for row in asociaciones
+    ]
+
+    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict, roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos)
 
 # Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])
@@ -331,6 +341,7 @@ def add_usuario():
     ciudad = data.get('ciudad')
     direccion = data.get('direccion')
     rol_id = data.get('rol_id')
+    parqueadero_id = data.get('parqueadero_id')
 
     if not documento or not contrasena or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id:
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
@@ -343,6 +354,18 @@ def add_usuario():
     nuevo_usuario = Usuario(documento=documento, contrasena=contrasena, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, ciudad=ciudad, direccion=direccion, rol_id=rol_id)
     db.session.add(nuevo_usuario)
     db.session.commit()
+
+    if parqueadero_id:
+        parqueadero = Parqueadero.query.get(parqueadero_id)
+        if not parqueadero:
+            return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+
+        # Asociar usuario al parqueadero
+        association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=nuevo_usuario.id)
+        db.session.execute(association)
+        db.session.commit()
+
+
     return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
 
 # Usiario UPDATE
