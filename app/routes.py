@@ -290,7 +290,7 @@ def delete_rol(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
-# Usuario ALL
+# Usiario ALL
 @routes.route('/usuario', methods=['GET'])
 def usuario():
     usuarios = Usuario.query.join(Rol).add_columns(
@@ -306,8 +306,8 @@ def usuario():
         select(parqueadero_usuario)
     ).fetchall()
 
-    asociaciones_dict = {row[1]: row[0] for row in asociaciones}
-    parqueaderos_dict = {p.id: p.nombre for p in parqueaderos}
+    asociaciones_dict = {row[1]: row[0] for row in asociaciones}  # {usuario_id: parqueadero_id}
+    parqueaderos_dict = {p.id: p.nombre for p in parqueaderos}  # {parqueadero_id: nombre}
 
     usuarios_dict = [
         {
@@ -330,7 +330,6 @@ def usuario():
         'usuario.html', titulo='Usuarios', usuarios=usuarios_dict, 
         roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict
     )
-
 
 # Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])

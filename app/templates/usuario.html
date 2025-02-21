@@ -108,10 +108,10 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="parqueadero_id" class="form-label">Parqueadero</label>
-              <select class="form-control  text-dark" id="parqueadero_id" required>
-                <option value="">Seleccione un Parqueadero</option>
-                {% for parqueadero in parqueaderos %}
-                <option value="{{ parqueadero.id }}">{{ parqueadero.nombre }}</option>
+              <select class="form-control text-dark" id="parqueadero_id" required>
+                <option value="" selected>Seleccione un Parqueadero</option>
+                {% for id, nombre in parqueaderos.items() %}
+                    <option value="{{ id }}">{{ nombre }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -187,18 +187,11 @@
       let email = row.find("td:eq(5)").text();
       let ciudad = row.find("td:eq(6)").text();
       let rol_nombre = row.find("td:eq(7)").text().trim();    
-      // let rol_nombre = row.find("td:eq(7)").text().trim(); 
-      // let parqueaderoMap = {};
-      // parqueaderos.forEach(p => {
-      //   parqueaderoMap[p.id] = p.nombre;
-      // });
+      let parqueadero_nombre = row.find("td:eq(8)").text();
 
-      // // Reemplazar parqueadero_id con su nombre en asociaciones
-      // asociaciones.forEach(asoc => {
-      //   asoc.parqueadero_id = parqueaderoMap[asoc.parqueadero_id] || "Desconocido";
-      // });
-
-      console.log(asociaciones);
+      let parqueadero_id = $("#parqueadero_id option").filter(function () {
+        return $(this).text().trim() === parqueadero_nombre;
+      }).val();
       
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
@@ -210,6 +203,7 @@
       $("#telefono").val(telefono);
       $("#email").val(email);
       $("#ciudad").val(ciudad);
+      $("#parqueadero_id").val(parqueadero_id);
       $("#direccion").val(direccion);
 
       // Buscar la opción en el select basada en el texto
