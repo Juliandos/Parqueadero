@@ -5,6 +5,14 @@ from datetime import datetime
 def current_time():
     return datetime.utcnow()
 
+# Tabla de asociación para la relación N:M entre Parqueadero y Usuario
+parqueadero_usuario = db.Table(
+    'parqueadero_usuario',
+    db.Column('parqueadero_id', db.Integer, db.ForeignKey('parqueadero.id'), primary_key=True),
+    db.Column('usuario_id', db.Integer, db.ForeignKey('usuario.id'), primary_key=True),
+    db.Column('created_at', db.DateTime, default=current_time, nullable=False)  # ¡Corregido aquí!
+)
+
 class TarifaTipo(db.Model):
     __tablename__ = 'tarifa_tipo'
     
@@ -165,12 +173,12 @@ class Usuario(db.Model):
     email = db.Column(db.String(64), nullable=False)
     ciudad = db.Column(db.String(64), nullable=False)
     direccion = db.Column(db.String(255), nullable=False)
-    es_propietario = db.Column(db.Boolean(), default=False, nullable=True)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
     rol_id = db.Column(db.Integer, db.ForeignKey('rol.id'), nullable=False)
 
-    parqueaderos = db.relationship('Parqueadero', back_populates='usuario')
+    # Relación N:M con Parqueadero (cambiada desde 1:N)
+    parqueaderos = db.relationship('Parqueadero', secondary=parqueadero_usuario, back_populates='usuarios')  # Modificado
 
 class Rol(db.Model):
     __tablename__ = 'rol'
@@ -188,7 +196,6 @@ class Periodicidad(db.Model):
     dias = db.Column(db.Integer, nullable=False)
 
     parqueadero_id = db.Column(db.Integer, db.ForeignKey('parqueadero.id'))
-    parqueadero = db.relationship('Parqueadero', back_populates='periodicidades')
     arrendamientos = db.relationship('Arrendamiento', back_populates='periodicidad')
 
 class Cliente(db.Model):
@@ -242,7 +249,8 @@ class Parqueadero(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     pais_id = db.Column(db.Integer, db.ForeignKey('pais.id'), nullable=False)
 
-    periodicidades = db.relationship('Periodicidad', back_populates='parqueadero')
+    # Relación N:M con Usuario (cambiada desde 1:N)
+    usuarios = db.relationship('Usuario', secondary=parqueadero_usuario, back_populates='parqueaderos')
 
     clientes = db.relationship('Cliente', back_populates='parqueadero')
     usuario = db.relationship('Usuario', back_populates='parqueaderos')

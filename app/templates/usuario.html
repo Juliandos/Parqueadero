@@ -163,14 +163,16 @@
       let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
       let id = row.find("td:eq(0)").text();
       let documento = row.find("td:eq(1)").text();
-      let contrasena = row.find("td:eq(2)").text();
-      let nombres = row.find("td:eq(3)").text();
-      let apellidos = row.find("td:eq(4)").text();
-      let telefono = row.find("td:eq(5)").text();
-      let email = row.find("td:eq(6)").text();
-      let rol_nombre = row.find("td:eq(7)").text().trim(); // Remover espacios extras      
+      let contrasena = usuarios[id].contrasena;
+      let nombres = row.find("td:eq(2)").text();
+      let apellidos = row.find("td:eq(3)").text();
+      let telefono = row.find("td:eq(4)").text();
+      let email = row.find("td:eq(5)").text();
+      let rol_nombre = row.find("td:eq(8)").text().trim();    
       let ciudad = usuarios[id].ciudad;
       let direccion = usuarios[id].direccion;
+      console.log(usuarios);
+      
 
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");

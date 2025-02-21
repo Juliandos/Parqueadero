@@ -302,7 +302,7 @@ def usuario():
         {
             "id": u.id,
             "documento": u.documento,
-            "contrasena": u.contrasena,
+            "contrasena": u.contrasena.decode() if isinstance(u.contrasena, bytes) else u.contrasena,
             "nombres": u.nombres,
             "apellidos": u.apellidos,
             "telefono": u.telefono,
@@ -323,7 +323,7 @@ def usuario():
 def add_usuario():
     data = request.get_json()
     documento = data.get('documento')
-    contrasena = bcrypt.generate_password_hash(data.get('contrasena')).decode('utf-8')
+    contrasena = bcrypt.generate_password_hash(data.get('contrasena'))
     nombres = data.get('nombres')
     apellidos = data.get('apellidos')
     telefono = data.get('telefono')
@@ -331,8 +331,6 @@ def add_usuario():
     ciudad = data.get('ciudad')
     direccion = data.get('direccion')
     rol_id = data.get('rol_id')
-
-    print("contrasena", contrasena)
 
     if not documento or not contrasena or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id:
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
@@ -365,7 +363,7 @@ def update_usuario(id):
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
     
     if contrasena:
-        contrasena = bcrypt.generate_password_hash(contrasena).decode('utf-8')
+        contrasena = bcrypt.generate_password_hash(contrasena)
     
     usuario = Usuario.query.get_or_404(id)
     usuario.documento = documento
