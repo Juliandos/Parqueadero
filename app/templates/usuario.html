@@ -19,6 +19,7 @@
           <th>Email</th>
           <th>Ciudad</th>
           <th>Rol ID</th>
+          <th>Parqueadero</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -33,6 +34,7 @@
           <td>{{ usuario.email }}</td>
           <td>{{ usuario.ciudad }}</td>
           <td>{{ usuario.rol_nombre }}</td>
+          <td>{{ usuario.parqueadero_nombre }}</td>
           <td>
             <button class="btn btn-warning btn-sm btnEditar" title="Editar" data-id="{{ usuario.id }}">
               <i class="fas fa-edit"></i>
@@ -186,15 +188,15 @@
       let ciudad = row.find("td:eq(6)").text();
       let rol_nombre = row.find("td:eq(7)").text().trim();    
       // let rol_nombre = row.find("td:eq(7)").text().trim(); 
-      let parqueaderoMap = {};
-      parqueaderos.forEach(p => {
-        parqueaderoMap[p.id] = p.nombre;
-      });
+      // let parqueaderoMap = {};
+      // parqueaderos.forEach(p => {
+      //   parqueaderoMap[p.id] = p.nombre;
+      // });
 
-      // Reemplazar parqueadero_id con su nombre en asociaciones
-      asociaciones.forEach(asoc => {
-        asoc.parqueadero_id = parqueaderoMap[asoc.parqueadero_id] || "Desconocido";
-      });
+      // // Reemplazar parqueadero_id con su nombre en asociaciones
+      // asociaciones.forEach(asoc => {
+      //   asoc.parqueadero_id = parqueaderoMap[asoc.parqueadero_id] || "Desconocido";
+      // });
 
       console.log(asociaciones);
       

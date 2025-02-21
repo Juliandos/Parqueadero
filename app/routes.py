@@ -290,15 +290,24 @@ def delete_rol(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
-# Usiario ALL
+# Usuario ALL
 @routes.route('/usuario', methods=['GET'])
 def usuario():
     usuarios = Usuario.query.join(Rol).add_columns(
-        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, Usuario.direccion, Rol.nombre.label('rol_nombre')
+        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, 
+        Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, 
+        Usuario.direccion, Rol.nombre.label('rol_nombre')
     ).all()
 
     roles = Rol.query.order_by(Rol.id).all()
     parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()
+
+    asociaciones = db.session.execute(
+        select(parqueadero_usuario)
+    ).fetchall()
+
+    asociaciones_dict = {row[1]: row[0] for row in asociaciones}
+    parqueaderos_dict = {p.id: p.nombre for p in parqueaderos}
 
     usuarios_dict = [
         {
@@ -311,27 +320,17 @@ def usuario():
             "email": u.email,
             "ciudad": u.ciudad,
             "direccion": u.direccion,
-            "direccion": u.direccion,
-            "rol_nombre": u.rol_nombre
+            "rol_nombre": u.rol_nombre,
+            "parqueadero_nombre": parqueaderos_dict.get(asociaciones_dict.get(u.id), "No asignado")
         }
         for u in usuarios
     ]
-    asociaciones = db.session.execute(
-        select(parqueadero_usuario)
-    ).fetchall()
 
-    asociaciones_dict = [
-        {"parqueadero_id": row[0], "usuario_id": row[1]}
-        for row in asociaciones
-    ]
+    return render_template(
+        'usuario.html', titulo='Usuarios', usuarios=usuarios_dict, 
+        roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict
+    )
 
-    parqueaderos_dict = [
-        {"id": p.id, "nombre": p.nombre}
-        for p in parqueaderos
-    ]
-        
-
-    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict, roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict)
 
 # Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])
