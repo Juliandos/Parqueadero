@@ -293,7 +293,7 @@ def delete_rol(id):
 # Usiario ALL
 @routes.route('/usuario', methods=['GET'])
 def usuario():
-    usuarios = Usuario.query.join(Rol).join(Parqueadero).add_columns(
+    usuarios = Usuario.query.join(Rol).add_columns(
         Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, Usuario.direccion, Rol.nombre.label('rol_nombre')
     ).all()
 
@@ -316,7 +316,6 @@ def usuario():
         }
         for u in usuarios
     ]
-
     asociaciones = db.session.execute(
         select(parqueadero_usuario)
     ).fetchall()
@@ -360,7 +359,6 @@ def add_usuario():
         if not parqueadero:
             return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
 
-        # Asociar usuario al parqueadero
         association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=nuevo_usuario.id)
         db.session.execute(association)
         db.session.commit()

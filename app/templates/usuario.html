@@ -184,7 +184,6 @@
       let ciudad = row.find("td:eq(6)").text();
       let rol_nombre = row.find("td:eq(7)").text().trim();    
       // let rol_nombre = row.find("td:eq(7)").text().trim();    
-      console.log(row.html());
 
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
@@ -233,9 +232,12 @@
         success: function () {
           Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
         },
-        error: function () {
-          Swal.fire("Error", "No se pudo completar la operación", "error");
-        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          let response = jqXHR.responseJSON;
+          let message = response && response.message ? response.message : "Error desconocido";
+
+          Swal.fire("Error", message, "error");
+        }
       });
 
       $("#Modal1").modal("hide");
