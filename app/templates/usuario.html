@@ -193,6 +193,10 @@
         return $(this).text().trim() === parqueadero_nombre;
       }).val();
       
+      let rol_id = $("#rol_id option").filter(function () {
+        return $(this).text().trim() === rol_nombre;
+      }).val();
+
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
       $("#UsuarioId").val(id);
@@ -203,14 +207,8 @@
       $("#telefono").val(telefono);
       $("#email").val(email);
       $("#ciudad").val(ciudad);
-      $("#parqueadero_id").val(parqueadero_id);
       $("#direccion").val(direccion);
-
-      // Buscar la opción en el select basada en el texto
-      let rol_id = $("#rol_id option").filter(function () {
-        return $(this).text().trim() === rol_nombre;
-      }).val();
-
+      $("#parqueadero_id").val(parqueadero_id);
       $("#rol_id").val(rol_id);
 
       $("#Modal1").modal("show");
@@ -279,9 +277,12 @@
                 Swal.fire("Error", response.message, "error");
               }
             },
-            error: function (error) {
-              Swal.fire("Error", response.message, "error");
-            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              let response = jqXHR.responseJSON;
+              let message = response && response.message ? response.message : "Error desconocido";
+
+              Swal.fire("Error", message, "error");
+            }
           });
           $("#Modal1").modal("hide");
         }

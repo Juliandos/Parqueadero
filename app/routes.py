@@ -370,7 +370,6 @@ def add_usuario():
 
     return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
 
-# Usiario UPDATE
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
 def update_usuario(id):
     data = request.get_json()
@@ -383,16 +382,17 @@ def update_usuario(id):
     ciudad = data.get('ciudad')
     direccion = data.get('direccion')
     rol_id = data.get('rol_id')
+    parqueadero_id = data.get('parqueadero_id')
     
-    if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id:
+    if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
-    
-    if contrasena:
-        contrasena = bcrypt.generate_password_hash(contrasena)
     
     usuario = Usuario.query.get_or_404(id)
     usuario.documento = documento
-    usuario.contrasena = contrasena
+
+    if contrasena:
+        usuario.contrasena = bcrypt.generate_password_hash(contrasena)
+
     usuario.nombres = nombres
     usuario.apellidos = apellidos
     usuario.telefono = telefono
@@ -400,16 +400,27 @@ def update_usuario(id):
     usuario.ciudad = ciudad
     usuario.direccion = direccion
     usuario.rol_id = rol_id
-    db.session.commit()  # Se actualiza automáticamente `updated_at`
+    
+    if parqueadero_id:
+        parqueadero = Parqueadero.query.get(parqueadero_id)
+        if not parqueadero:
+            return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+        
+        db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+        
+        association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
+        db.session.execute(association)
+    
+    db.session.commit()
     
     return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
+
 
 # Usiario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
 def delete_usuario(id):
     usuario = Usuario.query.get_or_404(id)
 
-    # Verificar si el usuario está asociado a parqueadero
     if Parqueadero.query.filter_by(usuario_id=id).first():
         return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
     
@@ -417,6 +428,9 @@ def delete_usuario(id):
         db.session.delete(usuario)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+    
+    db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+    db.session.commit()
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
