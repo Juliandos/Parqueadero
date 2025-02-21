@@ -325,7 +325,13 @@ def usuario():
         for row in asociaciones
     ]
 
-    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict, roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos)
+    parqueaderos_dict = [
+        {"id": p.id, "nombre": p.nombre}
+        for p in parqueaderos
+    ]
+        
+
+    return render_template('usuario.html', titulo='Usuarios', usuarios=usuarios_dict, roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict)
 
 # Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])
