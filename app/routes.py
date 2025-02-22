@@ -370,6 +370,7 @@ def add_usuario():
 
     return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
 
+# Usiario UPDATE
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
 def update_usuario(id):
     data = request.get_json()
@@ -388,11 +389,11 @@ def update_usuario(id):
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
     
     usuario = Usuario.query.get_or_404(id)
-    usuario.documento = documento
 
     if contrasena:
         usuario.contrasena = bcrypt.generate_password_hash(contrasena)
 
+    usuario.documento = documento
     usuario.nombres = nombres
     usuario.apellidos = apellidos
     usuario.telefono = telefono
@@ -1334,9 +1335,12 @@ def agregar_parqueadero():
 def actualizar_parqueadero(id):
     data = request.get_json()
     parqueadero = Parqueadero.query.get_or_404(id)
-    
+
     if Parqueadero.query.filter(Parqueadero.rut == data['rut'], Parqueadero.id != id).first():
-        return jsonify({'success': False, 'message': 'RUT ya está en uso'}), 400
+        return jsonify({'success': False, 'message': 'Este RUT ya está en uso'}), 400
+
+    if Parqueadero.query.filter(Parqueadero.nombre == data['nombre'], Parqueadero.id != id).first():
+        return jsonify({'success': False, 'message': 'Este nombre de parqueadero ya está en uso'}), 400
 
     parqueadero.rut = data['rut']
     parqueadero.nombre = data['nombre']
@@ -1344,8 +1348,18 @@ def actualizar_parqueadero(id):
     parqueadero.telefono = data['telefono']
     parqueadero.email = data['email']
     parqueadero.ciudad = data['ciudad']
-    parqueadero.usuario_id = data['usuario_id']
     parqueadero.pais_id = data['pais_id']
+
+    usuario_id = data.get('usuario_id')
+    if usuario_id:
+        usuario = Usuario.query.get(usuario_id)
+        if not usuario:
+            return jsonify({'success': False, 'message': 'Usuario no encontrado'}), 404
+
+        db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.parqueadero_id == id))
+
+        association = parqueadero_usuario.insert().values(parqueadero_id=id, usuario_id=usuario_id)
+        db.session.execute(association)
 
     db.session.commit()
     return jsonify({'success': True, 'message': 'Parqueadero actualizado correctamente'})
@@ -1355,11 +1369,25 @@ def actualizar_parqueadero(id):
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
 
+    if db.session.query(parqueadero_usuario).filter_by(parqueadero_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: parqueadero en uso'}), 400
+    
+    if Sede.query.filter_by(parqueadero_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
+    
+    if Punto.query.filter_by(parqueadero_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
+    
+    if Cliente.query.filter_by(parqueadero_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
+
     if request.form.get('_method') == 'DELETE':
+        db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.parqueadero_id == id))
+
         db.session.delete(parqueadero)
         db.session.commit()
-        return jsonify({'success': True, 'message': 'Parqueadero eliminada'}), 200
-    
+        return jsonify({'success': True, 'message': 'Parqueadero eliminado'}), 200
+
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Login

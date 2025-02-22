@@ -158,10 +158,8 @@
 
     $("#TableParqueadero").on("click", ".btnEditar", function () {
       const parqueaderoId = $(this).data('id');
-      const parqueadero = JSON.parse(document.getElementById('parqueaderosData').dataset.parqueaderos)
-        .find(p => p.id == parqueaderoId);
+      const parqueadero = JSON.parse(document.getElementById('parqueaderosData').dataset.parqueaderos).find(p => p.id == parqueaderoId);
 
-      // Llenar formulario con datos existentes
       $("#ParqueaderoId").val(parqueadero.id);
       $("#rut").val(parqueadero.rut);
       $("#nombre").val(parqueadero.nombre);
@@ -227,11 +225,19 @@
             data: { _method: "DELETE" },
             success: function () {
               Swal.fire("Eliminado", "Parqueadero eliminado", "success").then(() => location.reload());
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              let response = jqXHR.responseJSON;
+              let message = response && response.message ? response.message : "Error desconocido";
+
+              Swal.fire("Error", message, "error");
             }
           });
+          $("#Modal1").modal("hide");
         }
       });
     });
+    
   });
 </script>
 {% endblock %}
