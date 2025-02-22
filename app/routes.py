@@ -1242,7 +1242,6 @@ def eliminar_redencion(id):
 @routes.route('/parqueadero', methods=['GET'])
 def listar_parqueaderos():
     parqueaderos = Parqueadero.query \
-        .join(Usuario) \
         .join(Pais) \
         .add_columns(
             Parqueadero.id,
@@ -1253,7 +1252,6 @@ def listar_parqueaderos():
             Parqueadero.email,
             Parqueadero.ciudad,
             Parqueadero.pais_id,
-            Parqueadero.usuario_id,
             Pais.nombre.label('pais_nombre')
         ) \
         .all()
@@ -1267,7 +1265,7 @@ def listar_parqueaderos():
         select(parqueadero_usuario)
     ).fetchall()
 
-    asociaciones_dict = {row[1]: row[0] for row in asociaciones}  # {usuario_id: parqueadero_id}
+    asociaciones_dict = {row[0]: row[1] for row in asociaciones}  # {parqueadero_id: usuario_id}
     usuarios_dict = {p.id: p.nombres for p in usuarios}  # {parqueadero_id: nombre}
 
     parqueaderos_dict = [
@@ -1285,7 +1283,7 @@ def listar_parqueaderos():
         }
         for p in parqueaderos
     ]
-
+    print(asociaciones_dict, usuarios_dict)
     return render_template('parqueadero.html', 
                         titulo='Parqueaderos',
                         parqueaderos=parqueaderos_dict,
@@ -1298,7 +1296,7 @@ def agregar_parqueadero():
     data = request.get_json()
     usuario_id = data['usuario_id']
 
-    required_fields = ['rut', 'nombre', 'direccion', 'telefono', 'email', 'ciudad', 'usuario_id', 'pais_id']
+    required_fields = ['rut', 'nombre', 'direccion', 'telefono', 'email', 'ciudad', 'pais_id']
     if not all(data.get(field) for field in required_fields):
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
