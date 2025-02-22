@@ -71,11 +71,11 @@ def seed_initial_data():
     if Parqueadero.query.count() == 0:
         # Insertar datos en Parqueadero
         parqueaderos = [
-            Parqueadero(rut='55-756-0644', nombre='P1', direccion='5678 Spaight Junction', telefono='266-538-1249', email='jandreazzi0@webmd.com', ciudad='Limbaan', created_at=datetime.strptime('7/13/2024', '%m/%d/%Y'), updated_at=datetime.strptime('11/8/2024', '%m/%d/%Y'), usuario_id=1, pais_id=1),
-            Parqueadero(rut='91-912-1971', nombre='P2', direccion='4563 Becker Point', telefono='492-452-9778', email='preece1@berkeley.edu', ciudad='Bayt Wazan', created_at=datetime.strptime('6/25/2024', '%m/%d/%Y'), updated_at=datetime.strptime('5/14/2024', '%m/%d/%Y'), usuario_id=2, pais_id=2),
-            Parqueadero(rut='96-436-9977', nombre='P3', direccion='48 Arizona Plaza', telefono='288-741-4898', email='mjermey2@google.co.jp', ciudad='Klimontów', created_at=datetime.strptime('9/13/2024', '%m/%d/%Y'), updated_at=datetime.strptime('6/17/2024', '%m/%d/%Y'), usuario_id=3, pais_id=2),
-            Parqueadero(rut='12-435-1269', nombre='P4', direccion='8 Clove Street', telefono='568-868-4539', email='wlewins3@answers.com', ciudad='Osan', created_at=datetime.strptime('1/8/2025', '%m/%d/%Y'), updated_at=datetime.strptime('4/12/2024', '%m/%d/%Y'), usuario_id=4, pais_id=3),
-            Parqueadero(rut='50-092-1403', nombre='P5', direccion='12 Karstens Center', telefono='207-539-6114', email='echomicz4@java.com', ciudad='Kedungbacin', created_at=datetime.strptime('5/6/2024', '%m/%d/%Y'), updated_at=datetime.strptime('9/7/2024', '%m/%d/%Y'), usuario_id=5, pais_id=4),
+            Parqueadero(rut='55-756-0644', nombre='P1', direccion='5678 Spaight Junction', telefono='266-538-1249', email='jandreazzi0@webmd.com', ciudad='Limbaan', created_at=datetime.strptime('7/13/2024', '%m/%d/%Y'), updated_at=datetime.strptime('11/8/2024', '%m/%d/%Y'), pais_id=1),
+            Parqueadero(rut='91-912-1971', nombre='P2', direccion='4563 Becker Point', telefono='492-452-9778', email='preece1@berkeley.edu', ciudad='Bayt Wazan', created_at=datetime.strptime('6/25/2024', '%m/%d/%Y'), updated_at=datetime.strptime('5/14/2024', '%m/%d/%Y'), pais_id=2),
+            Parqueadero(rut='96-436-9977', nombre='P3', direccion='48 Arizona Plaza', telefono='288-741-4898', email='mjermey2@google.co.jp', ciudad='Klimontów', created_at=datetime.strptime('9/13/2024', '%m/%d/%Y'), updated_at=datetime.strptime('6/17/2024', '%m/%d/%Y'), pais_id=2),
+            Parqueadero(rut='12-435-1269', nombre='P4', direccion='8 Clove Street', telefono='568-868-4539', email='wlewins3@answers.com', ciudad='Osan', created_at=datetime.strptime('1/8/2025', '%m/%d/%Y'), updated_at=datetime.strptime('4/12/2024', '%m/%d/%Y'), pais_id=3),
+            Parqueadero(rut='50-092-1403', nombre='P5', direccion='12 Karstens Center', telefono='207-539-6114', email='echomicz4@java.com', ciudad='Kedungbacin', created_at=datetime.strptime('5/6/2024', '%m/%d/%Y'), updated_at=datetime.strptime('9/7/2024', '%m/%d/%Y'), pais_id=4),
         ]
         db.session.bulk_save_objects(parqueaderos)
         print("✅ Datos iniciales de parqueadero cargados")
