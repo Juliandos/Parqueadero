@@ -94,8 +94,8 @@
                 <label for="usuario_id" class="form-label">Usuario</label>
                 <select class="form-control text-dark" id="usuario_id" required>
                   <option value="">Seleccione un usuario</option>
-                  {% for usuario in usuarios %}
-                  <option value="{{ usuario.id }}">{{ usuario.nombres }}</option>
+                  {% for id, nombres in usuarios.items() %}
+                  <option value="{{ id }}">{{ nombres }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -143,10 +143,16 @@
     $("#TableParqueadero").DataTable();
 
     $("#btnAgregar").click(function () {
-      // Resetear formulario
-      $("#ParqueaderoForm")[0].reset();
       $("#Modal1Label").text("Nuevo Parqueadero");
       $("#ParqueaderoForm").attr("data-action", "create");
+      $("rut").val('');
+      $("#nombre").val('');
+      $("#direccion").val('');
+      $("#telefono").val('');
+      $("#email").val('');
+      $("#ciudad").val('');
+      $("#usuario_id").val('');
+      $("#pais_id").val('');
       $("#Modal1").modal("show");
     });
 

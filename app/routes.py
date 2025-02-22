@@ -415,7 +415,6 @@ def update_usuario(id):
     
     return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
 
-
 # Usiario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
 def delete_usuario(id):
@@ -1255,15 +1254,21 @@ def listar_parqueaderos():
             Parqueadero.ciudad,
             Parqueadero.pais_id,
             Parqueadero.usuario_id,
-            Parqueadero.created_at,
-            Parqueadero.updated_at,
-            Usuario.nombres.label('usuario_nombre'),
             Pais.nombre.label('pais_nombre')
         ) \
         .all()
     
     usuarios = Usuario.query.order_by(Usuario.nombres).all()
     paises = Pais.query.order_by(Pais.nombre).all()
+
+    usuarios = Usuario.query.order_by(Usuario.id).all()
+
+    asociaciones = db.session.execute(
+        select(parqueadero_usuario)
+    ).fetchall()
+
+    asociaciones_dict = {row[1]: row[0] for row in asociaciones}  # {usuario_id: parqueadero_id}
+    usuarios_dict = {p.id: p.nombres for p in usuarios}  # {parqueadero_id: nombre}
 
     parqueaderos_dict = [
         {
@@ -1274,11 +1279,8 @@ def listar_parqueaderos():
             "telefono": p.telefono,
             "email": p.email,
             "ciudad": p.ciudad,
-            "created_at": p.created_at,
-            "updated_at": p.updated_at,
-            "usuario_id": p.usuario_id,
+            "usuario_nombre": usuarios_dict.get(asociaciones_dict.get(p.id), "No asignado"),
             "pais_id": p.pais_id,
-            "usuario_nombre": p.usuario_nombre,
             "pais_nombre": p.pais_nombre
         }
         for p in parqueaderos
@@ -1287,20 +1289,23 @@ def listar_parqueaderos():
     return render_template('parqueadero.html', 
                         titulo='Parqueaderos',
                         parqueaderos=parqueaderos_dict,
-                        usuarios=usuarios,
+                        usuarios=usuarios_dict,
                         paises=paises)
 
 # Parqueadero CREATE
 @routes.route('/parqueadero/add', methods=['POST'])
 def agregar_parqueadero():
     data = request.get_json()
-    
+    usuario_id = data['usuario_id']
+
     required_fields = ['rut', 'nombre', 'direccion', 'telefono', 'email', 'ciudad', 'usuario_id', 'pais_id']
     if not all(data.get(field) for field in required_fields):
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
     if Parqueadero.query.filter_by(rut=data['rut']).first():
         return jsonify({'success': False, 'message': 'RUT ya registrado'}), 400
+    if Parqueadero.query.filter_by(nombre=data['nombre']).first():
+        return jsonify({'success': False, 'message': 'Nombre de parqueadero ya registrado'}), 400
 
     nuevo_parqueadero = Parqueadero(
         rut=data['rut'],
@@ -1309,12 +1314,21 @@ def agregar_parqueadero():
         telefono=data['telefono'],
         email=data['email'],
         ciudad=data['ciudad'],
-        usuario_id=data['usuario_id'],
         pais_id=data['pais_id']
     )
 
     db.session.add(nuevo_parqueadero)
     db.session.commit()
+
+    if usuario_id:
+        usuario = Usuario.query.get(usuario_id)
+        if not usuario:
+            return jsonify({'success': False, 'message': 'Usuario no encontrado'}), 404
+
+        association = parqueadero_usuario.insert().values(usuario_id=usuario_id, parqueadero_id=nuevo_parqueadero.id)
+        db.session.execute(association)
+        db.session.commit()
+
     return jsonify({'success': True, 'message': 'Parqueadero registrado correctamente'})
 
 # Parqueadero UPDATE
