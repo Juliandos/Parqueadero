@@ -178,7 +178,7 @@ class Usuario(db.Model):
     rol_id = db.Column(db.Integer, db.ForeignKey('rol.id'), nullable=False)
 
     # Relación N:M con Parqueadero (cambiada desde 1:N)
-    parqueaderos = db.relationship('Parqueadero', secondary=parqueadero_usuario, back_populates='usuarios')  # Modificado
+    parqueaderos = db.relationship('Parqueadero', secondary=parqueadero_usuario, back_populates='usuarios')
 
 class Rol(db.Model):
     __tablename__ = 'rol'
@@ -246,13 +246,11 @@ class Parqueadero(db.Model):
     ciudad = db.Column(db.String(64), nullable=False)
     created_at = db.Column(db.DateTime, default=current_time, nullable=False)
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     pais_id = db.Column(db.Integer, db.ForeignKey('pais.id'), nullable=False)
 
     # Relación N:M con Usuario (cambiada desde 1:N)
     usuarios = db.relationship('Usuario', secondary=parqueadero_usuario, back_populates='parqueaderos')
 
     clientes = db.relationship('Cliente', back_populates='parqueadero')
-    usuario = db.relationship('Usuario', back_populates='parqueaderos')
     pais = db.relationship('Pais', back_populates='parqueaderos')
 
