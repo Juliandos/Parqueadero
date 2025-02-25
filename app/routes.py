@@ -1349,6 +1349,13 @@ def listar_parqueaderos():
     asociaciones_dict = {row[0]: row[1] for row in asociaciones}  # {parqueadero_id: usuario_id}
     usuarios_dict = {p.id: p.nombres for p in usuarios}  # {parqueadero_id: nombre}
 
+    roles_permitidos = [1, 2] # Jefe y Administrador
+    usuarios_dict = {
+        k: v
+        for k, v in usuarios_dict.items()
+        if Usuario.query.filter(Usuario.id == k, Usuario.rol_id.in_(roles_permitidos)).first()
+    }
+
     parqueaderos_dict = [
         {
             "id": p.id,
