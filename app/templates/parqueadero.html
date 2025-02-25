@@ -159,6 +159,10 @@
     $("#TableParqueadero").on("click", ".btnEditar", function () {
       const parqueaderoId = $(this).data('id');
       const parqueadero = JSON.parse(document.getElementById('parqueaderosData').dataset.parqueaderos).find(p => p.id == parqueaderoId);
+      
+      let usuario_id = $("#usuario_id option").filter(function () {
+        return $(this).text().trim() === parqueadero.usuario_nombre;
+      }).val();
 
       $("#ParqueaderoId").val(parqueadero.id);
       $("#rut").val(parqueadero.rut);
@@ -167,7 +171,7 @@
       $("#telefono").val(parqueadero.telefono);
       $("#email").val(parqueadero.email);
       $("#ciudad").val(parqueadero.ciudad);
-      $("#usuario_id").val(parqueadero.usuario_id);
+      $("#usuario_id").val(usuario_id);
       $("#pais_id").val(parqueadero.pais_id);
 
       $("#Modal1Label").text("Editar Parqueadero");
