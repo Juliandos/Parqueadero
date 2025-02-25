@@ -253,4 +253,5 @@ class Parqueadero(db.Model):
 
     clientes = db.relationship('Cliente', back_populates='parqueadero')
     pais = db.relationship('Pais', back_populates='parqueaderos')
+    # sedes = db.relationship('Parqueadero', back_populates='parqueadero')
 

@@ -257,7 +257,6 @@ def seed_initial_data():
                 id=1,
                 cantidad=9,
                 cliente_id=3,
-                parqueadero_id=1,
                 created_at=datetime.strptime('2024-03-14 14:54:47', '%Y-%m-%d %H:%M:%S'),
                 updated_at=datetime.strptime('2024-11-25 22:20:44', '%Y-%m-%d %H:%M:%S')
             ),
@@ -265,7 +264,6 @@ def seed_initial_data():
                 id=2,
                 cantidad=60,
                 cliente_id=2,
-                parqueadero_id=2,
                 created_at=datetime.strptime('2024-02-19 02:49:02', '%Y-%m-%d %H:%M:%S'),
                 updated_at=datetime.strptime('2024-05-12 05:53:27', '%Y-%m-%d %H:%M:%S')
             ),
@@ -273,7 +271,6 @@ def seed_initial_data():
                 id=3,
                 cantidad=51,
                 cliente_id=1,
-                parqueadero_id=3,
                 created_at=datetime.strptime('2024-08-29 09:27:42', '%Y-%m-%d %H:%M:%S'),
                 updated_at=datetime.strptime('2024-11-19 15:50:45', '%Y-%m-%d %H:%M:%S')
             ),
@@ -281,7 +278,6 @@ def seed_initial_data():
                 id=4,
                 cantidad=43,
                 cliente_id=2,
-                parqueadero_id=4,
                 created_at=datetime.strptime('2024-04-25 09:41:20', '%Y-%m-%d %H:%M:%S'),
                 updated_at=datetime.strptime('2024-12-21 01:23:51', '%Y-%m-%d %H:%M:%S')
             ),
@@ -289,7 +285,6 @@ def seed_initial_data():
                 id=5,
                 cantidad=17,
                 cliente_id=4,
-                parqueadero_id=5,
                 created_at=datetime.strptime('2024-05-18 05:04:36', '%Y-%m-%d %H:%M:%S'),
                 updated_at=datetime.strptime('2025-02-11 15:05:48', '%Y-%m-%d %H:%M:%S')
             )

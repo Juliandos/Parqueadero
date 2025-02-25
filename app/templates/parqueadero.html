@@ -223,10 +223,12 @@
             url: `/parqueadero/delete/${id}`,
             type: "POST",
             data: { _method: "DELETE" },
-            success: function () {
+            success: function (response) {
               Swal.fire("Eliminado", "Parqueadero eliminado", "success").then(() => location.reload());
+              console.log(response);
             },
             error: function(jqXHR, textStatus, errorThrown) {
+              
               let response = jqXHR.responseJSON;
               let message = response && response.message ? response.message : "Error desconocido";
 
@@ -237,7 +239,7 @@
         }
       });
     });
-    
+
   });
 </script>
 {% endblock %}

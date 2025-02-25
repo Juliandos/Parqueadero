@@ -421,18 +421,42 @@ def update_usuario(id):
 def delete_usuario(id):
     usuario = Usuario.query.get_or_404(id)
 
-    if Parqueadero.query.filter_by(usuario_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
+    # Validar si hay sedes asociadas
+    if Sede.query.filter_by(usuario_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
     
     if request.form.get('_method') == 'DELETE':
-        db.session.delete(usuario)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
-    
-    db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
-    db.session.commit()
-    
+        try:
+            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+            db.session.commit()
+
+            # Eliminar el usuario
+            db.session.delete(usuario)
+            db.session.commit()
+
+            # Verificar si realmente se eliminó
+            check = Usuario.query.get(id)
+            if check:
+                return jsonify({'success': False, 'message': 'Error: El usuario no se eliminó correctamente'}), 500
+
+            return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+        
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
+
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
+    # if request.form.get('_method') == 'DELETE':
+    #     db.session.delete(usuario)
+    #     db.session.commit()
+        
+    #     return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+    
+    # db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+    # db.session.commit()
+    
+    # return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Vehículo ALL
 @routes.route('/vehiculo', methods=['GET'])
@@ -680,7 +704,6 @@ def agregar_parqueo():
 @routes.route('/parqueo/edit/<int:id>', methods=['PUT'])
 def actualizar_parqueo(id):
     data = request.get_json()
-    print(data)
     modulo_id = data.get('modulo_id')
     vehiculo_placa = data.get('vehiculo_placa')
     medio_pago_id = data.get('medio_pago_id')
@@ -693,7 +716,6 @@ def actualizar_parqueo(id):
     parqueo.vehiculo_placa = vehiculo_placa
     parqueo.medio_pago_id = medio_pago_id
     parqueo.tarifa_id = tarifa_id
-    print(parqueo)
 
     db.session.commit()
     return jsonify({'success': True, 'message': 'Parqueo actualizado correctamente'})
@@ -1284,7 +1306,6 @@ def listar_parqueaderos():
         }
         for p in parqueaderos
     ]
-    print(asociaciones_dict, usuarios_dict)
     return render_template('parqueadero.html', 
                         titulo='Parqueaderos',
                         parqueaderos=parqueaderos_dict,
@@ -1368,27 +1389,37 @@ def actualizar_parqueadero(id):
 @routes.route('/parqueadero/delete/<int:id>', methods=['POST'])
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
-
-    if db.session.query(parqueadero_usuario).filter_by(parqueadero_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: parqueadero en uso'}), 400
     
-    if Sede.query.filter_by(parqueadero_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
-    
-    if Punto.query.filter_by(parqueadero_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
-    
+    # Validar si hay clientes asociados
     if Cliente.query.filter_by(parqueadero_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
+        return jsonify({'success': False, 'message': 'No se puede eliminar: Hay clientes asociados a este parqueadero'}), 400
+
+    # Validar si hay sedes asociadas
+    if Sede.query.filter_by(parqueadero_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este parqueadero'}), 400
 
     if request.form.get('_method') == 'DELETE':
-        db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.parqueadero_id == id))
+        try:
+            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.parqueadero_id == id))
+            db.session.commit()
 
-        db.session.delete(parqueadero)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Parqueadero eliminado'}), 200
+            # Eliminar el parqueadero
+            db.session.delete(parqueadero)
+            db.session.commit()
+
+            # Verificar si realmente se eliminó
+            check = Parqueadero.query.get(id)
+            if check:
+                return jsonify({'success': False, 'message': 'Error: El parqueadero no se eliminó correctamente'}), 500
+
+            return jsonify({'success': True, 'message': 'Parqueadero eliminado'}), 200
+        
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
 
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+
 
 # Login
 @routes.route('/login', methods=['GET'])
