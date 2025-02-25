@@ -175,11 +175,13 @@
     $("#TableUsuario").on("click", ".btnEditar", function () {
       let row = $(this).closest("tr");
       let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
+      console.log(usuarios);
+      
       let asociaciones = JSON.parse(document.getElementById("asociacionesData").dataset.asociaciones);
       let parqueaderos = JSON.parse(document.getElementById("parqueaderosData").dataset.parqueaderos);
       let id = row.find("td:eq(0)").text();
-      let contrasena = usuarios[id].contrasena;
-      let direccion = usuarios[id].direccion;
+      let contrasena = usuarios[id-1].contrasena;
+      let direccion = usuarios[id-1].direccion;
       let documento = row.find("td:eq(1)").text();
       let nombres = row.find("td:eq(2)").text();
       let apellidos = row.find("td:eq(3)").text();

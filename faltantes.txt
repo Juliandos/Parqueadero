@@ -1,6 +1,4 @@
 contraseña
 agregar validación de fechas como en parqueo
-agregar .show y .hide, desde usuarios ya lo tiene
-modificar la actualización del registro o de las tablas en general para que no se recargue la página
-asignar a suario y parqueadero un suario y viceversa como uno predeterminado administrador puede ser y crear el modelo de la tabla U:P 
+asignar a suario y parqueadero un suario y viceversa como uno predeterminado administrador puede ser
 validación para formularios de contraseñas
