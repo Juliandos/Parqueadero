@@ -331,7 +331,6 @@ def usuario():
         roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict
     )
 
-# Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])
 def add_usuario():
     data = request.get_json()
@@ -346,38 +345,56 @@ def add_usuario():
     rol_id = data.get('rol_id')
     parqueadero_id = data.get('parqueadero_id')
 
-    if not documento or not contrasena or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id:
+    rol_id = int(rol_id)
+
+    if not all([documento, contrasena, nombres, apellidos, telefono, email, ciudad, direccion, rol_id]):
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    
+    # Obtener los IDs de los roles
+    rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
+    rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
-    # Verificar si ya hay un usuario con el mismo parqueadero_id y rol "jefe"
-    usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
-        parqueadero_usuario.c.parqueadero_id == parqueadero_id,
-        Usuario.rol_id == db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
-    ).first()
+    print("rol_jefe_id: ", rol_jefe_id, "rol_admin: ", rol_admin_id, "rol_id: ", rol_id)
 
-    if usuario_jefe_existente:
-        return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de jefe en este parqueadero'}), 400
+    # Validar si el usuario que se está creando es Jefe
+    if rol_id == rol_jefe_id:
+        usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
+            parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+            Usuario.rol_id == rol_jefe_id
+        ).first()
+
+        if usuario_jefe_existente:
+            return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
+
+    # Validar si el usuario que se está creando es Administrador
+    if rol_id == rol_admin_id:
+        administradores = (
+            db.session.query(Usuario)
+            .join(parqueadero_usuario)
+            .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
+            .filter(Usuario.rol_id == rol_admin_id)
+            .count()
+        )
+        if administradores >= 2:
+            return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
     
     if Usuario.query.filter_by(documento=documento).first():   
         return jsonify({'success': False, 'message': 'El documento ya existe'}), 400
     if Usuario.query.filter_by(email=email).first():
         return jsonify({'success': False, 'message': 'El email ya existe'}), 400
     
-    nuevo_usuario = Usuario(documento=documento, contrasena=contrasena, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, ciudad=ciudad, direccion=direccion, rol_id=rol_id)
-    db.session.add(nuevo_usuario)
-    db.session.commit()
+    # nuevo_usuario = Usuario(documento=documento, contrasena=contrasena, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, ciudad=ciudad, direccion=direccion, rol_id=rol_id)
+    # db.session.add(nuevo_usuario)
+    # db.session.commit()
 
-    if parqueadero_id:
-        parqueadero = Parqueadero.query.get(parqueadero_id)
-        if not parqueadero:
-            return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
-        
+    # if parqueadero_id:
+    #     parqueadero = Parqueadero.query.get(parqueadero_id)
+    #     if not parqueadero:
+    #         return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
 
-
-        association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=nuevo_usuario.id)
-        db.session.execute(association)
-        db.session.commit()
-
+    #     association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=nuevo_usuario.id)
+    #     db.session.execute(association)
+    #     db.session.commit()
 
     return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
 
