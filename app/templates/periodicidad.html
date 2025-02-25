@@ -153,6 +153,12 @@
             data: { _method: "DELETE" },
             success: function () {
               Swal.fire("Eliminado", "Periodicidad eliminada", "success").then(() => location.reload());
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              let response = jqXHR.responseJSON;
+              let message = response && response.message ? response.message : "Error desconocido";
+
+              Swal.fire("Error", message, "error");
             }
           });
         }

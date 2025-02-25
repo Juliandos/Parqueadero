@@ -148,9 +148,12 @@
                 row.fadeOut(500, function () { $(this).remove(); });
                 Swal.fire("Eliminado", response.message, "success");
               },
-              error: function () {
-                Swal.fire("Error", "No se pudo eliminar.", "error");
-              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                let response = jqXHR.responseJSON;
+                let message = response && response.message ? response.message : "Error desconocido";
+
+                Swal.fire("Error", message, "error");
+              }
             });
           }
         });

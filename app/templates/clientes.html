@@ -220,9 +220,12 @@ content %}
             Swal.fire("Error", data.message, "error");
           }
         },
-        error: function () {
-          Swal.fire("Error", "No se pudo completar la operación.", "error");
-        },
+            error: function(jqXHR, textStatus, errorThrown) {
+              let response = jqXHR.responseJSON;
+              let message = response && response.message ? response.message : "Error desconocido";
+
+              Swal.fire("Error", message, "error");
+            }
       });
 
       $("#Modal1").modal("hide");

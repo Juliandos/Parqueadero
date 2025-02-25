@@ -185,9 +185,12 @@ content %}
                 Swal.fire("Error", response.message, "error");
               }
             },
-            error: function (error) {
-              Swal.fire("Error", "No se pudo eliminar.", "error");
-            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              let response = jqXHR.responseJSON;
+              let message = response && response.message ? response.message : "Error desconocido";
+
+              Swal.fire("Error", message, "error");
+            }
           });
         }
       });

@@ -145,8 +145,11 @@
             success: function () {
               Swal.fire("Eliminado", "Tarifa eliminada", "success").then(() => location.reload());
             },
-            error: function () {
-              Swal.fire("Error", "No se pudo eliminar la tarifa", "error");
+            error: function(jqXHR, textStatus, errorThrown) {
+              let response = jqXHR.responseJSON;
+              let message = response && response.message ? response.message : "Error desconocido";
+
+              Swal.fire("Error", message, "error");
             }
           });
         }
