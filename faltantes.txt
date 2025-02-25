@@ -1,4 +1,3 @@
 contraseña
 agregar validación de fechas como en parqueo
-asignar a suario y parqueadero un suario y viceversa como uno predeterminado administrador puede ser
-validación para formularios de contraseñas
+validación para formularios de contraseñas, ahora falta en el login y registro para clientes sería por nombres, apellidos y documento único

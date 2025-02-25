@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 from flask import Blueprint, jsonify, render_template, request
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero, parqueadero_usuario
 from app import db
@@ -336,7 +337,7 @@ def usuario():
 def add_usuario():
     data = request.get_json()
     documento = data.get('documento')
-    contrasena = bcrypt.generate_password_hash(data.get('contrasena'))
+    contrasena = data.get('contrasena')
     nombres = data.get('nombres')
     apellidos = data.get('apellidos')
     telefono = data.get('telefono')
@@ -350,6 +351,13 @@ def add_usuario():
 
     if not all([documento, contrasena, nombres, apellidos, telefono, email, ciudad, direccion, rol_id]):
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+
+    # Validar la contraseña antes de hashearla
+    if not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', contrasena):
+        return jsonify({'success': False, 'message': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial'}), 400
+    
+    # Hashear la contraseña solo si es válida
+    contrasena = bcrypt.generate_password_hash(contrasena)
     
     # Obtener los IDs de los roles
     rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
