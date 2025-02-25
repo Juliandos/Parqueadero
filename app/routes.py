@@ -349,6 +349,15 @@ def add_usuario():
     if not documento or not contrasena or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id:
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
+    # Verificar si ya hay un usuario con el mismo parqueadero_id y rol "jefe"
+    usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
+        parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+        Usuario.rol_id == db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
+    ).first()
+
+    if usuario_jefe_existente:
+        return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de jefe en este parqueadero'}), 400
+    
     if Usuario.query.filter_by(documento=documento).first():   
         return jsonify({'success': False, 'message': 'El documento ya existe'}), 400
     if Usuario.query.filter_by(email=email).first():
@@ -362,6 +371,8 @@ def add_usuario():
         parqueadero = Parqueadero.query.get(parqueadero_id)
         if not parqueadero:
             return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+        
+
 
         association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=nuevo_usuario.id)
         db.session.execute(association)

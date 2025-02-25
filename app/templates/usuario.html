@@ -175,8 +175,6 @@
     $("#TableUsuario").on("click", ".btnEditar", function () {
       let row = $(this).closest("tr");
       let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
-      console.log(usuarios);
-      
       let asociaciones = JSON.parse(document.getElementById("asociacionesData").dataset.asociaciones);
       let parqueaderos = JSON.parse(document.getElementById("parqueaderosData").dataset.parqueaderos);
       let id = row.find("td:eq(0)").text();
