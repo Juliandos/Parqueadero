@@ -1,7 +1,7 @@
 from app import db
 from datetime import datetime
 from flask_login import UserMixin
-from app import login
+from app import login as login_manager
 
 
 def current_time():
@@ -182,7 +182,7 @@ class Usuario(UserMixin, db.Model):
     # Relación N:M con Parqueadero (cambiada desde 1:N)
     parqueaderos = db.relationship('Parqueadero', secondary=parqueadero_usuario, back_populates='usuarios')
 
-@login.user_loader
+@login_manager.user_loader
 def load_user(id):
     """
     Carga un usuario a partir de su ID

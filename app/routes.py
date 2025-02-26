@@ -1,11 +1,13 @@
 from datetime import datetime
 import re
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, redirect, render_template, request, url_for
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero, parqueadero_usuario
 from app import db
 # import bcrypt
 from flask_bcrypt import Bcrypt
 from sqlalchemy import select
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import login_user, current_user
 
 bcrypt = Bcrypt()
 
@@ -1498,6 +1500,34 @@ def eliminar_parqueadero(id):
 @routes.route('/login', methods=['GET'])
 def login():
     return render_template('login.html', title="Login")
+
+# Login POST
+@routes.route('/login', methods=['POST'])
+def login_post():
+    if current_user.is_authenticated:
+        return redirect(url_for('modulo'))  # Ajusta la ruta correcta
+
+    email = request.form.get('email', '').strip()
+    password = request.form.get('password', '').strip()
+
+    if not email or not password:
+        return render_template('login.html', title='Login', error='Debe ingresar email y contraseña')
+
+    user = Usuario.query.filter_by(email=email).first()
+
+    if user is None:
+        return render_template('login.html', title='Login', error='Usuario o contraseña incorrectos')
+
+    print("User Password: " + user.contrasena, "Password: " + password)
+
+    if bcrypt.check_password_hash(user.contrasena, password):  
+        print("Listo entraster: " + user.contrasena)
+        login_user(user)
+        return redirect(url_for('listar_modulos'))
+
+    return render_template('login.html', title='Login', error='Usuario o contraseña incorrectos')
+
+
 
 # Register
 @routes.route('/register', methods=['GET'])
