@@ -1,5 +1,7 @@
 from app import db
 from datetime import datetime
+from flask_login import UserMixin
+from app import login
 
 
 def current_time():
@@ -161,7 +163,7 @@ class Pais(db.Model):
 
     parqueaderos = db.relationship('Parqueadero', back_populates='pais')
 
-class Usuario(db.Model):
+class Usuario(UserMixin, db.Model):
     __tablename__ = 'usuario'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -179,6 +181,16 @@ class Usuario(db.Model):
 
     # Relación N:M con Parqueadero (cambiada desde 1:N)
     parqueaderos = db.relationship('Parqueadero', secondary=parqueadero_usuario, back_populates='usuarios')
+
+@login.user_loader
+def load_user(id):
+    """
+    Carga un usuario a partir de su ID
+    
+        Args:
+            id (str): ID del usuario a cargar
+    """
+    return Usuario.query.get(int(id))
 
 class Rol(db.Model):
     __tablename__ = 'rol'
