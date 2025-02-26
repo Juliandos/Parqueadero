@@ -1505,29 +1505,27 @@ def login():
 @routes.route('/login', methods=['POST'])
 def login_post():
     if current_user.is_authenticated:
-        return redirect(url_for('modulo'))  # Ajusta la ruta correcta
+        return redirect(url_for('routes.index'))  # Ajusta la ruta correcta
 
     email = request.form.get('email', '').strip()
     password = request.form.get('password', '').strip()
 
     if not email or not password:
-        return render_template('login.html', title='Login', error='Debe ingresar email y contraseña')
+        return jsonify({'success': False, 'message': 'Los campos email y contraseña son obligatorios'}), 400
 
     user = Usuario.query.filter_by(email=email).first()
 
     if user is None:
-        return render_template('login.html', title='Login', error='Usuario o contraseña incorrectos')
+        return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
     print("User Password: " + user.contrasena, "Password: " + password)
 
     if bcrypt.check_password_hash(user.contrasena, password):  
         print("Listo entraster: " + user.contrasena)
-        login_user(user)
-        return redirect(url_for('listar_modulos'))
+        # login_user(user)
+        return jsonify({"success": True, "redirect": url_for('routes.index')})
 
-    return render_template('login.html', title='Login', error='Usuario o contraseña incorrectos')
-
-
+    return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
 # Register
 @routes.route('/register', methods=['GET'])
