@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 import re
-from flask import Blueprint, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero, parqueadero_usuario
 from app import db
 from flask_bcrypt import Bcrypt
@@ -1128,8 +1128,8 @@ def eliminar_sede(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Pais LIST
-@login_required
 @routes.route('/pais', methods=['GET'])
+@login_required
 def listar_paises():
     paises = Pais.query.all()
     
@@ -1145,8 +1145,8 @@ def listar_paises():
                         paises=paises_dict)
 
 # Pais CREATE
-@login_required
 @routes.route('/pais/add', methods=['POST'])
+@login_required
 def agregar_pais():
     data = request.get_json()
     
@@ -1162,8 +1162,8 @@ def agregar_pais():
     return jsonify({'success': True, 'message': 'País creado correctamente'})
 
 # Pais UPDATE
-@login_required
 @routes.route('/pais/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_pais(id):
     data = request.get_json()
     pais = Pais.query.get_or_404(id)
@@ -1175,8 +1175,8 @@ def actualizar_pais(id):
     return jsonify({'success': True, 'message': 'País actualizado correctamente'})
 
 # Pais DELETE
-@login_required
 @routes.route('/pais/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_pais(id):
     pais = Pais.query.get_or_404(id)
 
@@ -1188,8 +1188,8 @@ def eliminar_pais(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Periodicidad ALL
-@login_required
 @routes.route('/periodicidad', methods=['GET'])
+@login_required
 def listar_periodicidades():
     periodicidades = Periodicidad.query.all()
     
@@ -1206,8 +1206,8 @@ def listar_periodicidades():
                         periodicidades=periodicidades_dict)
 
 # Periodicidad CREATE
-@login_required
 @routes.route('/periodicidad/add', methods=['POST'])
+@login_required
 def agregar_periodicidad():
     data = request.get_json()
     
@@ -1224,8 +1224,8 @@ def agregar_periodicidad():
     return jsonify({'success': True, 'message': 'Periodicidad creada correctamente'})
 
 # Periodicidad UPDATE
-@login_required
 @routes.route('/periodicidad/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_periodicidad(id):
     data = request.get_json()
     periodicidad = Periodicidad.query.get_or_404(id)
@@ -1238,8 +1238,8 @@ def actualizar_periodicidad(id):
     return jsonify({'success': True, 'message': 'Periodicidad actualizada correctamente'})
 
 # Periodicidad DELETE
-@login_required
 @routes.route('/periodicidad/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_periodicidad(id):
     periodicidad = Periodicidad.query.get_or_404(id)
 
@@ -1251,8 +1251,8 @@ def eliminar_periodicidad(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Puntos ALL
-@login_required
 @routes.route('/puntos')
+@login_required
 def obtener_puntos():
     puntos = Punto.query.join(Cliente).add_columns(
         Punto.id,
@@ -1274,8 +1274,8 @@ def obtener_puntos():
                         clientes=clientes)
 
 # Puntos CREATE
-@login_required
 @routes.route('/punto/add', methods=['POST'])
+@login_required
 def agregar_punto():
     data = request.get_json()
     cantidad = data.get('cantidad')
@@ -1296,8 +1296,8 @@ def agregar_punto():
     return jsonify({'success': True, 'message': 'Punto creado correctamente'})
 
 # Puntos UPDATE
-@login_required
 @routes.route('/punto/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_punto(id):
     data = request.get_json()
     punto = Punto.query.get_or_404(id)
@@ -1310,8 +1310,8 @@ def actualizar_punto(id):
     return jsonify({'success': True, 'message': 'Punto actualizado correctamente'})
 
 # Puntos DELETE
-@login_required
 @routes.route('/punto/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_punto(id):
     punto = Punto.query.get_or_404(id)
 
@@ -1323,8 +1323,8 @@ def eliminar_punto(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Redimir ALL
-@login_required
 @routes.route('/redimir')
+@login_required
 def obtener_redenciones():
     redenciones = Redimir.query.join(Punto).add_columns(
         Redimir.id,
@@ -1348,8 +1348,8 @@ def obtener_redenciones():
                         puntos=puntos)
 
 # Redimir CREATE
-@login_required
 @routes.route('/redimir/add', methods=['POST'])
+@login_required
 def agregar_redencion():
     data = request.get_json()
     cantidad = data.get('cantidad')
@@ -1368,8 +1368,8 @@ def agregar_redencion():
     return jsonify({'success': True, 'message': 'Redención registrada correctamente'})
 
 # Redimir UPDATE
-@login_required
 @routes.route('/redimir/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_redencion(id):
     data = request.get_json()
     redimir = Redimir.query.get_or_404(id)
@@ -1381,8 +1381,8 @@ def actualizar_redencion(id):
     return jsonify({'success': True, 'message': 'Redención actualizada correctamente'})
 
 # Redimir DELETE
-@login_required
 @routes.route('/redimir/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_redencion(id):
     redimir = Redimir.query.get_or_404(id)
 
@@ -1453,8 +1453,8 @@ def listar_parqueaderos():
                         paises=paises)
 
 # Parqueadero CREATE
-@login_required
 @routes.route('/parqueadero/add', methods=['POST'])
+@login_required
 def agregar_parqueadero():
     data = request.get_json()
     usuario_id = data['usuario_id']
@@ -1493,8 +1493,8 @@ def agregar_parqueadero():
     return jsonify({'success': True, 'message': 'Parqueadero registrado correctamente'})
 
 # Parqueadero UPDATE
-@login_required
 @routes.route('/parqueadero/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_parqueadero(id):
     data = request.get_json()
     parqueadero = Parqueadero.query.get_or_404(id)
@@ -1528,8 +1528,8 @@ def actualizar_parqueadero(id):
     return jsonify({'success': True, 'message': 'Parqueadero actualizado correctamente'})
 
 # Parqueadero DELETE
-@login_required
 @routes.route('/parqueadero/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
     
@@ -1563,11 +1563,11 @@ def eliminar_parqueadero(id):
 
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
-
 # Login
 @routes.route('/login', methods=['GET'])
-def login():
-    return render_template('login.html', title="Login")
+def login_get():
+    next_param = request.args.get('next', '')
+    return render_template('login.html', next_param=next_param)
 
 # Login POST
 @routes.route('/login', methods=['POST'])
@@ -1589,14 +1589,19 @@ def login_post():
     if bcrypt.check_password_hash(user.contrasena, password):  
         login_user(user)
 
-        next = request.args.get('next')
-        if not next:
-            return jsonify({"success": True, "redirect": url_for('routes.index')})
-        else:
-            return jsonify({"success": True, "redirect": next})
-        
-    return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
+        next_param = request.args.get('next', '')  
+        print("next_param recibido:", next_param)  # Depuración
 
+        if next_param.startswith('/'):  
+            next_param = next_param[1:]  # Elimina la barra inicial
+
+        # Validar si el endpoint existe antes de usarlo
+        if next_param in current_app.view_functions:  
+            return jsonify({"success": True, "redirect": url_for(f'routes.{next_param}')})
+        else:
+            print("next_param inválido:", next_param)
+            return jsonify({"success": True, "redirect": url_for('routes.index')})
+        
 # Logout user
 @routes.route('/logout')
 # @login_required   
@@ -1606,3 +1611,9 @@ def logout():
     """
     logout_user()
     return redirect(url_for('routes.login'))
+
+# Register
+@routes.route('/register', methods=['GET'])
+def register():
+    roles = Rol.query.all()
+    return render_template('register.html', roles=roles)
