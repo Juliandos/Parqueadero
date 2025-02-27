@@ -1614,3 +1614,10 @@ def logout():
 def register():
     roles = Rol.query.all()
     return render_template('register.html', roles=roles)
+
+# Información de perfil
+@routes.route('/profile_info', methods=['GET'])
+@login_required
+def profile_info():
+    user = current_user
+    return render_template('profile-info.html', user=user, titulo="Información de perfil")
