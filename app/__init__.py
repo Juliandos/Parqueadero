@@ -1,16 +1,21 @@
-from datetime import datetime
 import os
+from datetime import datetime
 from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from dotenv import load_dotenv
+
 # from flask_migrate import Migrate
 
+load_dotenv()
 db = SQLAlchemy()
 login = LoginManager()
 
+
 def create_app():
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     app.config.from_object(Config) 
 

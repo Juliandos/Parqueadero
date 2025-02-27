@@ -1,12 +1,11 @@
+import os
 from datetime import datetime
 import re
 from flask import Blueprint, jsonify, redirect, render_template, request, url_for
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero, parqueadero_usuario
 from app import db
-# import bcrypt
 from flask_bcrypt import Bcrypt
 from sqlalchemy import select
-# from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_required, login_user, current_user, logout_user
 
 bcrypt = Bcrypt()
@@ -1518,8 +1517,6 @@ def login_post():
     if user is None:
         return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
-    print("User Password: " + user.contrasena, "Password: " + password)
-
     if bcrypt.check_password_hash(user.contrasena, password):  
         print("Listo entraster: " + user.contrasena)
         login_user(user)
@@ -1534,7 +1531,7 @@ def logout():
     """
     Solicita al usuario cerrar sesión y redirecciona a la página de inicio.
     """
-    # logout_user()
+    logout_user()
     return redirect(url_for('routes.login'))
 
 # Register

@@ -63,8 +63,11 @@
             $("#login-alert").removeClass("d-none").text(response.message);
           }
         },
-        error: function () {
-          $("#login-alert").removeClass("d-none").text("Ocurrió un error en el servidor.");
+        error: function(jqXHR, textStatus, errorThrown) {
+          let response = jqXHR.responseJSON;
+          let message = response && response.message ? response.message : "Error desconocido";
+
+          Swal.fire("Error", message, "error");
         }
       });
     });
