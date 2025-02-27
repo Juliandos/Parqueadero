@@ -36,126 +36,81 @@
 																			<div class="sherah-ptabs__separate">
 																				<div class="sherah-ptabs__form-main">
 																					<div class="sherah__item-group sherah-default-bg sherah-border">
-																						<!--Profile Cover Info -->
-																						<div class="sherah-profile-cover sherah-offset-bg sherah-dflex">
-																							<div class="sherah-profile-cover__img">
-																								<img src={{ url_for('static', filename='img/profile-thumb.png') }} alt="#">
-																							</div>
-																							<div class="sherah-profile-cover__content">
-																								<h3 class="sherah-profile-cover__title">{{current_user.nombres}}</h3>
-																								<span class="sherah-profile-cover__text sherah-color1">I am Professional Graphic Designer</span>
-																								<ul class="sherah-social mg-top-30">
-																									<li><a href="#" class="sherah-pcolor sherah-border sherah-default-bg"><i class="fa-brands fa-facebook-f"></i></a></li>
-																									<li><a href="#" class="sherah-pcolor sherah-border sherah-default-bg"><i class="fa-brands fa-twitter"></i></a></li>
-																									<li><a href="#" class="sherah-pcolor sherah-border sherah-default-bg"><i class="fa-brands fa-linkedin"></i></a></li>
-																									<li><a href="#" class="sherah-pcolor sherah-border sherah-default-bg"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13">
-																										<path id="Path_193" data-name="Path 193" d="M-395.137,386.139q0-.953,0-1.906c0-.237-.074-.31-.311-.31h-3.775a1.256,1.256,0,0,1-.866-.3,1.162,1.162,0,0,1-.323-1.239,1.136,1.136,0,0,1,.963-.773c.122-.011.245-.017.367-.017h3.609c.272,0,.336-.064.336-.337q0-1.875,0-3.749a1.257,1.257,0,0,1,.3-.866,1.162,1.162,0,0,1,1.239-.323,1.137,1.137,0,0,1,.773.963c.011.122.017.245.017.367q0,1.8,0,3.609c0,.272.064.336.337.336h3.749a1.257,1.257,0,0,1,.866.3,1.162,1.162,0,0,1,.323,1.239,1.137,1.137,0,0,1-.963.773c-.122.011-.245.017-.367.017q-1.8,0-3.609,0c-.272,0-.336.064-.336.337q0,1.875,0,3.749a1.256,1.256,0,0,1-.3.866,1.162,1.162,0,0,1-1.239.323,1.1,1.1,0,0,1-.769-.963c-.024-.617-.016-1.236-.022-1.854C-395.137,386.3-395.137,386.22-395.137,386.139Z" transform="translate(400.472 -376.258)"/>
-																									  </svg></a></li>
-																								</ul>
-																							</div>
-																						</div>
-																						<!-- End Profile Cover Info -->
-																						
 																						<div class="sherah-profile-info__v2 mg-top-30">
 																							<h3 class="sherah-profile-info__heading mg-btm-30">Personal Information</h3>
 																							<form method="POST" action="{{ url_for('routes.profile_info') }}">
                                                 {{ form.hidden_tag() }}
                                                 
                                                 <!-- Documento -->
-                                                <div class="mb-3">
+                                                <div class="mb-3 row">
+                                                  <div class="col-12">
                                                     {{ form.documento.label(class="form-label required") }}
-                                                    {{ form.documento(class="form-control") }}
+                                                    {{ form.documento(class="form-control text-dark", value=current_user.documento) }}
                                                     {% for error in form.documento.errors %}
                                                         <div class="invalid-feedback d-block">{{ error }}</div>
                                                     {% endfor %}
-                                                </div>
-                    
-                                                <!-- Contraseña -->
-                                                <div class="mb-3">
-                                                    {{ form.contrasena.label(class="form-label required") }}
-                                                    <div class="input-group">
-                                                        {{ form.contrasena(class="form-control") }}
-                                                        <span class="input-group-text password-toggle" onclick="togglePassword('contrasena')">
-                                                            👁️
-                                                        </span>
-                                                    </div>
-                                                    {% for error in form.contrasena.errors %}
-                                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                                    {% endfor %}
-                                                </div>
-                    
-                                                <!-- Confirmar Contraseña -->
-                                                <div class="mb-3">
-                                                    {{ form.confirmar_contrasena.label(class="form-label required") }}
-                                                    <div class="input-group">
-                                                        {{ form.confirmar_contrasena(class="form-control") }}
-                                                        <span class="input-group-text password-toggle" onclick="togglePassword('confirmar_contrasena')">
-                                                            👁️
-                                                        </span>
-                                                    </div>
-                                                    {% for error in form.confirmar_contrasena.errors %}
-                                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                                    {% endfor %}
+                                                  </div>
                                                 </div>
                     
                                                 <!-- Nombres y Apellidos -->
                                                 <div class="row">
                                                     <div class="col-md-6 mb-3">
                                                         {{ form.nombres.label(class="form-label required") }}
-                                                        {{ form.nombres(class="form-control") }}
+                                                        {{ form.nombres(class="form-control text-dark", value=current_user.nombres) }}
                                                         {% for error in form.nombres.errors %}
                                                             <div class="invalid-feedback d-block">{{ error }}</div>
                                                         {% endfor %}
                                                     </div>
                                                     <div class="col-md-6 mb-3">
                                                         {{ form.apellidos.label(class="form-label required") }}
-                                                        {{ form.apellidos(class="form-control") }}
+                                                        {{ form.apellidos(class="form-control text-dark", value=current_user.apellidos) }}
                                                         {% for error in form.apellidos.errors %}
                                                             <div class="invalid-feedback d-block">{{ error }}</div>
                                                         {% endfor %}
                                                     </div>
                                                   </div>
                       
-                                                  <!-- Teléfono -->
-                                                  <div class="mb-3">
+                                                  <!-- Teléfono Email-->
+                                                  <div class="mb-3 row">
+                                                    <div class="col-6">
                                                       {{ form.telefono.label(class="form-label required") }}
-                                                      {{ form.telefono(class="form-control") }}
+                                                      {{ form.telefono(class="form-control text-dark", value=current_user.telefono) }}
                                                       <small class="form-text text-muted">Ejemplo: +57 310 1234567</small>
                                                       {% for error in form.telefono.errors %}
                                                           <div class="invalid-feedback d-block">{{ error }}</div>
                                                       {% endfor %}
-                                                  </div>
-                      
-                                                  <!-- Email -->
-                                                  <div class="mb-3">
+                                                    </div>
+                                                    <div class="col-6">
                                                       {{ form.email.label(class="form-label required") }}
-                                                      {{ form.email(class="form-control") }}
+                                                      {{ form.email(class="form-control text-dark", value=current_user.email) }}
                                                       {% for error in form.email.errors %}
                                                           <div class="invalid-feedback d-block">{{ error }}</div>
                                                       {% endfor %}
+                                                    </div>
                                                   </div>
                       
                                                   <!-- Ciudad y Dirección -->
-                                                  <div class="mb-3">
+                                                  <div class="mb-3 row">
+                                                    <div class="col-6">
                                                       {{ form.ciudad.label(class="form-label required") }}
-                                                      {{ form.ciudad(class="form-control") }}
+                                                      {{ form.ciudad(class="form-control text-dark", value=current_user.ciudad) }}
                                                       {% for error in form.ciudad.errors %}
                                                           <div class="invalid-feedback d-block">{{ error }}</div>
                                                       {% endfor %}
-                                                  </div>
-                      
-                                                  <div class="mb-3">
+                                                    </div>
+                                                    <div class="col-6">
                                                       {{ form.direccion.label(class="form-label required") }}
-                                                      {{ form.direccion(class="form-control") }}
+                                                      {{ form.direccion(class="form-control text-dark", value=current_user.direccion) }}
                                                       {% for error in form.direccion.errors %}
                                                           <div class="invalid-feedback d-block">{{ error }}</div>
                                                       {% endfor %}
+                                                    </div>
                                                   </div>
                       
                                                   <!-- Tipo de Usuario -->
                                                   <div class="mb-4">
                                                       {{ form.rol_id.label(class="form-label required") }}
-                                                      {{ form.rol_id(class="form-select") }}
+                                                      {{ form.rol_id(class="form-select", value=current_user.rol_id) }}
                                                       {% for error in form.rol_id.errors %}
                                                           <div class="invalid-feedback d-block">{{ error }}</div>
                                                       {% endfor %}

@@ -23,21 +23,7 @@ class UsuarioForm(FlaskForm):
         ],
         render_kw={"placeholder": "Número de documento sin espacios"}
     )
-
-    # Campos de Contraseña con confirmación
-    contrasena = PasswordField('Contraseña',
-        validators=[
-            DataRequired('La contraseña es obligatoria'),
-            Length(min=8, max=100, message='La contraseña debe tener al menos 8 caracteres')
-        ]
-    )
-    confirmar_contrasena = PasswordField('Confirmar Contraseña',
-        validators=[
-            DataRequired('Por favor confirma tu contraseña'),
-            EqualTo('contrasena', message='Las contraseñas no coinciden')
-        ]
-    )
-
+    
     # Campos de Nombre y Apellidos
     nombres = StringField('Nombres',
         validators=[
@@ -94,7 +80,7 @@ class UsuarioForm(FlaskForm):
         render_kw={"class": "form-select"}
     )
 
-    submit = SubmitField('Registrarse')
+    submit = SubmitField('Guardar Cambios')
 
     def __init__(self, *args, **kwargs):
         super(UsuarioForm, self).__init__(*args, **kwargs)
