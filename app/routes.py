@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import re
 from flask import Blueprint, current_app, jsonify, redirect, render_template, request, url_for
+from app.forms import UsuarioForm
 from app.models import VehiculoTipo, TarifaTipo, Tarifa, Modulo, Vehiculo, Parqueo, Punto, Redimir, Arrendamiento, Sede, Pais, Usuario, Rol, Periodicidad, Cliente, MedioPago, Parqueadero, parqueadero_usuario
 from app import db
 from flask_bcrypt import Bcrypt
@@ -1620,4 +1621,5 @@ def register():
 @login_required
 def profile_info():
     user = current_user
-    return render_template('profile-info.html', user=user, titulo="Información de perfil")
+    form = UsuarioForm()
+    return render_template('profile-info.html', user=user, titulo="Información de perfil", form=form)

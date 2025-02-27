@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from .models import Usuario, Rol
+from wtforms.validators import Regexp
+
 
 def documento_unico(form, field):
     if Usuario.query.filter_by(documento=field.data).first():
@@ -11,7 +13,7 @@ def email_unico(form, field):
     if Usuario.query.filter_by(email=field.data.lower()).first():
         raise ValidationError('Este email ya está registrado')
 
-class RegistroForm(FlaskForm):
+class UsuarioForm(FlaskForm):
     # Campo Documento
     documento = StringField('Documento de Identidad', 
         validators=[
@@ -95,6 +97,6 @@ class RegistroForm(FlaskForm):
     submit = SubmitField('Registrarse')
 
     def __init__(self, *args, **kwargs):
-        super(RegistroForm, self).__init__(*args, **kwargs)
+        super(UsuarioForm, self).__init__(*args, **kwargs)
         # Cargar opciones de roles desde la base de datos
         self.rol_id.choices = [(r.id, r.nombre) for r in Rol.query.order_by(Rol.nombre).all()]
