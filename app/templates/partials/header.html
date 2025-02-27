@@ -341,8 +341,8 @@
                         <img src="{{ url_for('static', filename='img/profile-pic.png') }}" alt="#">
                       </div>
                       <div class="sherah-header__author--info sherah-dflex sherah-dflex__base">
-                        <h4 class="sherah-header__author--title  sherah-dflex sherah-dflex__column">Anthony <span
-                            class="sherah-header__author--text">USA</span></h4>
+                        <h4 class="sherah-header__author--title  sherah-dflex sherah-dflex__column">{{current_user.nombres}} <span
+                            class="sherah-header__author--text">{{current_user.ciudad}}</span></h4>
                         <svg class="sherah-default__fill sherah-default__arrow" xmlns="http://www.w3.org/2000/svg"
                           width="10.621" height="5.836" viewBox="0 0 10.621 5.836">
                           <g id="Arrow_Icon" data-name="Arrow Icon" transform="translate(1599.621 7.836) rotate(180)">
@@ -379,7 +379,7 @@
                                 </svg>
 
                               </div>
-                              <h4 class="sherah-dropdown-card-name"><a href="profile-info.html">My Profile</a></h4>
+                              <h4 class="sherah-dropdown-card-name"><a href="../profile-info.html">My Profile</a></h4>
                             </div>
                           </li>
                           <li>
