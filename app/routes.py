@@ -18,17 +18,20 @@ info_template = {
 }
 
 @routes.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
 # VehiculoTipo all
 @routes.route('/vehiculo_tipo')
+@login_required
 def vehiculo_tipo():
     tipos_vehiculo = VehiculoTipo.query.all()
     return render_template('vehiculo_tipo.html', titulo='Tipo de Vehiculo', tipos_vehiculo = tipos_vehiculo)
 
 # VehiculoTipo DELETE
 @routes.route('/vehiculo_tipo/delete/<int:id>', methods=['POST'])
+@login_required
 def vehiculo_tipo_delete(id):
     tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
 
@@ -45,6 +48,7 @@ def vehiculo_tipo_delete(id):
 
 # VehiculoTipo CREATE
 @routes.route('/vehiculo_tipo/add', methods=['POST'])
+@login_required
 def vehiculo_tipo_add():
     data = request.get_json()
     nombre = data.get('nombre')
@@ -58,6 +62,7 @@ def vehiculo_tipo_add():
 
 # VehiculoTipo EDIT
 @routes.route('/vehiculo_tipo/edit/<int:id>', methods=['PUT'])
+@login_required
 def vehiculo_tipo_edit(id):
     data = request.get_json()
     nombre = data.get('nombre')
@@ -73,12 +78,14 @@ def vehiculo_tipo_edit(id):
 
 # TarifaTipo ALL
 @routes.route('/tarifa_tipo', methods=['GET'])
+@login_required
 def tarifa_tipo():
     tarifas_tipo = TarifaTipo.query.all()
     return render_template('tarifa_tipo.html', titulo='Tipo de Tarifa', tipos_tarifa = tarifas_tipo)
 
 # TarifaTipo CREATE
 @routes.route('/tarifa_tipo/add', methods=['POST'])
+@login_required
 def tarifa_tipo_add():
     data = request.get_json()
     nombre = data.get('nombre')
@@ -93,6 +100,7 @@ def tarifa_tipo_add():
 
 # TarifaTipo UPDATE
 @routes.route('/tarifa_tipo/edit/<int:id>', methods=['PUT'])
+@login_required
 def tarifa_tipo_update(id):
     data = request.get_json()
     nombre = data.get('nombre')
@@ -109,6 +117,7 @@ def tarifa_tipo_update(id):
 
 # TarifaTipo DELETE
 @routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
+@login_required
 def tarifa_tipo_delete(id):
     tarifa_tipo = TarifaTipo.query.get_or_404(id)
     
@@ -121,12 +130,14 @@ def tarifa_tipo_delete(id):
 
 # MedioPago ALL
 @routes.route('/medio_pago', methods=['GET'])
+@login_required
 def medio_pago():
     medios_pagos = MedioPago.query.all()
     return render_template('medio_pago.html', titulo='Medios de Pago', medios_pagos = medios_pagos)
 
 # MedioPago CREATE
 @routes.route('/medio_pago/add', methods=['POST'])
+@login_required
 def add_medio_pago():
     data = request.get_json()
     nombre = data.get('nombre')
@@ -140,6 +151,7 @@ def add_medio_pago():
 
 # MedioPago UPDATE
 @routes.route('/medio_pago/edit/<int:id>', methods=['PUT'])
+@login_required
 def update_medio_pago(id):
     data = request.get_json()
     nombre = data.get('nombre')
@@ -154,6 +166,7 @@ def update_medio_pago(id):
 
 # MedioPago DELETE
 @routes.route('/medio_pago/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_medio_pago(id):
     medio_pago = MedioPago.query.get_or_404(id)
     
@@ -166,6 +179,7 @@ def delete_medio_pago(id):
 
 # Cliente ALL
 @routes.route('/cliente', methods=['GET'])
+@login_required
 def cliente():
     clientes = Cliente.query.join(Parqueadero).add_columns(
         Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.id.label('parqueadero_id'), Parqueadero.nombre.label('parqueadero_nombre')
@@ -190,6 +204,7 @@ def cliente():
 
 # Cliente CREATE
 @routes.route('/cliente/add', methods=['POST'])
+@login_required
 def add_cliente():
     data = request.get_json()
     documento = data.get('documento')
@@ -210,6 +225,7 @@ def add_cliente():
 
 # Cliente UPDATE
 @routes.route('/cliente/edit/<int:id>', methods=['PUT'])
+@login_required
 def update_cliente(id):
     data = request.get_json()
     documento = data.get('documento')
@@ -237,6 +253,7 @@ def update_cliente(id):
 
 # Cliente DELETE
 @routes.route('/cliente/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_cliente(id):
     cliente = Cliente.query.get_or_404(id)
     
@@ -249,12 +266,14 @@ def delete_cliente(id):
 
 # Rol ALL
 @routes.route('/rol', methods=['GET'])
+@login_required
 def rol():
     roles = Rol.query.all()
     return render_template('rol.html', titulo='Roles', roles = roles)
 
 # Rol CREATE
 @routes.route('/rol/add', methods=['POST'])
+@login_required
 def add_rol():
     data = request.get_json()
     nombre = data.get('nombre')
@@ -268,6 +287,7 @@ def add_rol():
 
 # Rol UPDATE
 @routes.route('/rol/edit/<int:id>', methods=['PUT'])
+@login_required
 def update_rol(id):
     data = request.get_json()
     nombre = data.get('nombre')
@@ -282,6 +302,7 @@ def update_rol(id):
 
 # Rol DELETE
 @routes.route('/rol/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_rol(id):
     rol = Rol.query.get_or_404(id)
     
@@ -294,6 +315,7 @@ def delete_rol(id):
 
 # Usiario ALL
 @routes.route('/usuario', methods=['GET'])
+@login_required
 def usuario():
     usuarios = Usuario.query.join(Rol).add_columns(
         Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, 
@@ -335,6 +357,7 @@ def usuario():
 
 # Usiario CREATE
 @routes.route('/usuario/add', methods=['POST'])
+@login_required
 def add_usuario():
     data = request.get_json()
     documento = data.get('documento')
@@ -410,6 +433,7 @@ def add_usuario():
 
 # Usiario UPDATE
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
+@login_required
 def update_usuario(id):
     data = request.get_json()
     documento = data.get('documento')
@@ -485,6 +509,7 @@ def update_usuario(id):
 
 # Usiario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_usuario(id):
     usuario = Usuario.query.get_or_404(id)
 
@@ -527,6 +552,7 @@ def delete_usuario(id):
 
 # Vehículo ALL
 @routes.route('/vehiculo', methods=['GET'])
+@login_required
 def vehiculo():
     vehiculos = Vehiculo.query \
         .join(VehiculoTipo) \
@@ -561,6 +587,7 @@ def vehiculo():
 
 # Vehículo CREATE
 @routes.route('/vehiculo/add', methods=['POST'])
+@login_required
 def add_vehiculo():
     data = request.get_json()
     placa = data.get('placa')
@@ -582,6 +609,7 @@ def add_vehiculo():
 
 # Vehiculo UPDATE
 @routes.route('/vehiculo/edit/<int:id>', methods=['PUT'])
+@login_required
 def update_vehiculo(id):
     data = request.get_json()
     placa = data.get('placa')
@@ -605,6 +633,7 @@ def update_vehiculo(id):
 
 # Vehículo DELETE
 @routes.route('/vehiculo/delete/<string:id>', methods=['POST'])
+@login_required
 def delete_vehiculo(id):
     vehiculo = Vehiculo.query.get_or_404(id)
 
@@ -617,6 +646,7 @@ def delete_vehiculo(id):
 
 # Tarifa ALL
 @routes.route('/tarifa', methods=['GET'])
+@login_required
 def tarifa():
     tarifas = Tarifa.query \
         .join(TarifaTipo) \
@@ -648,6 +678,7 @@ def tarifa():
 
 # Tarifa CREATE
 @routes.route('/tarifa/add', methods=['POST'])
+@login_required
 def add_tarifa():
     data = request.get_json()
     nombre = data.get('nombre')
@@ -667,6 +698,7 @@ def add_tarifa():
 
 # Tarifa UPDATE
 @routes.route('/tarifa/edit/<int:id>', methods=['PUT'])
+@login_required
 def update_tarifa(id):
     data = request.get_json()
     nombre = data.get('nombre')
@@ -688,6 +720,7 @@ def update_tarifa(id):
 
 # Tarifa DELETE
 @routes.route('/tarifa/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_tarifa(id):
     tarifa = Tarifa.query.get_or_404(id)
 
@@ -700,6 +733,7 @@ def delete_tarifa(id):
 
 # Parqueo ALL
 @routes.route('/parqueo', methods=['GET'])
+@login_required
 def listar_parqueos():
     parqueos = Parqueo.query \
         .join(Modulo) \
@@ -744,6 +778,7 @@ def listar_parqueos():
 
 # Parqueo CREATE
 @routes.route('/parqueo/add', methods=['POST'])
+@login_required
 def agregar_parqueo():
     data = request.get_json()
     modulo_id = data.get('modulo_id')
@@ -769,6 +804,7 @@ def agregar_parqueo():
 
 # Parqueo UPDATE
 @routes.route('/parqueo/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_parqueo(id):
     data = request.get_json()
     modulo_id = data.get('modulo_id')
@@ -789,6 +825,7 @@ def actualizar_parqueo(id):
 
 # Parqueo DELETE
 @routes.route('/parqueo/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_parqueo(id):
     parqueo = Parqueo.query.get_or_404(id)
 
@@ -801,6 +838,7 @@ def eliminar_parqueo(id):
 
 # Arrendamiento ALL
 @routes.route('/arrendamiento', methods=['GET'])
+@login_required
 def listar_arrendamientos():
     arrendamientos = Arrendamiento.query \
         .join(Periodicidad) \
@@ -845,6 +883,7 @@ def listar_arrendamientos():
 
 # Arrendamiento CREATE
 @routes.route('/arrendamiento/add', methods=['POST'])
+@login_required
 def agregar_arrendamiento():
     data = request.get_json()
     descripcion = data.get('descripcion')
@@ -868,6 +907,7 @@ def agregar_arrendamiento():
 
 # Arrendamiento UPDATE
 @routes.route('/arrendamiento/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_arrendamiento(id):
     data = request.get_json()
     descripcion = data.get('descripcion')
@@ -887,6 +927,7 @@ def actualizar_arrendamiento(id):
 
 # Arrendamiento DELETE
 @routes.route('/arrendamiento/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_arrendamiento(id):
     arrendamiento = Arrendamiento.query.get_or_404(id)
 
@@ -899,6 +940,7 @@ def eliminar_arrendamiento(id):
 
 # Modulo ALL
 @routes.route('/modulo', methods=['GET'])
+@login_required
 def listar_modulos():
     modulos = Modulo.query \
         .join(Sede) \
@@ -933,6 +975,7 @@ def listar_modulos():
 
 # Modulo CREATE
 @routes.route('/modulo/add', methods=['POST'])
+@login_required
 def agregar_modulo():
     data = request.get_json()
     nombre = data.get('nombre')
@@ -956,6 +999,7 @@ def agregar_modulo():
 
 # Modulo UPDATE
 @routes.route('/modulo/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_modulo(id):
     data = request.get_json()
     modulo = Modulo.query.get_or_404(id)
@@ -971,6 +1015,7 @@ def actualizar_modulo(id):
 
 # Modulo DELETE
 @routes.route('/modulo/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_modulo(id):
     modulo = Modulo.query.get_or_404(id)
 
@@ -983,6 +1028,7 @@ def eliminar_modulo(id):
 
 # Sede ALL
 @routes.route('/sede', methods=['GET'])
+@login_required
 def listar_sedes():
     sedes = Sede.query \
         .join(Parqueadero, Sede.parqueadero) \
@@ -1027,6 +1073,7 @@ def listar_sedes():
 
 # Sede CREATE
 @routes.route('/sede/add', methods=['POST'])
+@login_required
 def agregar_sede():
     data = request.get_json()
     required_fields = ['nombre', 'direccion', 'telefono', 'email', 'ciudad', 'parqueadero_id', 'usuario_id']
@@ -1050,6 +1097,7 @@ def agregar_sede():
 
 # Sede UPDATE
 @routes.route('/sede/edit/<int:id>', methods=['PUT'])
+@login_required
 def actualizar_sede(id):
     data = request.get_json()
     sede = Sede.query.get_or_404(id)
@@ -1068,6 +1116,7 @@ def actualizar_sede(id):
 
 # Sede DELETE
 @routes.route('/sede/delete/<int:id>', methods=['POST'])
+@login_required
 def eliminar_sede(id):
     sede = Sede.query.get_or_404(id)
 
@@ -1079,6 +1128,7 @@ def eliminar_sede(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Pais LIST
+@login_required
 @routes.route('/pais', methods=['GET'])
 def listar_paises():
     paises = Pais.query.all()
@@ -1095,6 +1145,7 @@ def listar_paises():
                         paises=paises_dict)
 
 # Pais CREATE
+@login_required
 @routes.route('/pais/add', methods=['POST'])
 def agregar_pais():
     data = request.get_json()
@@ -1111,6 +1162,7 @@ def agregar_pais():
     return jsonify({'success': True, 'message': 'País creado correctamente'})
 
 # Pais UPDATE
+@login_required
 @routes.route('/pais/edit/<int:id>', methods=['PUT'])
 def actualizar_pais(id):
     data = request.get_json()
@@ -1123,6 +1175,7 @@ def actualizar_pais(id):
     return jsonify({'success': True, 'message': 'País actualizado correctamente'})
 
 # Pais DELETE
+@login_required
 @routes.route('/pais/delete/<int:id>', methods=['POST'])
 def eliminar_pais(id):
     pais = Pais.query.get_or_404(id)
@@ -1135,6 +1188,7 @@ def eliminar_pais(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Periodicidad ALL
+@login_required
 @routes.route('/periodicidad', methods=['GET'])
 def listar_periodicidades():
     periodicidades = Periodicidad.query.all()
@@ -1152,6 +1206,7 @@ def listar_periodicidades():
                         periodicidades=periodicidades_dict)
 
 # Periodicidad CREATE
+@login_required
 @routes.route('/periodicidad/add', methods=['POST'])
 def agregar_periodicidad():
     data = request.get_json()
@@ -1169,6 +1224,7 @@ def agregar_periodicidad():
     return jsonify({'success': True, 'message': 'Periodicidad creada correctamente'})
 
 # Periodicidad UPDATE
+@login_required
 @routes.route('/periodicidad/edit/<int:id>', methods=['PUT'])
 def actualizar_periodicidad(id):
     data = request.get_json()
@@ -1182,6 +1238,7 @@ def actualizar_periodicidad(id):
     return jsonify({'success': True, 'message': 'Periodicidad actualizada correctamente'})
 
 # Periodicidad DELETE
+@login_required
 @routes.route('/periodicidad/delete/<int:id>', methods=['POST'])
 def eliminar_periodicidad(id):
     periodicidad = Periodicidad.query.get_or_404(id)
@@ -1194,6 +1251,7 @@ def eliminar_periodicidad(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Puntos ALL
+@login_required
 @routes.route('/puntos')
 def obtener_puntos():
     puntos = Punto.query.join(Cliente).add_columns(
@@ -1216,6 +1274,7 @@ def obtener_puntos():
                         clientes=clientes)
 
 # Puntos CREATE
+@login_required
 @routes.route('/punto/add', methods=['POST'])
 def agregar_punto():
     data = request.get_json()
@@ -1237,6 +1296,7 @@ def agregar_punto():
     return jsonify({'success': True, 'message': 'Punto creado correctamente'})
 
 # Puntos UPDATE
+@login_required
 @routes.route('/punto/edit/<int:id>', methods=['PUT'])
 def actualizar_punto(id):
     data = request.get_json()
@@ -1250,6 +1310,7 @@ def actualizar_punto(id):
     return jsonify({'success': True, 'message': 'Punto actualizado correctamente'})
 
 # Puntos DELETE
+@login_required
 @routes.route('/punto/delete/<int:id>', methods=['POST'])
 def eliminar_punto(id):
     punto = Punto.query.get_or_404(id)
@@ -1262,6 +1323,7 @@ def eliminar_punto(id):
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Redimir ALL
+@login_required
 @routes.route('/redimir')
 def obtener_redenciones():
     redenciones = Redimir.query.join(Punto).add_columns(
@@ -1286,6 +1348,7 @@ def obtener_redenciones():
                         puntos=puntos)
 
 # Redimir CREATE
+@login_required
 @routes.route('/redimir/add', methods=['POST'])
 def agregar_redencion():
     data = request.get_json()
@@ -1305,6 +1368,7 @@ def agregar_redencion():
     return jsonify({'success': True, 'message': 'Redención registrada correctamente'})
 
 # Redimir UPDATE
+@login_required
 @routes.route('/redimir/edit/<int:id>', methods=['PUT'])
 def actualizar_redencion(id):
     data = request.get_json()
@@ -1317,6 +1381,7 @@ def actualizar_redencion(id):
     return jsonify({'success': True, 'message': 'Redención actualizada correctamente'})
 
 # Redimir DELETE
+@login_required
 @routes.route('/redimir/delete/<int:id>', methods=['POST'])
 def eliminar_redencion(id):
     redimir = Redimir.query.get_or_404(id)
@@ -1330,6 +1395,7 @@ def eliminar_redencion(id):
 
 # Parqueadero ALL
 @routes.route('/parqueadero', methods=['GET'])
+@login_required
 def listar_parqueaderos():
     parqueaderos = Parqueadero.query \
         .join(Pais) \
@@ -1387,6 +1453,7 @@ def listar_parqueaderos():
                         paises=paises)
 
 # Parqueadero CREATE
+@login_required
 @routes.route('/parqueadero/add', methods=['POST'])
 def agregar_parqueadero():
     data = request.get_json()
@@ -1426,6 +1493,7 @@ def agregar_parqueadero():
     return jsonify({'success': True, 'message': 'Parqueadero registrado correctamente'})
 
 # Parqueadero UPDATE
+@login_required
 @routes.route('/parqueadero/edit/<int:id>', methods=['PUT'])
 def actualizar_parqueadero(id):
     data = request.get_json()
@@ -1460,6 +1528,7 @@ def actualizar_parqueadero(id):
     return jsonify({'success': True, 'message': 'Parqueadero actualizado correctamente'})
 
 # Parqueadero DELETE
+@login_required
 @routes.route('/parqueadero/delete/<int:id>', methods=['POST'])
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
