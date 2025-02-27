@@ -19,6 +19,7 @@
             <div id="login-alert" class="alert alert-danger text-center d-none"></div>
 
             <form id="login-form">
+              <input type="hidden" name="next" value="{{ next_param }}">
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
@@ -53,7 +54,7 @@
       
       $.ajax({
         type: "POST",
-        url: "{{ url_for('routes.login') }}",
+        url: "{{ url_for('routes.login_get') }}",
         data: $(this).serialize(), // Envía los datos del formulario, como json, hace lo mismo que cuando se crea un usuario Ej
         dataType: "json",
         success: function (response) {
