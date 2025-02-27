@@ -21,7 +21,7 @@ def create_app():
 
     db.init_app(app)
     login.init_app(app)
-    login.login_view = 'routes.login'
+    login.login_view = 'routes.login_get'
 
 
     from app import models

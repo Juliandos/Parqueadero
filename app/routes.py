@@ -734,7 +734,7 @@ def delete_tarifa(id):
 # Parqueo ALL
 @routes.route('/parqueo', methods=['GET'])
 @login_required
-def listar_parqueos():
+def parqueo():
     parqueos = Parqueo.query \
         .join(Modulo) \
         .join(MedioPago) \
@@ -839,7 +839,7 @@ def eliminar_parqueo(id):
 # Arrendamiento ALL
 @routes.route('/arrendamiento', methods=['GET'])
 @login_required
-def listar_arrendamientos():
+def arrendamiento():
     arrendamientos = Arrendamiento.query \
         .join(Periodicidad) \
         .join(Vehiculo) \
@@ -941,7 +941,7 @@ def eliminar_arrendamiento(id):
 # Modulo ALL
 @routes.route('/modulo', methods=['GET'])
 @login_required
-def listar_modulos():
+def modulo():
     modulos = Modulo.query \
         .join(Sede) \
         .add_columns(
@@ -1029,7 +1029,7 @@ def eliminar_modulo(id):
 # Sede ALL
 @routes.route('/sede', methods=['GET'])
 @login_required
-def listar_sedes():
+def sede():
     sedes = Sede.query \
         .join(Parqueadero, Sede.parqueadero) \
         .join(Usuario, Sede.usuario) \
@@ -1127,10 +1127,10 @@ def eliminar_sede(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
-# Pais LIST
+# Pais ALL
 @routes.route('/pais', methods=['GET'])
 @login_required
-def listar_paises():
+def pais():
     paises = Pais.query.all()
     
     paises_dict = [
@@ -1190,7 +1190,7 @@ def eliminar_pais(id):
 # Periodicidad ALL
 @routes.route('/periodicidad', methods=['GET'])
 @login_required
-def listar_periodicidades():
+def periodicidad():
     periodicidades = Periodicidad.query.all()
     
     periodicidades_dict = [
@@ -1253,7 +1253,7 @@ def eliminar_periodicidad(id):
 # Puntos ALL
 @routes.route('/puntos')
 @login_required
-def obtener_puntos():
+def puntos():
     puntos = Punto.query.join(Cliente).add_columns(
         Punto.id,
         Punto.cantidad,
@@ -1325,7 +1325,7 @@ def eliminar_punto(id):
 # Redimir ALL
 @routes.route('/redimir')
 @login_required
-def obtener_redenciones():
+def redimir():
     redenciones = Redimir.query.join(Punto).add_columns(
         Redimir.id,
         Redimir.cantidad,
@@ -1396,7 +1396,7 @@ def eliminar_redencion(id):
 # Parqueadero ALL
 @routes.route('/parqueadero', methods=['GET'])
 @login_required
-def listar_parqueaderos():
+def parqueadero():
     parqueaderos = Parqueadero.query \
         .join(Pais) \
         .add_columns(
@@ -1577,6 +1577,7 @@ def login_post():
 
     email = request.form.get('email', '').strip()
     password = request.form.get('password', '').strip()
+    next_param = request.form.get('next', '')
 
     if not email or not password:
         return jsonify({'success': False, 'message': 'Los campos email y contraseña son obligatorios'}), 400
@@ -1589,18 +1590,14 @@ def login_post():
     if bcrypt.check_password_hash(user.contrasena, password):  
         login_user(user)
 
-        next_param = request.args.get('next', '')  
-        print("next_param recibido:", next_param)  # Depuración
+        next_param = next_param.lstrip('/')
 
-        if next_param.startswith('/'):  
-            next_param = next_param[1:]  # Elimina la barra inicial
-
-        # Validar si el endpoint existe antes de usarlo
-        if next_param in current_app.view_functions:  
+        if next_param:  
             return jsonify({"success": True, "redirect": url_for(f'routes.{next_param}')})
         else:
-            print("next_param inválido:", next_param)
             return jsonify({"success": True, "redirect": url_for('routes.index')})
+    
+    return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
         
 # Logout user
 @routes.route('/logout')
@@ -1610,7 +1607,7 @@ def logout():
     Solicita al usuario cerrar sesión y redirecciona a la página de inicio.
     """
     logout_user()
-    return redirect(url_for('routes.login'))
+    return redirect(url_for('routes.login_get'))
 
 # Register
 @routes.route('/register', methods=['GET'])
