@@ -1587,10 +1587,14 @@ def login_post():
         return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
     if bcrypt.check_password_hash(user.contrasena, password):  
-        print("Listo entraster: " + user.contrasena)
         login_user(user)
-        return jsonify({"success": True, "redirect": url_for('routes.index')})
 
+        next = request.args.get('next')
+        if not next:
+            return jsonify({"success": True, "redirect": url_for('routes.index')})
+        else:
+            return jsonify({"success": True, "redirect": next})
+        
     return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
 # Logout user
@@ -1602,9 +1606,3 @@ def logout():
     """
     logout_user()
     return redirect(url_for('routes.login'))
-
-# Register
-@routes.route('/register', methods=['GET'])
-def register():
-    roles = Rol.query.all()
-    return render_template('register.html', roles=roles)
