@@ -6,8 +6,8 @@ from app import db
 # import bcrypt
 from flask_bcrypt import Bcrypt
 from sqlalchemy import select
-from werkzeug.security import check_password_hash, generate_password_hash
-from flask_login import login_user, current_user
+# from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import login_required, login_user, current_user, logout_user
 
 bcrypt = Bcrypt()
 
@@ -1505,7 +1505,7 @@ def login():
 @routes.route('/login', methods=['POST'])
 def login_post():
     if current_user.is_authenticated:
-        return redirect(url_for('routes.index'))  # Ajusta la ruta correcta
+        return redirect(url_for('routes.index'))
 
     email = request.form.get('email', '').strip()
     password = request.form.get('password', '').strip()
@@ -1522,10 +1522,20 @@ def login_post():
 
     if bcrypt.check_password_hash(user.contrasena, password):  
         print("Listo entraster: " + user.contrasena)
-        # login_user(user)
+        login_user(user)
         return jsonify({"success": True, "redirect": url_for('routes.index')})
 
     return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
+
+# Logout user
+@routes.route('/logout')
+# @login_required   
+def logout():
+    """
+    Solicita al usuario cerrar sesión y redirecciona a la página de inicio.
+    """
+    # logout_user()
+    return redirect(url_for('routes.login'))
 
 # Register
 @routes.route('/register', methods=['GET'])
