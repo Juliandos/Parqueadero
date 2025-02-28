@@ -1620,6 +1620,28 @@ def register():
 @routes.route('/profile_info', methods=['GET'])
 @login_required
 def profile_info():
-    user = current_user
-    form = UsuarioForm()
-    return render_template('profile-info.html', user=user, titulo="Información de perfil", form=form)
+    return render_template('profile-info.html', 
+                        titulo="Información de perfil",
+                        usuario=current_user)
+
+# @routes.route('/profile_info_edit', methods=['POST'])
+# # @login_required
+# def profile_info_edit():
+#     print("Solicitud recibida:", request.method)
+#     print("Datos en request.form:", request.form)
+#     form = UsuarioForm(request.form)
+#     print(form.validate_on_submit())
+#     if form.validate_on_submit():  # Validar el formulario
+#         # Actualizar los datos del usuario
+#         current_user.nombres = form.nombres.data
+#         current_user.apellidos = form.apellidos.data
+#         current_user.telefono = form.telefono.data
+#         current_user.direccion = form.direccion.data
+#         current_user.ciudad = form.ciudad.data
+
+#         # Guardar cambios en la base de datos
+#         db.session.commit()
+
+#         return jsonify({"mensaje": "Perfil actualizado con éxito"}), 200
+#     else:
+#         return jsonify({"error": "Datos inválidos", "detalles": form.errors}), 400

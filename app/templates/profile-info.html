@@ -1,154 +1,202 @@
 {% extends 'base.html' %}
 {% block title %}{{ titulo }}{% endblock %}
 {% block content %}
-	<body id="sherah-adashboard sherah-show">
-	
-		<div class="sherah-body-area">
-			<!-- sherah Dashboard -->
-			<section class="sherah-adashboard sherah-show">
-				<div class="container">
-					<div class="row">	
-						<div class="col-12">
-							<div class="sherah-body">
-								<!-- Dashboard Inner -->
-								<div class="sherah-dsinner">
-									<!-- Sherah Breadcrumb -->
-									<div class="sherah-breadcrumb mg-top-30">
-										<h2 class="sherah-breadcrumb__title">Setting</h2>
-										<ul class="sherah-breadcrumb__list"> 
-											<li><a href="#">Home</a></li>
-											<li class="active"><a href="profile-info.html">Personal Information</a></li>
-										</ul>
-									</div>
-									<!-- End Sherah Breadcrumb -->
-									<div class="sherah-personals d-flex justify-content-end">
-										<div class="row w-100">
-                      <!-- margin-left: 100px; -->
-											<div class="col-lg-12 col-md-10 col-12  sherah-personals__content mg-top-30" style="margin-left: 20%;">
-												<div class="sherah-ptabs">
-													<div class="sherah-ptabs__inner">
-														<div class="tab-content" id="nav-tabContent">
-															<!--  Features Single Tab -->
-															<div class="tab-pane fade show active" id="id1" role="tabpanel">
-																<form action="#">
-																	<div class="row">
-																		<div class="col-12">
-																			<div class="sherah-ptabs__separate">
-																				<div class="sherah-ptabs__form-main">
-																					<div class="sherah__item-group sherah-default-bg sherah-border">
-																						<div class="sherah-profile-info__v2 mg-top-30">
-																							<h3 class="sherah-profile-info__heading mg-btm-30">Personal Information</h3>
-																							<form method="POST" action="{{ url_for('routes.profile_info') }}">
-                                                {{ form.hidden_tag() }}
-                                                
-                                                <!-- Documento -->
-                                                <div class="mb-3 row">
-                                                  <div class="col-12">
-                                                    {{ form.documento.label(class="form-label required") }}
-                                                    {{ form.documento(class="form-control text-dark", value=current_user.documento) }}
-                                                    {% for error in form.documento.errors %}
-                                                        <div class="invalid-feedback d-block">{{ error }}</div>
-                                                    {% endfor %}
-                                                  </div>
+
+<body id="sherah-adashboard sherah-show">
+
+  <div class="sherah-body-area">
+    <!-- sherah Dashboard -->
+    <section class="sherah-adashboard sherah-show">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="sherah-body">
+              <!-- Dashboard Inner -->
+              <div class="sherah-dsinner">
+                <!-- Sherah Breadcrumb -->
+                <div class="sherah-breadcrumb mg-top-30">
+                  <h2 class="sherah-breadcrumb__title">Setting</h2>
+                  <ul class="sherah-breadcrumb__list">
+                    <li><a href="#">Home</a></li>
+                    <li class="active"><a href="profile-info.html">Personal Information</a></li>
+                  </ul>
+                </div>
+                <!-- End Sherah Breadcrumb -->
+                <div class="sherah-personals d-flex justify-content-end">
+                  <div class="row w-100">
+                    <!-- margin-left: 100px; -->
+                    <div class="col-lg-12 col-md-10 col-12  sherah-personals__content mg-top-30"
+                      style="margin-left: 20%;">
+                      <div class="sherah-ptabs">
+                        <div class="sherah-ptabs__inner">
+                          <div class="tab-content" id="nav-tabContent">
+                            <!--  Features Single Tab -->
+                            <div class="tab-pane fade show active" id="id1" role="tabpanel">
+                              <form action="#">
+                                <div class="row">
+                                  <div class="col-12">
+                                    <div class="sherah-ptabs__separate">
+                                      <div class="sherah-ptabs__form-main">
+                                        <div class="sherah__item-group sherah-default-bg sherah-border">
+                                          <div class="sherah-profile-info__v2 mg-top-30">
+                                            <h3 class="sherah-profile-info__heading mg-btm-30">Personal Information</h3>
+                                            <form id="UsuarioForm" data-action="edit" class="needs-validation" novalidate>
+                                              <input type="hidden" id="UsuarioId" value="">
+
+                                              <div class="mb-3">
+                                                <label for="documento" class="form-label">Documento</label>
+                                                <input type="text" class="form-control" id="documento" readonly value={{usuario.documento}}>
+                                                <div class="invalid-feedback">El documento es obligatorio.</div>
+                                              </div>
+
+                                              <div class="mb-3">
+                                                <label for="contrasena" class="form-label">Contraseña</label>
+                                                <input type="password" class="form-control" id="contrasena">
+                                                <div class="form-text">Déjalo en blanco si no deseas cambiarla.</div>
+                                              </div>
+
+                                              <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="nombres" class="form-label">Nombres</label>
+                                                  <input type="text" class="form-control" id="nombres" required>
+                                                  <div class="invalid-feedback">Los nombres son obligatorios.</div>
                                                 </div>
-                    
-                                                <!-- Nombres y Apellidos -->
-                                                <div class="row">
-                                                    <div class="col-md-6 mb-3">
-                                                        {{ form.nombres.label(class="form-label required") }}
-                                                        {{ form.nombres(class="form-control text-dark", value=current_user.nombres) }}
-                                                        {% for error in form.nombres.errors %}
-                                                            <div class="invalid-feedback d-block">{{ error }}</div>
-                                                        {% endfor %}
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        {{ form.apellidos.label(class="form-label required") }}
-                                                        {{ form.apellidos(class="form-control text-dark", value=current_user.apellidos) }}
-                                                        {% for error in form.apellidos.errors %}
-                                                            <div class="invalid-feedback d-block">{{ error }}</div>
-                                                        {% endfor %}
-                                                    </div>
-                                                  </div>
-                      
-                                                  <!-- Teléfono Email-->
-                                                  <div class="mb-3 row">
-                                                    <div class="col-6">
-                                                      {{ form.telefono.label(class="form-label required") }}
-                                                      {{ form.telefono(class="form-control text-dark", value=current_user.telefono) }}
-                                                      <small class="form-text text-muted">Ejemplo: +57 310 1234567</small>
-                                                      {% for error in form.telefono.errors %}
-                                                          <div class="invalid-feedback d-block">{{ error }}</div>
-                                                      {% endfor %}
-                                                    </div>
-                                                    <div class="col-6">
-                                                      {{ form.email.label(class="form-label required") }}
-                                                      {{ form.email(class="form-control text-dark", value=current_user.email) }}
-                                                      {% for error in form.email.errors %}
-                                                          <div class="invalid-feedback d-block">{{ error }}</div>
-                                                      {% endfor %}
-                                                    </div>
-                                                  </div>
-                      
-                                                  <!-- Ciudad y Dirección -->
-                                                  <div class="mb-3 row">
-                                                    <div class="col-6">
-                                                      {{ form.ciudad.label(class="form-label required") }}
-                                                      {{ form.ciudad(class="form-control text-dark", value=current_user.ciudad) }}
-                                                      {% for error in form.ciudad.errors %}
-                                                          <div class="invalid-feedback d-block">{{ error }}</div>
-                                                      {% endfor %}
-                                                    </div>
-                                                    <div class="col-6">
-                                                      {{ form.direccion.label(class="form-label required") }}
-                                                      {{ form.direccion(class="form-control text-dark", value=current_user.direccion) }}
-                                                      {% for error in form.direccion.errors %}
-                                                          <div class="invalid-feedback d-block">{{ error }}</div>
-                                                      {% endfor %}
-                                                    </div>
-                                                  </div>
-                      
-                                                  <!-- Tipo de Usuario -->
-                                                  <div class="mb-4">
-                                                      {{ form.rol_id.label(class="form-label required") }}
-                                                      {{ form.rol_id(class="form-select", value=current_user.rol_id) }}
-                                                      {% for error in form.rol_id.errors %}
-                                                          <div class="invalid-feedback d-block">{{ error }}</div>
-                                                      {% endfor %}
-                                                  </div>
-                      
-                                                  <div class="d-grid gap-2">
-                                                      {{ form.submit(class="btn btn-primary btn-lg") }}
-                                                  </div>
-                                              </form>
-																						</div>
+
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="apellidos" class="form-label">Apellidos</label>
+                                                  <input type="text" class="form-control" id="apellidos" required>
+                                                  <div class="invalid-feedback">Los apellidos son obligatorios.</div>
+                                                </div>
+                                              </div>
+
+                                              <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="telefono" class="form-label">Teléfono</label>
+                                                  <input type="text" class="form-control" id="telefono" required>
+                                                  <div class="invalid-feedback">El teléfono es obligatorio.</div>
+                                                </div>
+
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="email" class="form-label">Email</label>
+                                                  <input type="email" class="form-control" id="email" required>
+                                                  <div class="invalid-feedback">El email es obligatorio y debe ser
+                                                    válido.</div>
+                                                </div>
+                                              </div>
+
+                                              <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="ciudad" class="form-label">Ciudad</label>
+                                                  <input type="text" class="form-control" id="ciudad" required>
+                                                  <div class="invalid-feedback">La ciudad es obligatoria.</div>
+                                                </div>
+
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="direccion" class="form-label">Dirección</label>
+                                                  <input type="text" class="form-control" id="direccion" required>
+                                                  <div class="invalid-feedback">La dirección es obligatoria.</div>
+                                                </div>
+                                              </div>
+
+                                              <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="rol_id" class="form-label">Rol</label>
+                                                  <select class="form-select" id="rol_id" required>
+                                                    <option value="">Seleccione un rol</option>
+                                                    <option value="1">Administrador</option>
+                                                    <option value="2">Jefe</option>
+                                                    <option value="3">Usuario</option>
+                                                  </select>
+                                                  <div class="invalid-feedback">Seleccione un rol válido.</div>
+                                                </div>
+
+                                                <div class="col-md-6 mb-3">
+                                                  <label for="parqueadero_id" class="form-label">Parqueadero</label>
+                                                  <input type="text" class="form-control" id="parqueadero_id" required>
+                                                  <div class="invalid-feedback">El parqueadero es obligatorio.</div>
+                                                </div>
+                                              </div>
+
+                                              <button type="submit" class="btn btn-primary">Guardar</button>
+                                            </form>
 
 
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</form>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- End Dashboard Inner -->
-							</div>
-						</div>
-						
-						
-					</div>	
-				</div>	
-			</section>	
-			<!-- End sherah Dashboard -->
-			
-		</div>
-		
-	</body>
+                                          </div>
+
+
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Dashboard Inner -->
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </section>
+    <!-- End sherah Dashboard -->
+
+  </div>
+  <script>
+    $(document).ready(function () {
+      $("#UsuarioForm").submit(function (event) {
+        event.preventDefault();
+        let form = this;
+
+        // Validar el formulario
+        if (!form.checkValidity()) {
+          event.stopPropagation();
+          $(form).addClass("was-validated");
+          return;
+        }
+
+        let action = $(this).attr("data-action");
+        let userId = $("#UsuarioId").val();
+        let url = action === "edit" ? `/usuario/edit/${userId}` : "/usuario/add";
+        let method = action === "edit" ? "PUT" : "POST";
+
+        $.ajax({
+          url: url,
+          type: method,
+          contentType: "application/json",
+          data: JSON.stringify({
+            documento: $("#documento").val(),
+            contrasena: $("#contrasena").val(),
+            nombres: $("#nombres").val(),
+            apellidos: $("#apellidos").val(),
+            telefono: $("#telefono").val(),
+            email: $("#email").val(),
+            ciudad: $("#ciudad").val(),
+            direccion: $("#direccion").val(),
+            rol_id: $("#rol_id").val(),
+            parqueadero_id: $("#parqueadero_id").val()
+          }),
+          success: function () {
+            Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
+          },
+          error: function (jqXHR) {
+            let response = jqXHR.responseJSON;
+            let message = response && response.message ? response.message : "Error desconocido";
+            Swal.fire("Error", message, "error");
+          }
+        });
+
+        $("#UsuarioModal").modal("hide");
+      });
+    });
+
+  </script>
+</body>
 {% endblock %}
-		

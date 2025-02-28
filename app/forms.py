@@ -18,7 +18,6 @@ class UsuarioForm(FlaskForm):
     documento = StringField('Documento de Identidad', 
         validators=[
             DataRequired('El documento es obligatorio'),
-            Length(min=8, max=16, message='El documento debe tener entre 8 y 16 caracteres'),
             documento_unico
         ],
         render_kw={"placeholder": "Número de documento sin espacios"}
@@ -76,7 +75,7 @@ class UsuarioForm(FlaskForm):
     # Selector de Rol
     rol_id = SelectField('Tipo de Usuario',
         coerce=int,
-        validators=[DataRequired('Selecciona un tipo de usuario')],
+        # validators=[DataRequired('Selecciona un tipo de usuario')],
         render_kw={"class": "form-select"}
     )
 
