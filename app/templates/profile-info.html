@@ -32,102 +32,97 @@
                           <div class="tab-content" id="nav-tabContent">
                             <!--  Features Single Tab -->
                             <div class="tab-pane fade show active" id="id1" role="tabpanel">
-                              <form action="#">
-                                <div class="row">
-                                  <div class="col-12">
-                                    <div class="sherah-ptabs__separate">
-                                      <div class="sherah-ptabs__form-main">
-                                        <div class="sherah__item-group sherah-default-bg sherah-border">
-                                          <div class="sherah-profile-info__v2 mg-top-30">
-                                            <h3 class="sherah-profile-info__heading mg-btm-30">Personal Information</h3>
-                                            <form id="UsuarioForm" data-action="edit" class="needs-validation" novalidate>
-                                              <input type="hidden" id="UsuarioId" value="">
+                              <div class="row">
+                                <div class="col-12">
+                                  <div class="sherah-ptabs__separate">
+                                    <div class="sherah-ptabs__form-main">
+                                      <div class="sherah__item-group sherah-default-bg sherah-border">
+                                        <div class="sherah-profile-info__v2 mg-top-30">
+                                          <h3 class="sherah-profile-info__heading mg-btm-30">Personal Information</h3>
+                                          <form id="UsuarioForm" data-action="edit" class="needs-validation" novalidate>
+                                            <input type="hidden" id="UsuarioId" value={{usuario.id}}>
 
-                                              <div class="mb-3">
-                                                <label for="documento" class="form-label">Documento</label>
-                                                <input type="text" class="form-control text-dark" id="documento" readonly value={{usuario.documento}}>
-                                                <div class="invalid-feedback">El documento es obligatorio.</div>
+                                            <div class="mb-3">
+                                              <label for="documento" class="form-label">Documento</label>
+                                              <input type="text" class="form-control text-dark" id="documento" readonly value={{usuario.documento}}>
+                                              <div class="invalid-feedback">El documento es obligatorio.</div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                              <label for="contrasena" class="form-label">Contraseña</label>
+                                              <input type="password" class="form-control text-dark" id="contrasena" readonly value={{usuario.contrasena}}>
+                                              <div class="form-text">Déjalo en blanco si no deseas cambiarla.</div>
+                                            </div>
+
+                                            <div class="row">
+                                              <div class="col-md-6 mb-3">
+                                                <label for="nombres" class="form-label">Nombres</label>
+                                                <input type="text" class="form-control text-dark" id="nombres" required value={{usuario.nombres}}>
+                                                <div class="invalid-feedback">Los nombres son obligatorios.</div>
                                               </div>
 
-                                              <div class="mb-3">
-                                                <label for="contrasena" class="form-label">Contraseña</label>
-                                                <input type="password" class="form-control text-dark" id="contrasena" readonly value={{usuario.contrasena}}>
-                                                <div class="form-text">Déjalo en blanco si no deseas cambiarla.</div>
+                                              <div class="col-md-6 mb-3">
+                                                <label for="apellidos" class="form-label">Apellidos</label>
+                                                <input type="text" class="form-control text-dark" id="apellidos" required value={{usuario.apellidos}}>
+                                                <div class="invalid-feedback">Los apellidos son obligatorios.</div>
+                                              </div>
+                                            </div>
+
+                                            <div class="row">
+                                              <div class="col-md-6 mb-3">
+                                                <label for="telefono" class="form-label">Teléfono</label>
+                                                <input type="text" class="form-control text-dark" id="telefono" required value={{usuario.telefono}}>
+                                                <div class="invalid-feedback">El teléfono es obligatorio.</div>
                                               </div>
 
-                                              <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="nombres" class="form-label">Nombres</label>
-                                                  <input type="text" class="form-control text-dark" id="nombres" required value={{usuario.nombres}}>
-                                                  <div class="invalid-feedback">Los nombres son obligatorios.</div>
-                                                </div>
+                                              <div class="col-md-6 mb-3">
+                                                <label for="email" class="form-label">Email</label>
+                                                <input type="email" class="form-control text-dark" id="email" required value={{usuario.email}}>
+                                                <div class="invalid-feedback">El email es obligatorio y debe ser
+                                                  válido.</div>
+                                              </div>
+                                            </div>
 
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="apellidos" class="form-label">Apellidos</label>
-                                                  <input type="text" class="form-control text-dark" id="apellidos" required value={{usuario.apellidos}}>
-                                                  <div class="invalid-feedback">Los apellidos son obligatorios.</div>
-                                                </div>
+                                            <div class="row">
+                                              <div class="col-md-6 mb-3">
+                                                <label for="ciudad" class="form-label">Ciudad</label>
+                                                <input type="text" class="form-control text-dark" id="ciudad" required value={{usuario.ciudad}}>
+                                                <div class="invalid-feedback">La ciudad es obligatoria.</div>
                                               </div>
 
-                                              <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="telefono" class="form-label">Teléfono</label>
-                                                  <input type="text" class="form-control text-dark" id="telefono" required value={{usuario.telefono}}>
-                                                  <div class="invalid-feedback">El teléfono es obligatorio.</div>
-                                                </div>
+                                              <div class="col-md-6 mb-3">
+                                                <label for="direccion" class="form-label">Dirección</label>
+                                                <input type="text" class="form-control text-dark" id="direccion" required value={{usuario.direccion}}>
+                                                <div class="invalid-feedback">La dirección es obligatoria.</div>
+                                              </div>
+                                            </div>
 
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="email" class="form-label">Email</label>
-                                                  <input type="email" class="form-control text-dark" id="email" required value={{usuario.email}}>
-                                                  <div class="invalid-feedback">El email es obligatorio y debe ser
-                                                    válido.</div>
-                                                </div>
+                                            <div class="row">
+                                              <div class="col-md-6 mb-3">
+                                                <label for="rol_id" class="form-label">Rol</label>
+                                                <select class="form-select" id="rol_id" required disabled>
+                                                  <!-- <option value="">Seleccione un rol</option> -->
+                                                  <option value="1">{{rol.nombre}}</option>
+                                                </select>
+                                                <div class="invalid-feedback">Seleccione un rol válido.</div>
                                               </div>
 
-                                              <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="ciudad" class="form-label">Ciudad</label>
-                                                  <input type="text" class="form-control text-dark" id="ciudad" required value={{usuario.ciudad}}>
-                                                  <div class="invalid-feedback">La ciudad es obligatoria.</div>
-                                                </div>
-
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="direccion" class="form-label">Dirección</label>
-                                                  <input type="text" class="form-control text-dark" id="direccion" required value={{usuario.direccion}}>
-                                                  <div class="invalid-feedback">La dirección es obligatoria.</div>
-                                                </div>
+                                              <div class="col-md-6 mb-3">
+                                                <label for="parqueadero_id" class="form-label">Parqueadero</label>
+                                                <input type="text" class="form-control text-dark" id="parqueadero_nombre" readonly value={{ parqueadero.nombre if parqueadero else "No asignado" }}>
+                                                <input type="hidden" id="parqueadero_id" value="{{ parqueadero.id if parqueadero else '' }}">
+                                                <div class="invalid-feedback">El parqueadero es obligatorio.</div>
                                               </div>
+                                            </div>
 
-                                              <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="rol_id" class="form-label">Rol</label>
-                                                  <select class="form-select" id="rol_id" required disabled>
-                                                    <!-- <option value="">Seleccione un rol</option> -->
-                                                    <option value="1">{{rol.nombre}}</option>
-                                                  </select>
-                                                  <div class="invalid-feedback">Seleccione un rol válido.</div>
-                                                </div>
-
-                                                <div class="col-md-6 mb-3">
-                                                  <label for="parqueadero_id" class="form-label">Parqueadero</label>
-                                                  <input type="text" class="form-control text-dark" id="parqueadero_id" required>
-                                                  <div class="invalid-feedback">El parqueadero es obligatorio.</div>
-                                                </div>
-                                              </div>
-
-                                              <button type="submit" class="btn btn-primary">Guardar</button>
-                                            </form>
-
-
-                                          </div>
-
-
+                                            <button type="submit" class="btn btn-primary">Guardar</button>
+                                          </form>
                                         </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              </form>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -147,42 +142,53 @@
     <!-- End sherah Dashboard -->
 
   </div>
-  <script>
-    $(document).ready(function () {
-      $("#UsuarioForm").submit(function (event) {
-        event.preventDefault();
-        let form = this;
+</body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("UsuarioForm");
 
-        // Validar el formulario
-        if (!form.checkValidity()) {
-          event.stopPropagation();
-          $(form).addClass("was-validated");
-          return;
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        // Obtener el action del formulario
+        const action = form.getAttribute("data-action");
+        const usuarioId = document.getElementById("UsuarioId").value;
+        const url = action === "edit" ? `/usuario/edit/${usuarioId}` : "/usuario/add";
+        const method = action === "edit" ? "PUT" : "POST";
+
+        // Obtener los valores actuales de los campos que NO deben cambiar
+        const documento = document.getElementById("documento").value;
+        const contrasena = document.getElementById("contrasena").value;
+        const rol_id = document.getElementById("rol_id").value;
+        const parqueadero_id = document.getElementById("parqueadero_id").value; // Obtener el ID del parqueadero
+
+        // Captura solo los datos que pueden modificarse
+        const formData = {
+            nombres: document.getElementById("nombres").value,
+            apellidos: document.getElementById("apellidos").value,
+            telefono: document.getElementById("telefono").value,
+            email: document.getElementById("email").value,
+            ciudad: document.getElementById("ciudad").value,
+            direccion: document.getElementById("direccion").value,
+        };
+
+        // Si es una edición, conservar los valores originales de los campos no modificables
+        if (action === "edit") {
+            formData.documento = documento;
+            formData.contrasena = contrasena;
+            formData.rol_id = rol_id;
+            formData.parqueadero_id = parqueadero_id; // Usar el ID del parqueadero
         }
 
-        let action = $(this).attr("data-action");
-        let userId = $("#UsuarioId").val();
-        let url = action === "edit" ? `/usuario/edit/${userId}` : "/usuario/add";
-        let method = action === "edit" ? "PUT" : "POST";
+        console.log(formData);
 
         $.ajax({
           url: url,
           type: method,
           contentType: "application/json",
-          data: JSON.stringify({
-            documento: $("#documento").val(),
-            contrasena: $("#contrasena").val(),
-            nombres: $("#nombres").val(),
-            apellidos: $("#apellidos").val(),
-            telefono: $("#telefono").val(),
-            email: $("#email").val(),
-            ciudad: $("#ciudad").val(),
-            direccion: $("#direccion").val(),
-            rol_id: $("#rol_id").val(),
-            parqueadero_id: $("#parqueadero_id").val()
-          }),
+          data: JSON.stringify(formData),
           success: function () {
-            Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
+            Swal.fire("Éxito", "Usuario actualizado correctamente", "success").then(() => location.reload());
           },
           error: function (jqXHR) {
             let response = jqXHR.responseJSON;
@@ -190,11 +196,7 @@
             Swal.fire("Error", message, "error");
           }
         });
-
-        $("#UsuarioModal").modal("hide");
-      });
     });
+});</script>
 
-  </script>
-</body>
 {% endblock %}

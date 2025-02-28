@@ -452,16 +452,15 @@ def update_usuario(id):
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
     
     rol_id = int(rol_id)
+
     # Obtener los IDs de los roles
     rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
     rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
-    print("rol_jefe_id: ", rol_jefe_id, "rol_admin: ", rol_admin_id, "rol_id: ", rol_id)
-
     # Validar si el usuario que se está creando es Jefe
     if rol_id == rol_jefe_id:
         usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
-            parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+            parqueadero_usuario.c.parqueadero_id != parqueadero_id,
             Usuario.rol_id == rol_jefe_id
         ).first()
 
@@ -507,6 +506,7 @@ def update_usuario(id):
     db.session.commit()
     
     return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
+
 
 # Usiario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
@@ -1621,11 +1621,16 @@ def register():
 @login_required
 def profile_info():
 
+    # Obtener el rol del usuario logueado
     rol = Rol.query.filter_by(id=current_user.rol_id).first()
-    print(current_user)
+
+    # Obtener el parqueadero asociado al usuario logueado
+    parqueadero_usuario = current_user.parqueaderos[0] if current_user.parqueaderos else None
+    
     return render_template('profile-info.html', 
                         titulo="Información de perfil",
                         usuario=current_user,
-                        rol=rol)
+                        rol=rol,
+                        parqueadero=parqueadero_usuario)
 
 
