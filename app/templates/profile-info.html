@@ -45,26 +45,26 @@
 
                                               <div class="mb-3">
                                                 <label for="documento" class="form-label">Documento</label>
-                                                <input type="text" class="form-control" id="documento" readonly value={{usuario.documento}}>
+                                                <input type="text" class="form-control text-dark" id="documento" readonly value={{usuario.documento}}>
                                                 <div class="invalid-feedback">El documento es obligatorio.</div>
                                               </div>
 
                                               <div class="mb-3">
                                                 <label for="contrasena" class="form-label">Contraseña</label>
-                                                <input type="password" class="form-control" id="contrasena">
+                                                <input type="password" class="form-control text-dark" id="contrasena" readonly value={{usuario.contrasena}}>
                                                 <div class="form-text">Déjalo en blanco si no deseas cambiarla.</div>
                                               </div>
 
                                               <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                   <label for="nombres" class="form-label">Nombres</label>
-                                                  <input type="text" class="form-control" id="nombres" required>
+                                                  <input type="text" class="form-control text-dark" id="nombres" required value={{usuario.nombres}}>
                                                   <div class="invalid-feedback">Los nombres son obligatorios.</div>
                                                 </div>
 
                                                 <div class="col-md-6 mb-3">
                                                   <label for="apellidos" class="form-label">Apellidos</label>
-                                                  <input type="text" class="form-control" id="apellidos" required>
+                                                  <input type="text" class="form-control text-dark" id="apellidos" required value={{usuario.apellidos}}>
                                                   <div class="invalid-feedback">Los apellidos son obligatorios.</div>
                                                 </div>
                                               </div>
@@ -72,13 +72,13 @@
                                               <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                   <label for="telefono" class="form-label">Teléfono</label>
-                                                  <input type="text" class="form-control" id="telefono" required>
+                                                  <input type="text" class="form-control text-dark" id="telefono" required value={{usuario.telefono}}>
                                                   <div class="invalid-feedback">El teléfono es obligatorio.</div>
                                                 </div>
 
                                                 <div class="col-md-6 mb-3">
                                                   <label for="email" class="form-label">Email</label>
-                                                  <input type="email" class="form-control" id="email" required>
+                                                  <input type="email" class="form-control text-dark" id="email" required value={{usuario.email}}>
                                                   <div class="invalid-feedback">El email es obligatorio y debe ser
                                                     válido.</div>
                                                 </div>
@@ -87,13 +87,13 @@
                                               <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                   <label for="ciudad" class="form-label">Ciudad</label>
-                                                  <input type="text" class="form-control" id="ciudad" required>
+                                                  <input type="text" class="form-control text-dark" id="ciudad" required value={{usuario.ciudad}}>
                                                   <div class="invalid-feedback">La ciudad es obligatoria.</div>
                                                 </div>
 
                                                 <div class="col-md-6 mb-3">
                                                   <label for="direccion" class="form-label">Dirección</label>
-                                                  <input type="text" class="form-control" id="direccion" required>
+                                                  <input type="text" class="form-control text-dark" id="direccion" required value={{usuario.direccion}}>
                                                   <div class="invalid-feedback">La dirección es obligatoria.</div>
                                                 </div>
                                               </div>
@@ -101,18 +101,16 @@
                                               <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                   <label for="rol_id" class="form-label">Rol</label>
-                                                  <select class="form-select" id="rol_id" required>
-                                                    <option value="">Seleccione un rol</option>
-                                                    <option value="1">Administrador</option>
-                                                    <option value="2">Jefe</option>
-                                                    <option value="3">Usuario</option>
+                                                  <select class="form-select" id="rol_id" required disabled>
+                                                    <!-- <option value="">Seleccione un rol</option> -->
+                                                    <option value="1">{{rol.nombre}}</option>
                                                   </select>
                                                   <div class="invalid-feedback">Seleccione un rol válido.</div>
                                                 </div>
 
                                                 <div class="col-md-6 mb-3">
                                                   <label for="parqueadero_id" class="form-label">Parqueadero</label>
-                                                  <input type="text" class="form-control" id="parqueadero_id" required>
+                                                  <input type="text" class="form-control text-dark" id="parqueadero_id" required>
                                                   <div class="invalid-feedback">El parqueadero es obligatorio.</div>
                                                 </div>
                                               </div>
