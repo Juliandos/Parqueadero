@@ -234,7 +234,8 @@
           ciudad: $("#ciudad").val(),
           direccion: $("#direccion").val(),
           rol_id: $("#rol_id").val(),
-          parqueadero_id: $("#parqueadero_id").val()
+          parqueadero_id: $("#parqueadero_id").val(),
+          cambio: true
         }),
         success: function () {
           Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
