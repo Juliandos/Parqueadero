@@ -12,9 +12,10 @@ from flask_principal import Principal, Permission, RoleNeed, Identity, Anonymous
 load_dotenv()
 db = SQLAlchemy()
 login = LoginManager()
-
-# Inicializar Flask-Principal
 principal = Principal()
+
+admin_permission = Permission(RoleNeed('Jefe'))
+user_permission = Permission(RoleNeed('Administrador'))
 
 def create_app():
     app = Flask(__name__)
@@ -34,19 +35,20 @@ def create_app():
     with app.app_context():
 
         from app.models import Usuario
-        
-        @identity_loaded.connect_via(app)
-        def on_identity_loaded(sender, identity):
-            """Carga los permisos del usuario autenticado."""
-            usuario = Usuario.query.get(identity.id)
-
-            if identity.id:
-                usuario = Usuario.query.get(identity.id)
-                if usuario:
-                    identity.provides.update(usuario.get_needs())
 
         db.create_all()
         # seed_initial_data()
+
+    @identity_loaded.connect_via(app)
+    def on_identity_loaded(sender, identity):
+        """Carga los permisos del usuario autenticado."""
+        usuario = Usuario.query.get(identity.id)
+
+        if identity.id:
+            usuario = Usuario.query.get(identity.id)
+            if usuario:
+                identity.provides.update(usuario.get_needs())
+
 
     from app.routes import routes  
     app.register_blueprint(routes)

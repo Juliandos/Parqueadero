@@ -15,21 +15,24 @@ bcrypt = Bcrypt()
 
 routes = Blueprint('routes', __name__)
 
+admin_permission = Permission(RoleNeed('Jefe'))
+user_permission = Permission(RoleNeed('Administrador'))
+
 info_template = {
     'titulo': 'Inicio',
     'nombre': 'Julian'
 }
 
-
-admin_permission = Permission(RoleNeed('Jefe'))
-user_permission = Permission(RoleNeed('Administrador'))
-
 @routes.route('/')
-@admin_permission.require(http_exception=403)
-# @user_permission.require(http_exception=403)
 @login_required
+# @user_permission.require(http_exception=403)
+# @admin_permission.require(http_exception=403)
 def index():
-    return render_template('index.html')
+    # Verificar si el usuario tiene al menos uno de los permisos
+    if admin_permission.can() or user_permission.can():
+        return render_template('index.html')
+    return "Acceso denegado", 403
+    # return render_template('index.html')
 
 # VehiculoTipo all
 @routes.route('/vehiculo_tipo')
@@ -1667,7 +1670,6 @@ def login_post():
         return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
     if user and bcrypt.check_password_hash(user.contrasena, password):  
-        print(f"Usuario Autenticado: {user.id}, Rol: {user.rol.nombre}")  # Debugging
         login_user(user)
 
         # Cambiar identidad en Flask-Principal
@@ -1690,6 +1692,7 @@ def logout():
     Solicita al usuario cerrar sesión y redirecciona a la página de inicio.
     """
     logout_user()
+    identity_changed.send(current_app._get_current_object(), identity=AnonymousIdentity())
     return redirect(url_for('routes.login_get'))
 
 # Register
