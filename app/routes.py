@@ -17,6 +17,7 @@ routes = Blueprint('routes', __name__)
 
 admin_permission = Permission(RoleNeed('Jefe'))
 user_permission = Permission(RoleNeed('Administrador'))
+operario_permission = Permission(RoleNeed('Operario'))
 
 info_template = {
     'titulo': 'Inicio',
@@ -25,14 +26,10 @@ info_template = {
 
 @routes.route('/')
 @login_required
-# @user_permission.require(http_exception=403)
-# @admin_permission.require(http_exception=403)
 def index():
-    # Verificar si el usuario tiene al menos uno de los permisos
-    if admin_permission.can() or user_permission.can():
+    if admin_permission.can() or user_permission.can() or operario_permission.can():
         return render_template('index.html')
     return "Acceso denegado", 403
-    # return render_template('index.html')
 
 # VehiculoTipo all
 @routes.route('/vehiculo_tipo')
