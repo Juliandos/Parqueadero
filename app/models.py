@@ -190,7 +190,7 @@ class Usuario(UserMixin, db.Model):
         """Devuelve las necesidades (permisos) del usuario basado en su rol."""
         needs = {UserNeed(self.id)}
         if self.rol:
-            needs.add(RoleNeed(self.rol.nombre))  # Asigna el rol como permiso
+            needs.add(RoleNeed(self.rol.nombre))
         return needs
     
 

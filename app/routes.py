@@ -25,6 +25,8 @@ admin_permission = Permission(RoleNeed('Jefe'))
 user_permission = Permission(RoleNeed('Administrador'))
 
 @routes.route('/')
+@admin_permission.require(http_exception=403)
+# @user_permission.require(http_exception=403)
 @login_required
 def index():
     return render_template('index.html')
@@ -39,6 +41,7 @@ def vehiculo_tipo():
 
 # VehiculoTipo DELETE
 @routes.route('/vehiculo_tipo/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_delete(id):
     tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
@@ -56,6 +59,7 @@ def vehiculo_tipo_delete(id):
 
 # VehiculoTipo CREATE
 @routes.route('/vehiculo_tipo/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_add():
     data = request.get_json()
@@ -70,6 +74,7 @@ def vehiculo_tipo_add():
 
 # VehiculoTipo EDIT
 @routes.route('/vehiculo_tipo/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_edit(id):
     data = request.get_json()
@@ -86,6 +91,7 @@ def vehiculo_tipo_edit(id):
 
 # TarifaTipo ALL
 @routes.route('/tarifa_tipo', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo():
     tarifas_tipo = TarifaTipo.query.all()
@@ -93,6 +99,7 @@ def tarifa_tipo():
 
 # TarifaTipo CREATE
 @routes.route('/tarifa_tipo/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_add():
     data = request.get_json()
@@ -108,6 +115,7 @@ def tarifa_tipo_add():
 
 # TarifaTipo UPDATE
 @routes.route('/tarifa_tipo/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_update(id):
     data = request.get_json()
@@ -125,6 +133,7 @@ def tarifa_tipo_update(id):
 
 # TarifaTipo DELETE
 @routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_delete(id):
     tarifa_tipo = TarifaTipo.query.get_or_404(id)
@@ -138,6 +147,7 @@ def tarifa_tipo_delete(id):
 
 # MedioPago ALL
 @routes.route('/medio_pago', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def medio_pago():
     medios_pagos = MedioPago.query.all()
@@ -145,6 +155,7 @@ def medio_pago():
 
 # MedioPago CREATE
 @routes.route('/medio_pago/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def add_medio_pago():
     data = request.get_json()
@@ -159,6 +170,7 @@ def add_medio_pago():
 
 # MedioPago UPDATE
 @routes.route('/medio_pago/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def update_medio_pago(id):
     data = request.get_json()
@@ -174,6 +186,7 @@ def update_medio_pago(id):
 
 # MedioPago DELETE
 @routes.route('/medio_pago/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def delete_medio_pago(id):
     medio_pago = MedioPago.query.get_or_404(id)
@@ -187,6 +200,7 @@ def delete_medio_pago(id):
 
 # Cliente ALL
 @routes.route('/cliente', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def cliente():
     clientes = Cliente.query.join(Parqueadero).add_columns(
@@ -212,6 +226,7 @@ def cliente():
 
 # Cliente CREATE
 @routes.route('/cliente/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def add_cliente():
     data = request.get_json()
@@ -233,6 +248,7 @@ def add_cliente():
 
 # Cliente UPDATE
 @routes.route('/cliente/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def update_cliente(id):
     data = request.get_json()
@@ -261,6 +277,7 @@ def update_cliente(id):
 
 # Cliente DELETE
 @routes.route('/cliente/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def delete_cliente(id):
     cliente = Cliente.query.get_or_404(id)
@@ -274,6 +291,7 @@ def delete_cliente(id):
 
 # Rol ALL
 @routes.route('/rol', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def rol():
     roles = Rol.query.all()
@@ -281,6 +299,7 @@ def rol():
 
 # Rol CREATE
 @routes.route('/rol/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def add_rol():
     data = request.get_json()
@@ -295,6 +314,7 @@ def add_rol():
 
 # Rol UPDATE
 @routes.route('/rol/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def update_rol(id):
     data = request.get_json()
@@ -310,6 +330,7 @@ def update_rol(id):
 
 # Rol DELETE
 @routes.route('/rol/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def delete_rol(id):
     rol = Rol.query.get_or_404(id)
@@ -323,6 +344,7 @@ def delete_rol(id):
 
 # Usuario ALL
 @routes.route('/usuario', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def usuario():
     usuarios = Usuario.query.join(Rol).add_columns(
@@ -365,6 +387,7 @@ def usuario():
 
 # Usuario CREATE
 @routes.route('/usuario/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def add_usuario():
     data = request.get_json()
@@ -441,6 +464,7 @@ def add_usuario():
 
 # Usuario UPDATE
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def update_usuario(id):
     data = request.get_json()
@@ -518,6 +542,7 @@ def update_usuario(id):
 
 # Usuario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def delete_usuario(id):
     usuario = Usuario.query.get_or_404(id)
@@ -561,6 +586,7 @@ def delete_usuario(id):
 
 # Vehículo ALL
 @routes.route('/vehiculo', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def vehiculo():
     vehiculos = Vehiculo.query \
@@ -596,6 +622,7 @@ def vehiculo():
 
 # Vehículo CREATE
 @routes.route('/vehiculo/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def add_vehiculo():
     data = request.get_json()
@@ -618,6 +645,7 @@ def add_vehiculo():
 
 # Vehiculo UPDATE
 @routes.route('/vehiculo/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def update_vehiculo(id):
     data = request.get_json()
@@ -642,6 +670,7 @@ def update_vehiculo(id):
 
 # Vehículo DELETE
 @routes.route('/vehiculo/delete/<string:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def delete_vehiculo(id):
     vehiculo = Vehiculo.query.get_or_404(id)
@@ -655,6 +684,7 @@ def delete_vehiculo(id):
 
 # Tarifa ALL
 @routes.route('/tarifa', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def tarifa():
     tarifas = Tarifa.query \
@@ -687,6 +717,7 @@ def tarifa():
 
 # Tarifa CREATE
 @routes.route('/tarifa/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def add_tarifa():
     data = request.get_json()
@@ -707,6 +738,7 @@ def add_tarifa():
 
 # Tarifa UPDATE
 @routes.route('/tarifa/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def update_tarifa(id):
     data = request.get_json()
@@ -729,6 +761,7 @@ def update_tarifa(id):
 
 # Tarifa DELETE
 @routes.route('/tarifa/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def delete_tarifa(id):
     tarifa = Tarifa.query.get_or_404(id)
@@ -742,6 +775,7 @@ def delete_tarifa(id):
 
 # Parqueo ALL
 @routes.route('/parqueo', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def parqueo():
     parqueos = Parqueo.query \
@@ -787,6 +821,7 @@ def parqueo():
 
 # Parqueo CREATE
 @routes.route('/parqueo/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_parqueo():
     data = request.get_json()
@@ -813,6 +848,7 @@ def agregar_parqueo():
 
 # Parqueo UPDATE
 @routes.route('/parqueo/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_parqueo(id):
     data = request.get_json()
@@ -834,6 +870,7 @@ def actualizar_parqueo(id):
 
 # Parqueo DELETE
 @routes.route('/parqueo/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_parqueo(id):
     parqueo = Parqueo.query.get_or_404(id)
@@ -847,6 +884,7 @@ def eliminar_parqueo(id):
 
 # Arrendamiento ALL
 @routes.route('/arrendamiento', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def arrendamiento():
     arrendamientos = Arrendamiento.query \
@@ -892,6 +930,7 @@ def arrendamiento():
 
 # Arrendamiento CREATE
 @routes.route('/arrendamiento/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_arrendamiento():
     data = request.get_json()
@@ -916,6 +955,7 @@ def agregar_arrendamiento():
 
 # Arrendamiento UPDATE
 @routes.route('/arrendamiento/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_arrendamiento(id):
     data = request.get_json()
@@ -936,6 +976,7 @@ def actualizar_arrendamiento(id):
 
 # Arrendamiento DELETE
 @routes.route('/arrendamiento/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_arrendamiento(id):
     arrendamiento = Arrendamiento.query.get_or_404(id)
@@ -949,6 +990,7 @@ def eliminar_arrendamiento(id):
 
 # Modulo ALL
 @routes.route('/modulo', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def modulo():
     modulos = Modulo.query \
@@ -984,6 +1026,7 @@ def modulo():
 
 # Modulo CREATE
 @routes.route('/modulo/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_modulo():
     data = request.get_json()
@@ -1008,6 +1051,7 @@ def agregar_modulo():
 
 # Modulo UPDATE
 @routes.route('/modulo/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_modulo(id):
     data = request.get_json()
@@ -1024,6 +1068,7 @@ def actualizar_modulo(id):
 
 # Modulo DELETE
 @routes.route('/modulo/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_modulo(id):
     modulo = Modulo.query.get_or_404(id)
@@ -1037,6 +1082,7 @@ def eliminar_modulo(id):
 
 # Sede ALL
 @routes.route('/sede', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def sede():
     sedes = Sede.query \
@@ -1082,6 +1128,7 @@ def sede():
 
 # Sede CREATE
 @routes.route('/sede/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_sede():
     data = request.get_json()
@@ -1106,6 +1153,7 @@ def agregar_sede():
 
 # Sede UPDATE
 @routes.route('/sede/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_sede(id):
     data = request.get_json()
@@ -1125,6 +1173,7 @@ def actualizar_sede(id):
 
 # Sede DELETE
 @routes.route('/sede/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_sede(id):
     sede = Sede.query.get_or_404(id)
@@ -1138,6 +1187,7 @@ def eliminar_sede(id):
 
 # Pais ALL
 @routes.route('/pais', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def pais():
     paises = Pais.query.all()
@@ -1155,6 +1205,7 @@ def pais():
 
 # Pais CREATE
 @routes.route('/pais/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_pais():
     data = request.get_json()
@@ -1172,6 +1223,7 @@ def agregar_pais():
 
 # Pais UPDATE
 @routes.route('/pais/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_pais(id):
     data = request.get_json()
@@ -1185,6 +1237,7 @@ def actualizar_pais(id):
 
 # Pais DELETE
 @routes.route('/pais/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_pais(id):
     pais = Pais.query.get_or_404(id)
@@ -1198,6 +1251,7 @@ def eliminar_pais(id):
 
 # Periodicidad ALL
 @routes.route('/periodicidad', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def periodicidad():
     periodicidades = Periodicidad.query.all()
@@ -1216,6 +1270,7 @@ def periodicidad():
 
 # Periodicidad CREATE
 @routes.route('/periodicidad/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_periodicidad():
     data = request.get_json()
@@ -1234,6 +1289,7 @@ def agregar_periodicidad():
 
 # Periodicidad UPDATE
 @routes.route('/periodicidad/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_periodicidad(id):
     data = request.get_json()
@@ -1248,6 +1304,7 @@ def actualizar_periodicidad(id):
 
 # Periodicidad DELETE
 @routes.route('/periodicidad/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_periodicidad(id):
     periodicidad = Periodicidad.query.get_or_404(id)
@@ -1261,6 +1318,7 @@ def eliminar_periodicidad(id):
 
 # Puntos ALL
 @routes.route('/puntos')
+@admin_permission.require(http_exception=403)
 @login_required
 def puntos():
     puntos = Punto.query.join(Cliente).add_columns(
@@ -1284,6 +1342,7 @@ def puntos():
 
 # Puntos CREATE
 @routes.route('/punto/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_punto():
     data = request.get_json()
@@ -1306,6 +1365,7 @@ def agregar_punto():
 
 # Puntos UPDATE
 @routes.route('/punto/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_punto(id):
     data = request.get_json()
@@ -1320,6 +1380,7 @@ def actualizar_punto(id):
 
 # Puntos DELETE
 @routes.route('/punto/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_punto(id):
     punto = Punto.query.get_or_404(id)
@@ -1333,6 +1394,7 @@ def eliminar_punto(id):
 
 # Redimir ALL
 @routes.route('/redimir')
+@admin_permission.require(http_exception=403)
 @login_required
 def redimir():
     redenciones = Redimir.query.join(Punto).add_columns(
@@ -1358,6 +1420,7 @@ def redimir():
 
 # Redimir CREATE
 @routes.route('/redimir/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_redencion():
     data = request.get_json()
@@ -1378,6 +1441,7 @@ def agregar_redencion():
 
 # Redimir UPDATE
 @routes.route('/redimir/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_redencion(id):
     data = request.get_json()
@@ -1391,6 +1455,7 @@ def actualizar_redencion(id):
 
 # Redimir DELETE
 @routes.route('/redimir/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_redencion(id):
     redimir = Redimir.query.get_or_404(id)
@@ -1404,6 +1469,7 @@ def eliminar_redencion(id):
 
 # Parqueadero ALL
 @routes.route('/parqueadero', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def parqueadero():
     parqueaderos = Parqueadero.query \
@@ -1463,6 +1529,7 @@ def parqueadero():
 
 # Parqueadero CREATE
 @routes.route('/parqueadero/add', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def agregar_parqueadero():
     data = request.get_json()
@@ -1503,6 +1570,7 @@ def agregar_parqueadero():
 
 # Parqueadero UPDATE
 @routes.route('/parqueadero/edit/<int:id>', methods=['PUT'])
+@admin_permission.require(http_exception=403)
 @login_required
 def actualizar_parqueadero(id):
     data = request.get_json()
@@ -1538,6 +1606,7 @@ def actualizar_parqueadero(id):
 
 # Parqueadero DELETE
 @routes.route('/parqueadero/delete/<int:id>', methods=['POST'])
+@admin_permission.require(http_exception=403)
 @login_required
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
@@ -1631,6 +1700,7 @@ def register():
 
 # Información de perfil
 @routes.route('/profile_info', methods=['GET'])
+@admin_permission.require(http_exception=403)
 @login_required
 def profile_info():
 

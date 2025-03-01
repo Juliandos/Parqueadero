@@ -28,11 +28,6 @@ def create_app():
 
     # principal = Principal(app)
     principal.init_app(app)
-    
-
-    # Definir permisos por rol
-    admin_permission = Permission(RoleNeed('Jefe'))
-    user_permission = Permission(RoleNeed('Administrador'))
 
     from app import models
 
@@ -43,13 +38,11 @@ def create_app():
         @identity_loaded.connect_via(app)
         def on_identity_loaded(sender, identity):
             """Carga los permisos del usuario autenticado."""
-            print(f"Identity Loaded: {identity.id}")  # Debugging
-
             usuario = Usuario.query.get(identity.id)
+
             if identity.id:
                 usuario = Usuario.query.get(identity.id)
                 if usuario:
-                    print(f"Asignando permisos a {usuario.nombres} con rol {usuario.rol.nombre}")
                     identity.provides.update(usuario.get_needs())
 
         db.create_all()
