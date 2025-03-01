@@ -13,6 +13,8 @@ load_dotenv()
 db = SQLAlchemy()
 login = LoginManager()
 
+# Inicializar Flask-Principal
+principal = Principal()
 
 def create_app():
     app = Flask(__name__)
@@ -24,19 +26,32 @@ def create_app():
     login.init_app(app)
     login.login_view = 'routes.login_get'
 
-    principal = Principal(app)
+    # principal = Principal(app)
+    principal.init_app(app)
     
-    # Definir necesidades de rol
-    admin_role = RoleNeed('admin')
-    user_role = RoleNeed('user')
 
-    # Crear permisos basados en roles
-    admin_permission = Permission(admin_role)
-    user_permission = Permission(user_role)
+    # Definir permisos por rol
+    admin_permission = Permission(RoleNeed('Jefe'))
+    user_permission = Permission(RoleNeed('Administrador'))
 
     from app import models
 
     with app.app_context():
+
+        from app.models import Usuario
+        
+        @identity_loaded.connect_via(app)
+        def on_identity_loaded(sender, identity):
+            """Carga los permisos del usuario autenticado."""
+            print(f"Identity Loaded: {identity.id}")  # Debugging
+
+            usuario = Usuario.query.get(identity.id)
+            if identity.id:
+                usuario = Usuario.query.get(identity.id)
+                if usuario:
+                    print(f"Asignando permisos a {usuario.nombres} con rol {usuario.rol.nombre}")
+                    identity.provides.update(usuario.get_needs())
+
         db.create_all()
         # seed_initial_data()
 

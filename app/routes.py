@@ -8,6 +8,8 @@ from app import db
 from flask_bcrypt import Bcrypt
 from sqlalchemy import select
 from flask_login import login_required, login_user, current_user, logout_user
+from flask_principal import Identity, AnonymousIdentity, identity_changed
+from flask_principal import Permission, RoleNeed
 
 bcrypt = Bcrypt()
 
@@ -18,6 +20,10 @@ info_template = {
     'nombre': 'Julian'
 }
 
+
+admin_permission = Permission(RoleNeed('Jefe'))
+user_permission = Permission(RoleNeed('Administrador'))
+
 @routes.route('/')
 @login_required
 def index():
@@ -25,6 +31,7 @@ def index():
 
 # VehiculoTipo all
 @routes.route('/vehiculo_tipo')
+@admin_permission.require(http_exception=403)  # Solo accesible para usuarios
 @login_required
 def vehiculo_tipo():
     tipos_vehiculo = VehiculoTipo.query.all()
@@ -1590,9 +1597,12 @@ def login_post():
     if user is None:
         return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
-    if bcrypt.check_password_hash(user.contrasena, password):  
-        print("Pasamos")
+    if user and bcrypt.check_password_hash(user.contrasena, password):  
+        print(f"Usuario Autenticado: {user.id}, Rol: {user.rol.nombre}")  # Debugging
         login_user(user)
+
+        # Cambiar identidad en Flask-Principal
+        identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
 
         next_param = next_param.lstrip('/')
 
@@ -1602,7 +1612,7 @@ def login_post():
             return jsonify({"success": True, "redirect": url_for('routes.index')})
     
     return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
-        
+
 # Logout user
 @routes.route('/logout')
 # @login_required   

@@ -2,6 +2,7 @@ from app import db
 from datetime import datetime
 from flask_login import UserMixin
 from app import login as login_manager
+from flask_principal import RoleNeed, UserNeed, Identity
 
 
 def current_time():
@@ -179,8 +180,19 @@ class Usuario(UserMixin, db.Model):
     updated_at = db.Column(db.DateTime, default=current_time, onupdate=current_time)
     rol_id = db.Column(db.Integer, db.ForeignKey('rol.id'), nullable=False)
 
+    # Relación con Rol (corregida)
+    rol = db.relationship('Rol', backref='usuarios')
+
     # Relación N:M con Parqueadero (cambiada desde 1:N)
     parqueaderos = db.relationship('Parqueadero', secondary=parqueadero_usuario, back_populates='usuarios')
+
+    def get_needs(self):
+        """Devuelve las necesidades (permisos) del usuario basado en su rol."""
+        needs = {UserNeed(self.id)}
+        if self.rol:
+            needs.add(RoleNeed(self.rol.nombre))  # Asigna el rol como permiso
+        return needs
+    
 
 @login_manager.user_loader
 def load_user(id):
