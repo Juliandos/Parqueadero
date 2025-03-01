@@ -115,7 +115,7 @@
                                               </div>
                                             </div>
 
-                                            <button type="submit" class="btn btn-primary">Guardar</button>
+                                            <button type="submit" class="btn btn-primary" disabled>Guardar</button> <!-- (***) Botón deshabilitado inicialmente -->
                                           </form>
                                         </div>
                                       </div>
@@ -134,35 +134,79 @@
               <!-- End Dashboard Inner -->
             </div>
           </div>
-
-
         </div>
       </div>
     </section>
     <!-- End sherah Dashboard -->
-
   </div>
 </body>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("UsuarioForm");
 
+    // (***) Guardar los valores iniciales del formulario
+    const initialValues = {
+        documento: document.getElementById("documento").value,
+        contrasena: document.getElementById("contrasena").value,
+        nombres: document.getElementById("nombres").value,
+        apellidos: document.getElementById("apellidos").value,
+        telefono: document.getElementById("telefono").value,
+        email: document.getElementById("email").value,
+        ciudad: document.getElementById("ciudad").value,
+        direccion: document.getElementById("direccion").value,
+        rol_id: document.getElementById("rol_id").value,
+        parqueadero_id: document.getElementById("parqueadero_id").value,
+    };
+
+    // (***) Función para verificar cambios en el formulario
+    function checkFormChanges() {
+        const currentValues = {
+            documento: document.getElementById("documento").value,
+            contrasena: document.getElementById("contrasena").value,
+            nombres: document.getElementById("nombres").value,
+            apellidos: document.getElementById("apellidos").value,
+            telefono: document.getElementById("telefono").value,
+            email: document.getElementById("email").value,
+            ciudad: document.getElementById("ciudad").value,
+            direccion: document.getElementById("direccion").value,
+            rol_id: document.getElementById("rol_id").value,
+            parqueadero_id: document.getElementById("parqueadero_id").value,
+        };
+
+        const hasChanges = Object.keys(initialValues).some(
+            key => initialValues[key] !== currentValues[key]
+        );
+
+        const submitButton = document.querySelector("#UsuarioForm button[type='submit']");
+        submitButton.disabled = !hasChanges;
+    }
+
+    form.querySelectorAll("input, select").forEach(element => {
+        element.addEventListener("input", checkFormChanges);
+        element.addEventListener("change", checkFormChanges);
+    });
+
+    checkFormChanges();
+
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        // Obtener el action del formulario
+        // Verificar si hay cambios antes de enviar
+        const hasChanges = Object.keys(initialValues).some(
+            key => initialValues[key] !== document.getElementById(key).value
+        );
+
+        if (!hasChanges) {
+            Swal.fire("Advertencia", "No se han realizado cambios", "warning");
+            return;
+        }
+
         const action = form.getAttribute("data-action");
         const usuarioId = document.getElementById("UsuarioId").value;
         const url = action === "edit" ? `/usuario/edit/${usuarioId}` : "/usuario/add";
         const method = action === "edit" ? "PUT" : "POST";
 
-        // Obtener los valores actuales de los campos que NO deben cambiar
-        const documento = document.getElementById("documento").value;
-        const contrasena = document.getElementById("contrasena").value;
-        const rol_id = document.getElementById("rol_id").value;
-        const parqueadero_id = document.getElementById("parqueadero_id").value; // Obtener el ID del parqueadero
-
-        // Captura solo los datos que pueden modificarse
         const formData = {
             nombres: document.getElementById("nombres").value,
             apellidos: document.getElementById("apellidos").value,
@@ -172,32 +216,29 @@
             direccion: document.getElementById("direccion").value,
         };
 
-        // Si es una edición, conservar los valores originales de los campos no modificables
         if (action === "edit") {
-            formData.documento = documento;
-            formData.contrasena = contrasena;
-            formData.rol_id = rol_id;
-            formData.parqueadero_id = parqueadero_id; // Usar el ID del parqueadero
-            formData.cambio = false;
+            formData.documento = document.getElementById("documento").value;
+            formData.contrasena = document.getElementById("contrasena").value;
+            formData.rol_id = document.getElementById("rol_id").value;
+            formData.parqueadero_id = document.getElementById("parqueadero_id").value;
         }
 
-        console.log(formData);
-
         $.ajax({
-          url: url,
-          type: method,
-          contentType: "application/json",
-          data: JSON.stringify(formData),
-          success: function () {
-            Swal.fire("Éxito", "Usuario actualizado correctamente", "success").then(() => location.reload());
-          },
-          error: function (jqXHR) {
-            let response = jqXHR.responseJSON;
-            let message = response && response.message ? response.message : "Error desconocido";
-            Swal.fire("Error", message, "error");
-          }
+            url: url,
+            type: method,
+            contentType: "application/json",
+            data: JSON.stringify(formData),
+            success: function () {
+                Swal.fire("Éxito", "Usuario actualizado correctamente", "success").then(() => location.reload());
+            },
+            error: function (jqXHR) {
+                let response = jqXHR.responseJSON;
+                let message = response && response.message ? response.message : "Error desconocido";
+                Swal.fire("Error", message, "error");
+            }
         });
     });
-});</script>
+});
+</script>
 
 {% endblock %}

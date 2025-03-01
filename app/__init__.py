@@ -5,6 +5,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from dotenv import load_dotenv
+from flask_principal import Principal, Permission, RoleNeed, Identity, AnonymousIdentity, identity_changed, identity_loaded
 
 # from flask_migrate import Migrate
 
@@ -23,6 +24,15 @@ def create_app():
     login.init_app(app)
     login.login_view = 'routes.login_get'
 
+    principal = Principal(app)
+    
+    # Definir necesidades de rol
+    admin_role = RoleNeed('admin')
+    user_role = RoleNeed('user')
+
+    # Crear permisos basados en roles
+    admin_permission = Permission(admin_role)
+    user_permission = Permission(user_role)
 
     from app import models
 
