@@ -314,7 +314,7 @@ def delete_rol(id):
     
     return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
-# Usiario ALL
+# Usuario ALL
 @routes.route('/usuario', methods=['GET'])
 @login_required
 def usuario():
@@ -356,7 +356,7 @@ def usuario():
         roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict
     )
 
-# Usiario CREATE
+# Usuario CREATE
 @routes.route('/usuario/add', methods=['POST'])
 @login_required
 def add_usuario():
@@ -432,7 +432,7 @@ def add_usuario():
 
     return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
 
-# Usiario UPDATE
+# Usuario UPDATE
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
 @login_required
 def update_usuario(id):
@@ -448,6 +448,7 @@ def update_usuario(id):
     rol_id = data.get('rol_id')
     parqueadero_id = data.get('parqueadero_id')
     cambio = data.get('cambio')
+    print(data)
     
     if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
         return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
@@ -482,7 +483,7 @@ def update_usuario(id):
 
     usuario = Usuario.query.get_or_404(id)
 
-    if contrasena:
+    if contrasena and not contrasena.startswith("$2b$"):
         usuario.contrasena = bcrypt.generate_password_hash(contrasena)
 
     usuario.documento = documento
@@ -508,8 +509,7 @@ def update_usuario(id):
     
     return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
 
-
-# Usiario DELETE
+# Usuario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_usuario(id):
@@ -1585,11 +1585,13 @@ def login_post():
         return jsonify({'success': False, 'message': 'Los campos email y contraseña son obligatorios'}), 400
 
     user = Usuario.query.filter_by(email=email).first()
+    print(email, user)
 
     if user is None:
         return jsonify({'success': False, 'message': 'Usuario o contraseña incorrectos'}), 400
 
     if bcrypt.check_password_hash(user.contrasena, password):  
+        print("Pasamos")
         login_user(user)
 
         next_param = next_param.lstrip('/')
