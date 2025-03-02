@@ -484,7 +484,6 @@ def update_usuario(id):
         rol_id = data.get('rol_id')
         parqueadero_id = data.get('parqueadero_id')
         acceso = data.get('acceso')
-        print(data)
         
         if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
             return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
@@ -552,33 +551,39 @@ def update_usuario(id):
 @jefe_permission.require(http_exception=403)
 @login_required
 def delete_usuario(id):
-    usuario = Usuario.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        usuario = Usuario.query.get_or_404(id)
 
-    # Validar si hay sedes asociadas
-    if Sede.query.filter_by(usuario_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
-    
-    if request.form.get('_method') == 'DELETE':
-        try:
-            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
-            db.session.commit()
+        # Validar si hay sedes asociadas
+        if Sede.query.filter_by(usuario_id=id).first():
+            return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
+        if usuario.rol_id == 1 and current_user.id == 2:
+            return jsonify({'success': False, 'message': 'No se puede eliminar: Este usuario es el Jefe de la empresa'}), 400
 
-            # Eliminar el usuario
-            db.session.delete(usuario)
-            db.session.commit()
-
-            # Verificar si realmente se eliminó
-            check = Usuario.query.get(id)
-            if check:
-                return jsonify({'success': False, 'message': 'Error: El usuario no se eliminó correctamente'}), 500
-
-            return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
         
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
+        if request.form.get('_method') == 'DELETE':
+            try:
+                db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+                db.session.commit()
 
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+                # Eliminar el usuario
+                db.session.delete(usuario)
+                db.session.commit()
+
+                # Verificar si realmente se eliminó
+                check = Usuario.query.get(id)
+                if check:
+                    return jsonify({'success': False, 'message': 'Error: El usuario no se eliminó correctamente'}), 500
+
+                return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+            
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
+
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
 
     # if request.form.get('_method') == 'DELETE':
     #     db.session.delete(usuario)
