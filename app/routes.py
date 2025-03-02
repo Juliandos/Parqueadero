@@ -15,9 +15,11 @@ bcrypt = Bcrypt()
 
 routes = Blueprint('routes', __name__)
 
-admin_permission = Permission(RoleNeed('Jefe'))
-user_permission = Permission(RoleNeed('Administrador'))
+jefe_permission = Permission(RoleNeed('Jefe'))
+admin_permission = Permission(RoleNeed('Administrador'))
 operario_permission = Permission(RoleNeed('Operario'))
+aseo_permission = Permission(RoleNeed('Aseo'))
+seguridad_permission = Permission(RoleNeed('Seguridad'))
 
 info_template = {
     'titulo': 'Inicio',
@@ -27,13 +29,13 @@ info_template = {
 @routes.route('/')
 @login_required
 def index():
-    if admin_permission.can() or user_permission.can() or operario_permission.can():
+    if jefe_permission.can() or admin_permission.can() or operario_permission.can():
         return render_template('index.html')
     return "Acceso denegado", 403
 
 # VehiculoTipo all
 @routes.route('/vehiculo_tipo')
-@admin_permission.require(http_exception=403)  # Solo accesible para usuarios
+@jefe_permission.require(http_exception=403)  # Solo accesible para usuarios
 @login_required
 def vehiculo_tipo():
     tipos_vehiculo = VehiculoTipo.query.all()
@@ -41,7 +43,7 @@ def vehiculo_tipo():
 
 # VehiculoTipo DELETE
 @routes.route('/vehiculo_tipo/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_delete(id):
     tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
@@ -59,7 +61,7 @@ def vehiculo_tipo_delete(id):
 
 # VehiculoTipo CREATE
 @routes.route('/vehiculo_tipo/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_add():
     data = request.get_json()
@@ -74,7 +76,7 @@ def vehiculo_tipo_add():
 
 # VehiculoTipo EDIT
 @routes.route('/vehiculo_tipo/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_edit(id):
     data = request.get_json()
@@ -91,7 +93,7 @@ def vehiculo_tipo_edit(id):
 
 # TarifaTipo ALL
 @routes.route('/tarifa_tipo', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo():
     tarifas_tipo = TarifaTipo.query.all()
@@ -99,7 +101,7 @@ def tarifa_tipo():
 
 # TarifaTipo CREATE
 @routes.route('/tarifa_tipo/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_add():
     data = request.get_json()
@@ -115,7 +117,7 @@ def tarifa_tipo_add():
 
 # TarifaTipo UPDATE
 @routes.route('/tarifa_tipo/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_update(id):
     data = request.get_json()
@@ -133,7 +135,7 @@ def tarifa_tipo_update(id):
 
 # TarifaTipo DELETE
 @routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_delete(id):
     tarifa_tipo = TarifaTipo.query.get_or_404(id)
@@ -147,7 +149,7 @@ def tarifa_tipo_delete(id):
 
 # MedioPago ALL
 @routes.route('/medio_pago', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def medio_pago():
     medios_pagos = MedioPago.query.all()
@@ -155,7 +157,7 @@ def medio_pago():
 
 # MedioPago CREATE
 @routes.route('/medio_pago/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def add_medio_pago():
     data = request.get_json()
@@ -170,7 +172,7 @@ def add_medio_pago():
 
 # MedioPago UPDATE
 @routes.route('/medio_pago/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def update_medio_pago(id):
     data = request.get_json()
@@ -186,7 +188,7 @@ def update_medio_pago(id):
 
 # MedioPago DELETE
 @routes.route('/medio_pago/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def delete_medio_pago(id):
     medio_pago = MedioPago.query.get_or_404(id)
@@ -200,7 +202,7 @@ def delete_medio_pago(id):
 
 # Cliente ALL
 @routes.route('/cliente', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def cliente():
     clientes = Cliente.query.join(Parqueadero).add_columns(
@@ -226,7 +228,7 @@ def cliente():
 
 # Cliente CREATE
 @routes.route('/cliente/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def add_cliente():
     data = request.get_json()
@@ -248,7 +250,7 @@ def add_cliente():
 
 # Cliente UPDATE
 @routes.route('/cliente/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def update_cliente(id):
     data = request.get_json()
@@ -277,7 +279,7 @@ def update_cliente(id):
 
 # Cliente DELETE
 @routes.route('/cliente/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def delete_cliente(id):
     cliente = Cliente.query.get_or_404(id)
@@ -291,7 +293,7 @@ def delete_cliente(id):
 
 # Rol ALL
 @routes.route('/rol', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def rol():
     roles = Rol.query.all()
@@ -299,7 +301,7 @@ def rol():
 
 # Rol CREATE
 @routes.route('/rol/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def add_rol():
     data = request.get_json()
@@ -314,7 +316,7 @@ def add_rol():
 
 # Rol UPDATE
 @routes.route('/rol/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def update_rol(id):
     data = request.get_json()
@@ -330,7 +332,7 @@ def update_rol(id):
 
 # Rol DELETE
 @routes.route('/rol/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def delete_rol(id):
     rol = Rol.query.get_or_404(id)
@@ -344,205 +346,210 @@ def delete_rol(id):
 
 # Usuario ALL
 @routes.route('/usuario', methods=['GET'])
-@admin_permission.require(http_exception=403)
+# @jefe_permission.require(http_exception=403)
 @login_required
 def usuario():
-    usuarios = Usuario.query.join(Rol).add_columns(
-        Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, 
-        Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, 
-        Usuario.direccion, Rol.nombre.label('rol_nombre')
-    ).all()
+    if jefe_permission.can() or admin_permission.can():
+        usuarios = Usuario.query.join(Rol).add_columns(
+            Usuario.id, Usuario.documento, Usuario.contrasena, Usuario.nombres, 
+            Usuario.apellidos, Usuario.telefono, Usuario.email, Usuario.ciudad, 
+            Usuario.direccion, Rol.nombre.label('rol_nombre')
+        ).all()
 
-    roles = Rol.query.order_by(Rol.id).all()
-    parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()
+        roles = Rol.query.order_by(Rol.id).all()
+        parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()
 
-    asociaciones = db.session.execute(
-        select(parqueadero_usuario)
-    ).fetchall()
+        asociaciones = db.session.execute(
+            select(parqueadero_usuario)
+        ).fetchall()
 
-    asociaciones_dict = {row[1]: row[0] for row in asociaciones}  # {usuario_id: parqueadero_id}
-    parqueaderos_dict = {p.id: p.nombre for p in parqueaderos}  # {parqueadero_id: nombre}
+        asociaciones_dict = {row[1]: row[0] for row in asociaciones}  # {usuario_id: parqueadero_id}
+        parqueaderos_dict = {p.id: p.nombre for p in parqueaderos}  # {parqueadero_id: nombre}
 
-    usuarios_dict = [
-        {
-            "id": u.id,
-            "documento": u.documento,
-            "contrasena": u.contrasena.decode() if isinstance(u.contrasena, bytes) else u.contrasena,
-            "nombres": u.nombres,
-            "apellidos": u.apellidos,
-            "telefono": u.telefono,
-            "email": u.email,
-            "ciudad": u.ciudad,
-            "direccion": u.direccion,
-            "rol_nombre": u.rol_nombre,
-            "parqueadero_nombre": parqueaderos_dict.get(asociaciones_dict.get(u.id), "No asignado")
-        }
-        for u in usuarios
-    ]
+        usuarios_dict = [
+            {
+                "id": u.id,
+                "documento": u.documento,
+                "contrasena": u.contrasena.decode() if isinstance(u.contrasena, bytes) else u.contrasena,
+                "nombres": u.nombres,
+                "apellidos": u.apellidos,
+                "telefono": u.telefono,
+                "email": u.email,
+                "ciudad": u.ciudad,
+                "direccion": u.direccion,
+                "rol_nombre": u.rol_nombre,
+                "parqueadero_nombre": parqueaderos_dict.get(asociaciones_dict.get(u.id), "No asignado")
+            }
+            for u in usuarios
+        ]
 
-    return render_template(
-        'usuario.html', titulo='Usuarios', usuarios=usuarios_dict, 
-        roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict
-    )
+        return render_template(
+            'usuario.html', titulo='Usuarios', usuarios=usuarios_dict, 
+            roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict, current_user_id=current_user.id
+        )
 
 # Usuario CREATE
 @routes.route('/usuario/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+# @jefe_permission.require(http_exception=403)
 @login_required
 def add_usuario():
-    data = request.get_json()
-    documento = data.get('documento')
-    contrasena = data.get('contrasena')
-    nombres = data.get('nombres')
-    apellidos = data.get('apellidos')
-    telefono = data.get('telefono')
-    email = data.get('email')
-    ciudad = data.get('ciudad')
-    direccion = data.get('direccion')
-    rol_id = data.get('rol_id')
-    parqueadero_id = data.get('parqueadero_id')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        documento = data.get('documento')
+        contrasena = data.get('contrasena')
+        nombres = data.get('nombres')
+        apellidos = data.get('apellidos')
+        telefono = data.get('telefono')
+        email = data.get('email')
+        ciudad = data.get('ciudad')
+        direccion = data.get('direccion')
+        rol_id = data.get('rol_id')
+        parqueadero_id = data.get('parqueadero_id')
 
-    rol_id = int(rol_id)
+        rol_id = int(rol_id)
 
-    if not all([documento, contrasena, nombres, apellidos, telefono, email, ciudad, direccion, rol_id]):
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        if not all([documento, contrasena, nombres, apellidos, telefono, email, ciudad, direccion, rol_id]):
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-    # Validar la contraseña antes de hashearla
-    if not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', contrasena):
-        return jsonify({'success': False, 'message': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial'}), 400
-    
-    # Hashear la contraseña solo si es válida
-    contrasena = bcrypt.generate_password_hash(contrasena)
-    
-    # Obtener los IDs de los roles
-    rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
-    rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
+        # Validar la contraseña antes de hashearla
+        if not re.match(r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', contrasena):
+            return jsonify({'success': False, 'message': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial'}), 400
+        
+        # Hashear la contraseña solo si es válida
+        contrasena = bcrypt.generate_password_hash(contrasena)
+        
+        # Obtener los IDs de los roles
+        rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
+        rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
-    print("rol_jefe_id: ", rol_jefe_id, "rol_admin: ", rol_admin_id, "rol_id: ", rol_id)
+        print("rol_jefe_id: ", rol_jefe_id, "rol_admin: ", rol_admin_id, "rol_id: ", rol_id)
 
-    # Validar si el usuario que se está creando es Jefe
-    if rol_id == rol_jefe_id:
-        usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
-            parqueadero_usuario.c.parqueadero_id == parqueadero_id,
-            Usuario.rol_id == rol_jefe_id
-        ).first()
+        # Validar si el usuario que se está creando es Jefe
+        if rol_id == rol_jefe_id:
+            usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
+                parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+                Usuario.rol_id == rol_jefe_id
+            ).first()
 
-        if usuario_jefe_existente:
-            return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
+            if usuario_jefe_existente:
+                return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
 
-    # Validar si el usuario que se está creando es Administrador
-    if rol_id == rol_admin_id:
-        administradores = (
-            db.session.query(Usuario)
-            .join(parqueadero_usuario)
-            .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
-            .filter(Usuario.rol_id == rol_admin_id)
-            .count()
-        )
-        if administradores >= 2:
-            return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
-    
-    if Usuario.query.filter_by(documento=documento).first():   
-        return jsonify({'success': False, 'message': 'El documento ya existe'}), 400
-    if Usuario.query.filter_by(email=email).first():
-        return jsonify({'success': False, 'message': 'El email ya existe'}), 400
-    
-    nuevo_usuario = Usuario(documento=documento, contrasena=contrasena, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, ciudad=ciudad, direccion=direccion, rol_id=rol_id)
-    db.session.add(nuevo_usuario)
-    db.session.commit()
-
-    if parqueadero_id:
-        parqueadero = Parqueadero.query.get(parqueadero_id)
-        if not parqueadero:
-            return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
-
-        association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=nuevo_usuario.id)
-        db.session.execute(association)
+        # Validar si el usuario que se está creando es Administrador
+        if rol_id == rol_admin_id:
+            administradores = (
+                db.session.query(Usuario)
+                .join(parqueadero_usuario)
+                .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
+                .filter(Usuario.rol_id == rol_admin_id)
+                .count()
+            )
+            if administradores >= 2:
+                return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
+        
+        if Usuario.query.filter_by(documento=documento).first():   
+            return jsonify({'success': False, 'message': 'El documento ya existe'}), 400
+        if Usuario.query.filter_by(email=email).first():
+            return jsonify({'success': False, 'message': 'El email ya existe'}), 400
+        
+        nuevo_usuario = Usuario(documento=documento, contrasena=contrasena, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, ciudad=ciudad, direccion=direccion, rol_id=rol_id)
+        db.session.add(nuevo_usuario)
         db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
+        if parqueadero_id:
+            parqueadero = Parqueadero.query.get(parqueadero_id)
+            if not parqueadero:
+                return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+
+            association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=nuevo_usuario.id)
+            db.session.execute(association)
+            db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Usuario agregado correctamente'})
 
 # Usuario UPDATE
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+# @jefe_permission.require(http_exception=403)
 @login_required
 def update_usuario(id):
-    data = request.get_json()
-    documento = data.get('documento')
-    contrasena = data.get('contrasena')
-    nombres = data.get('nombres')
-    apellidos = data.get('apellidos')
-    telefono = data.get('telefono')
-    email = data.get('email')
-    ciudad = data.get('ciudad')
-    direccion = data.get('direccion')
-    rol_id = data.get('rol_id')
-    parqueadero_id = data.get('parqueadero_id')
-    cambio = data.get('cambio')
-    print(data)
-    
-    if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
-    
-    rol_id = int(rol_id)
-
-    # Obtener los IDs de los roles
-    rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
-    rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
-
-    # Validar si el usuario que se está creando es Jefe
-    if rol_id == rol_jefe_id and cambio:
-        usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
-            parqueadero_usuario.c.parqueadero_id == parqueadero_id,
-            Usuario.rol_id == rol_jefe_id
-        ).first()
-
-        if usuario_jefe_existente:
-            return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
-
-    # Validar si el usuario que se está creando es Administrador
-    if rol_id == rol_admin_id:
-        administradores = (
-            db.session.query(Usuario)
-            .join(parqueadero_usuario)
-            .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
-            .filter(Usuario.rol_id == rol_admin_id)
-            .count()
-        )
-        if administradores >= 2:
-            return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
-
-    usuario = Usuario.query.get_or_404(id)
-
-    if contrasena and not contrasena.startswith("$2b$"):
-        usuario.contrasena = bcrypt.generate_password_hash(contrasena)
-
-    usuario.documento = documento
-    usuario.nombres = nombres
-    usuario.apellidos = apellidos
-    usuario.telefono = telefono
-    usuario.email = email
-    usuario.ciudad = ciudad
-    usuario.direccion = direccion
-    usuario.rol_id = rol_id
-    
-    if parqueadero_id:
-        parqueadero = Parqueadero.query.get(parqueadero_id)
-        if not parqueadero:
-            return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        documento = data.get('documento')
+        contrasena = data.get('contrasena')
+        nombres = data.get('nombres')
+        apellidos = data.get('apellidos')
+        telefono = data.get('telefono')
+        email = data.get('email')
+        ciudad = data.get('ciudad')
+        direccion = data.get('direccion')
+        rol_id = data.get('rol_id')
+        parqueadero_id = data.get('parqueadero_id')
+        cambio = data.get('cambio')
+        print(data)
         
-        db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+        if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
         
-        association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
-        db.session.execute(association)
-    
-    db.session.commit()
-    
-    return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
+        rol_id = int(rol_id)
+
+        # Obtener los IDs de los roles
+        rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
+        rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
+
+        # Validar si el usuario que se está creando es Jefe
+        if rol_id == rol_jefe_id and cambio:
+            usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
+                parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+                Usuario.rol_id == rol_jefe_id
+            ).first()
+
+            if usuario_jefe_existente:
+                return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
+
+        # Validar si el usuario que se está creando es Administrador
+        if rol_id == rol_admin_id:
+            administradores = (
+                db.session.query(Usuario)
+                .join(parqueadero_usuario)
+                .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
+                .filter(Usuario.rol_id == rol_admin_id)
+                .count()
+            )
+            if administradores >= 2:
+                return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
+
+        usuario = Usuario.query.get_or_404(id)
+
+        if contrasena and not contrasena.startswith("$2b$"):
+            usuario.contrasena = bcrypt.generate_password_hash(contrasena)
+
+        usuario.documento = documento
+        usuario.nombres = nombres
+        usuario.apellidos = apellidos
+        usuario.telefono = telefono
+        usuario.email = email
+        usuario.ciudad = ciudad
+        usuario.direccion = direccion
+        usuario.rol_id = rol_id
+        
+        if parqueadero_id:
+            parqueadero = Parqueadero.query.get(parqueadero_id)
+            if not parqueadero:
+                return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+            
+            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+            
+            association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
+            db.session.execute(association)
+        
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
+    else:
+        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Usuario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def delete_usuario(id):
     usuario = Usuario.query.get_or_404(id)
@@ -586,7 +593,7 @@ def delete_usuario(id):
 
 # Vehículo ALL
 @routes.route('/vehiculo', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo():
     vehiculos = Vehiculo.query \
@@ -622,7 +629,7 @@ def vehiculo():
 
 # Vehículo CREATE
 @routes.route('/vehiculo/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def add_vehiculo():
     data = request.get_json()
@@ -645,7 +652,7 @@ def add_vehiculo():
 
 # Vehiculo UPDATE
 @routes.route('/vehiculo/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def update_vehiculo(id):
     data = request.get_json()
@@ -670,7 +677,7 @@ def update_vehiculo(id):
 
 # Vehículo DELETE
 @routes.route('/vehiculo/delete/<string:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def delete_vehiculo(id):
     vehiculo = Vehiculo.query.get_or_404(id)
@@ -684,7 +691,7 @@ def delete_vehiculo(id):
 
 # Tarifa ALL
 @routes.route('/tarifa', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa():
     tarifas = Tarifa.query \
@@ -717,7 +724,7 @@ def tarifa():
 
 # Tarifa CREATE
 @routes.route('/tarifa/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def add_tarifa():
     data = request.get_json()
@@ -738,7 +745,7 @@ def add_tarifa():
 
 # Tarifa UPDATE
 @routes.route('/tarifa/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def update_tarifa(id):
     data = request.get_json()
@@ -761,7 +768,7 @@ def update_tarifa(id):
 
 # Tarifa DELETE
 @routes.route('/tarifa/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def delete_tarifa(id):
     tarifa = Tarifa.query.get_or_404(id)
@@ -775,7 +782,7 @@ def delete_tarifa(id):
 
 # Parqueo ALL
 @routes.route('/parqueo', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def parqueo():
     parqueos = Parqueo.query \
@@ -821,7 +828,7 @@ def parqueo():
 
 # Parqueo CREATE
 @routes.route('/parqueo/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_parqueo():
     data = request.get_json()
@@ -848,7 +855,7 @@ def agregar_parqueo():
 
 # Parqueo UPDATE
 @routes.route('/parqueo/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_parqueo(id):
     data = request.get_json()
@@ -870,7 +877,7 @@ def actualizar_parqueo(id):
 
 # Parqueo DELETE
 @routes.route('/parqueo/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_parqueo(id):
     parqueo = Parqueo.query.get_or_404(id)
@@ -884,7 +891,7 @@ def eliminar_parqueo(id):
 
 # Arrendamiento ALL
 @routes.route('/arrendamiento', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def arrendamiento():
     arrendamientos = Arrendamiento.query \
@@ -930,7 +937,7 @@ def arrendamiento():
 
 # Arrendamiento CREATE
 @routes.route('/arrendamiento/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_arrendamiento():
     data = request.get_json()
@@ -955,7 +962,7 @@ def agregar_arrendamiento():
 
 # Arrendamiento UPDATE
 @routes.route('/arrendamiento/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_arrendamiento(id):
     data = request.get_json()
@@ -976,7 +983,7 @@ def actualizar_arrendamiento(id):
 
 # Arrendamiento DELETE
 @routes.route('/arrendamiento/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_arrendamiento(id):
     arrendamiento = Arrendamiento.query.get_or_404(id)
@@ -990,7 +997,7 @@ def eliminar_arrendamiento(id):
 
 # Modulo ALL
 @routes.route('/modulo', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def modulo():
     modulos = Modulo.query \
@@ -1026,7 +1033,7 @@ def modulo():
 
 # Modulo CREATE
 @routes.route('/modulo/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_modulo():
     data = request.get_json()
@@ -1051,7 +1058,7 @@ def agregar_modulo():
 
 # Modulo UPDATE
 @routes.route('/modulo/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_modulo(id):
     data = request.get_json()
@@ -1068,7 +1075,7 @@ def actualizar_modulo(id):
 
 # Modulo DELETE
 @routes.route('/modulo/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_modulo(id):
     modulo = Modulo.query.get_or_404(id)
@@ -1082,7 +1089,7 @@ def eliminar_modulo(id):
 
 # Sede ALL
 @routes.route('/sede', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def sede():
     sedes = Sede.query \
@@ -1128,7 +1135,7 @@ def sede():
 
 # Sede CREATE
 @routes.route('/sede/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_sede():
     data = request.get_json()
@@ -1153,7 +1160,7 @@ def agregar_sede():
 
 # Sede UPDATE
 @routes.route('/sede/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_sede(id):
     data = request.get_json()
@@ -1173,7 +1180,7 @@ def actualizar_sede(id):
 
 # Sede DELETE
 @routes.route('/sede/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_sede(id):
     sede = Sede.query.get_or_404(id)
@@ -1187,7 +1194,7 @@ def eliminar_sede(id):
 
 # Pais ALL
 @routes.route('/pais', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def pais():
     paises = Pais.query.all()
@@ -1205,7 +1212,7 @@ def pais():
 
 # Pais CREATE
 @routes.route('/pais/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_pais():
     data = request.get_json()
@@ -1223,7 +1230,7 @@ def agregar_pais():
 
 # Pais UPDATE
 @routes.route('/pais/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_pais(id):
     data = request.get_json()
@@ -1237,7 +1244,7 @@ def actualizar_pais(id):
 
 # Pais DELETE
 @routes.route('/pais/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_pais(id):
     pais = Pais.query.get_or_404(id)
@@ -1251,7 +1258,7 @@ def eliminar_pais(id):
 
 # Periodicidad ALL
 @routes.route('/periodicidad', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def periodicidad():
     periodicidades = Periodicidad.query.all()
@@ -1270,7 +1277,7 @@ def periodicidad():
 
 # Periodicidad CREATE
 @routes.route('/periodicidad/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_periodicidad():
     data = request.get_json()
@@ -1289,7 +1296,7 @@ def agregar_periodicidad():
 
 # Periodicidad UPDATE
 @routes.route('/periodicidad/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_periodicidad(id):
     data = request.get_json()
@@ -1304,7 +1311,7 @@ def actualizar_periodicidad(id):
 
 # Periodicidad DELETE
 @routes.route('/periodicidad/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_periodicidad(id):
     periodicidad = Periodicidad.query.get_or_404(id)
@@ -1318,7 +1325,7 @@ def eliminar_periodicidad(id):
 
 # Puntos ALL
 @routes.route('/puntos')
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def puntos():
     puntos = Punto.query.join(Cliente).add_columns(
@@ -1342,7 +1349,7 @@ def puntos():
 
 # Puntos CREATE
 @routes.route('/punto/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_punto():
     data = request.get_json()
@@ -1365,7 +1372,7 @@ def agregar_punto():
 
 # Puntos UPDATE
 @routes.route('/punto/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_punto(id):
     data = request.get_json()
@@ -1380,7 +1387,7 @@ def actualizar_punto(id):
 
 # Puntos DELETE
 @routes.route('/punto/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_punto(id):
     punto = Punto.query.get_or_404(id)
@@ -1394,7 +1401,7 @@ def eliminar_punto(id):
 
 # Redimir ALL
 @routes.route('/redimir')
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def redimir():
     redenciones = Redimir.query.join(Punto).add_columns(
@@ -1420,7 +1427,7 @@ def redimir():
 
 # Redimir CREATE
 @routes.route('/redimir/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_redencion():
     data = request.get_json()
@@ -1441,7 +1448,7 @@ def agregar_redencion():
 
 # Redimir UPDATE
 @routes.route('/redimir/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_redencion(id):
     data = request.get_json()
@@ -1455,7 +1462,7 @@ def actualizar_redencion(id):
 
 # Redimir DELETE
 @routes.route('/redimir/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_redencion(id):
     redimir = Redimir.query.get_or_404(id)
@@ -1469,7 +1476,7 @@ def eliminar_redencion(id):
 
 # Parqueadero ALL
 @routes.route('/parqueadero', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def parqueadero():
     parqueaderos = Parqueadero.query \
@@ -1529,7 +1536,7 @@ def parqueadero():
 
 # Parqueadero CREATE
 @routes.route('/parqueadero/add', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_parqueadero():
     data = request.get_json()
@@ -1570,7 +1577,7 @@ def agregar_parqueadero():
 
 # Parqueadero UPDATE
 @routes.route('/parqueadero/edit/<int:id>', methods=['PUT'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_parqueadero(id):
     data = request.get_json()
@@ -1606,7 +1613,7 @@ def actualizar_parqueadero(id):
 
 # Parqueadero DELETE
 @routes.route('/parqueadero/delete/<int:id>', methods=['POST'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
@@ -1700,7 +1707,7 @@ def register():
 
 # Información de perfil
 @routes.route('/profile_info', methods=['GET'])
-@admin_permission.require(http_exception=403)
+@jefe_permission.require(http_exception=403)
 @login_required
 def profile_info():
 

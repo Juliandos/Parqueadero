@@ -64,9 +64,10 @@
       <div class="modal-body">
         <form id="UsuarioForm">
           <input type="hidden" id="UsuarioId" />
+          <input type="hidden" id="UsuarioLogId" value={{current_user_id}}/>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="documento" class="form-label">Documento</label>
+              <label for="documento" class="form-label">{{Documento}}</label>
               <input type="text" class="form-control  text-dark" id="documento" required />
             </div>
             <div class="col-md-6 mb-3">
@@ -125,6 +126,8 @@
 
 <script>
   $(document).ready(function () {
+    let adminModJefe;
+
     $(document)
       .ajaxStart(function () {
         $.LoadingOverlay("show");
@@ -197,6 +200,8 @@
         return $(this).text().trim() === rol_nombre;
       }).val();
 
+      adminModJefe = rol_id;
+
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
       $("#UsuarioId").val(id);
@@ -219,34 +224,40 @@
       let action = $(this).attr("data-action");
       let url = action === "edit" ? `/usuario/edit/${$("#UsuarioId").val()}` : "/usuario/add";
       let method = action === "edit" ? "PUT" : "POST";
+      let usuarioLogValue = document.getElementById("UsuarioLogId").value;
+      let cleanValue = usuarioLogValue.replace("/", "");
+      
+      if(adminModJefe == 1 && cleanValue == 1){
+        $.ajax({
+          url: url,
+          type: method,
+          contentType: "application/json",
+          data: JSON.stringify({
+            documento: $("#documento").val(),
+            contrasena: $("#contrasena").val(),
+            nombres: $("#nombres").val(),
+            apellidos: $("#apellidos").val(),
+            telefono: $("#telefono").val(),
+            email: $("#email").val(),
+            ciudad: $("#ciudad").val(),
+            direccion: $("#direccion").val(),
+            rol_id: $("#rol_id").val(),
+            parqueadero_id: $("#parqueadero_id").val(),
+            cambio: false
+          }),
+          success: function () {
+            Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            let response = jqXHR.responseJSON;
+            let message = response && response.message ? response.message : "Error desconocido";
 
-      $.ajax({
-        url: url,
-        type: method,
-        contentType: "application/json",
-        data: JSON.stringify({
-          documento: $("#documento").val(),
-          contrasena: $("#contrasena").val(),
-          nombres: $("#nombres").val(),
-          apellidos: $("#apellidos").val(),
-          telefono: $("#telefono").val(),
-          email: $("#email").val(),
-          ciudad: $("#ciudad").val(),
-          direccion: $("#direccion").val(),
-          rol_id: $("#rol_id").val(),
-          parqueadero_id: $("#parqueadero_id").val(),
-          cambio: false
-        }),
-        success: function () {
-          Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          let response = jqXHR.responseJSON;
-          let message = response && response.message ? response.message : "Error desconocido";
-
-          Swal.fire("Error", message, "error");
-        }
-      });
+            Swal.fire("Error", message, "error");
+          }
+        });
+      }else{
+        Swal.fire("Error", "No tienes los accesos necesarios", "error");
+      }
 
       $("#Modal1").modal("hide");
     });
