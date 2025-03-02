@@ -483,7 +483,7 @@ def update_usuario(id):
         direccion = data.get('direccion')
         rol_id = data.get('rol_id')
         parqueadero_id = data.get('parqueadero_id')
-        cambio = data.get('cambio')
+        acceso = data.get('acceso')
         print(data)
         
         if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
@@ -496,7 +496,7 @@ def update_usuario(id):
         rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
         # Validar si el usuario que se está creando es Jefe
-        if rol_id == rol_jefe_id and cambio:
+        if rol_id == rol_jefe_id and not acceso:
             usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
                 parqueadero_usuario.c.parqueadero_id == parqueadero_id,
                 Usuario.rol_id == rol_jefe_id

@@ -67,7 +67,7 @@
           <input type="hidden" id="UsuarioLogId" value={{current_user_id}}/>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="documento" class="form-label">{{Documento}}</label>
+              <label for="documento" class="form-label">Documento</label>
               <input type="text" class="form-control  text-dark" id="documento" required />
             </div>
             <div class="col-md-6 mb-3">
@@ -227,7 +227,9 @@
       let usuarioLogValue = document.getElementById("UsuarioLogId").value;
       let cleanValue = usuarioLogValue.replace("/", "");
       
-      if(adminModJefe == 1 && cleanValue == 1){
+      if(cleanValue == 2 && adminModJefe == 1){
+        Swal.fire("Error", "No tienes los accesos necesarios", "error");
+      }else{
         $.ajax({
           url: url,
           type: method,
@@ -243,7 +245,7 @@
             direccion: $("#direccion").val(),
             rol_id: $("#rol_id").val(),
             parqueadero_id: $("#parqueadero_id").val(),
-            cambio: false
+            acceso: false
           }),
           success: function () {
             Swal.fire("Éxito", "Usuario guardado", "success").then(() => location.reload());
@@ -251,14 +253,13 @@
           error: function(jqXHR, textStatus, errorThrown) {
             let response = jqXHR.responseJSON;
             let message = response && response.message ? response.message : "Error desconocido";
-
+  
             Swal.fire("Error", message, "error");
           }
         });
-      }else{
-        Swal.fire("Error", "No tienes los accesos necesarios", "error");
+        
       }
-
+      
       $("#Modal1").modal("hide");
     });
 
