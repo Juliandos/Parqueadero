@@ -557,6 +557,8 @@ def delete_usuario(id):
         # Validar si hay sedes asociadas
         if Sede.query.filter_by(usuario_id=id).first():
             return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
+        
+        # Validar si el usuario es Jefe y no es el Jefe de la empresa
         if usuario.rol_id == 1 and current_user.id == 2:
             return jsonify({'success': False, 'message': 'No se puede eliminar: Este usuario es el Jefe de la empresa'}), 400
 
