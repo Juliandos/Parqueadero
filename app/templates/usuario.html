@@ -64,7 +64,7 @@
       <div class="modal-body">
         <form id="UsuarioForm">
           <input type="hidden" id="UsuarioId" />
-          <input type="hidden" id="UsuarioLogId" value={{current_user_id}}/>
+          <input type="hidden" id="UsuarioLogId" value='{{ current_user | tojson }}' />
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="documento" class="form-label">Documento</label>
@@ -126,7 +126,8 @@
 
 <script>
   $(document).ready(function () {
-    let adminModJefe;
+    let rolUsuarioMod;
+    let parqueadero_id_mod;
 
     $(document)
       .ajaxStart(function () {
@@ -200,7 +201,8 @@
         return $(this).text().trim() === rol_nombre;
       }).val();
 
-      adminModJefe = rol_id;
+      rolUsuarioMod = rol_id;
+      parqueadero_id_mod = parqueadero_id
 
       $("#Modal1Label").text("Editar Cliente");
       $("#UsuarioForm").attr("data-action", "edit");
@@ -225,9 +227,11 @@
       let url = action === "edit" ? `/usuario/edit/${$("#UsuarioId").val()}` : "/usuario/add";
       let method = action === "edit" ? "PUT" : "POST";
       let usuarioLogValue = document.getElementById("UsuarioLogId").value;
-      let cleanValue = usuarioLogValue.replace("/", "");
+      let usuarioLog = JSON.parse(usuarioLogValue);
+
+      console.log(usuarioLog.id,rolUsuarioMod,parqueadero_id_mod,usuarioLog.parqueadero_id);
       
-      if(cleanValue == 2 && adminModJefe == 1){
+      if(usuarioLog.id == 2 && rolUsuarioMod == 1){
         Swal.fire("Error", "No tienes los accesos necesarios", "error");
       }else{
         $.ajax({

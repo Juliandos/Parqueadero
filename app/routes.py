@@ -383,9 +383,29 @@ def usuario():
             for u in usuarios
         ]
 
+        # Obtener el parqueadero_id asociado al current_user
+        parqueadero_id = db.session.execute(
+            select(parqueadero_usuario.c.parqueadero_id)
+            .where(parqueadero_usuario.c.usuario_id == current_user.id)
+        ).scalar()
+
+        # Convertir `current_user` en JSON con el parqueadero_id
+        current_user_dict = {
+            "id": current_user.id,
+            "documento": current_user.documento,
+            "nombres": current_user.nombres,
+            "apellidos": current_user.apellidos,
+            "telefono": current_user.telefono,
+            "email": current_user.email,
+            "ciudad": current_user.ciudad,
+            "direccion": current_user.direccion,
+            "rol_nombre": current_user.rol.nombre,
+            "parqueadero_id": parqueadero_id  # Agregamos el parqueadero asociado
+        }
+
         return render_template(
             'usuario.html', titulo='Usuarios', usuarios=usuarios_dict, 
-            roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict, current_user_id=current_user.id
+            roles=roles, asociaciones=asociaciones_dict, parqueaderos=parqueaderos_dict, current_user=current_user_dict
         )
 
 # Usuario CREATE
@@ -490,7 +510,6 @@ def update_usuario(id):
         
         rol_id = int(rol_id)
 
-        # Obtener los IDs de los roles
         rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
         rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
@@ -501,7 +520,7 @@ def update_usuario(id):
                 Usuario.rol_id == rol_jefe_id
             ).first()
 
-            if usuario_jefe_existente:
+            if usuario_jefe_existente.id != current_user.id:
                 return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
 
         # Validar si el usuario que se está creando es Administrador
