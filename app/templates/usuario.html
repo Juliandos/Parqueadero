@@ -204,7 +204,7 @@
       let usuarioLogValue = document.getElementById("UsuarioLogId").value;
       let usuarioLog = JSON.parse(usuarioLogValue);
 
-      console.log();
+      console.log(rol_id, parqueadero_id, usuarioLog.parqueadero_id);
       
       if (rol_id == 1 && parqueadero_id != usuarioLog.parqueadero_id) {
         Swal.fire("Error", "No tienes los accesos necesarios", "error");
@@ -238,7 +238,6 @@
       let method = action === "edit" ? "PUT" : "POST";
       let usuarioLogValue = document.getElementById("UsuarioLogId").value;
       let usuarioLog = JSON.parse(usuarioLogValue);
-      // console.log(usuarioLog.id,rolUsuarioMod,parqueadero_id_mod,usuarioLog.parqueadero_id);
       
       // Validación si soy administrador y estoy modificando un jefe, no se puede
       if(usuarioLog.id == 2 && rolUsuarioMod == 1){
