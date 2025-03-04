@@ -488,82 +488,85 @@ def add_usuario():
 
 # Usuario UPDATE
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
-# @jefe_permission.require(http_exception=403)
 @login_required
 def update_usuario(id):
-    if jefe_permission.can() or admin_permission.can():
-        data = request.get_json()
-        documento = data.get('documento')
-        contrasena = data.get('contrasena')
-        nombres = data.get('nombres')
-        apellidos = data.get('apellidos')
-        telefono = data.get('telefono')
-        email = data.get('email')
-        ciudad = data.get('ciudad')
-        direccion = data.get('direccion')
-        rol_id = data.get('rol_id')
-        parqueadero_id = data.get('parqueadero_id')
-        acceso = data.get('acceso')
-        
-        if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
-            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
-        
-        rol_id = int(rol_id)
+    try:
+        if jefe_permission.can() or admin_permission.can():
+            data = request.get_json()
+            documento = data.get('documento')
+            contrasena = data.get('contrasena')
+            nombres = data.get('nombres')
+            apellidos = data.get('apellidos')
+            telefono = data.get('telefono')
+            email = data.get('email')
+            ciudad = data.get('ciudad')
+            direccion = data.get('direccion')
+            rol_id = data.get('rol_id')
+            parqueadero_id = data.get('parqueadero_id')
+            acceso = data.get('acceso')
 
-        rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
-        rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
+            if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
+                return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-        # Validar si el usuario que se está creando es Jefe
-        if rol_id == rol_jefe_id and not acceso:
-            usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
-                parqueadero_usuario.c.parqueadero_id == parqueadero_id,
-                Usuario.rol_id == rol_jefe_id
-            ).first()
+            rol_id = int(rol_id)
 
-            if usuario_jefe_existente.id != current_user.id:
-                return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
+            rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
+            rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
-        # Validar si el usuario que se está creando es Administrador
-        if rol_id == rol_admin_id:
-            administradores = (
-                db.session.query(Usuario)
-                .join(parqueadero_usuario)
-                .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
-                .filter(Usuario.rol_id == rol_admin_id)
-                .count()
-            )
-            if administradores >= 2:
-                return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
+            # Validar si ya hay un jefe para ese parqueadero
+            if rol_id == rol_jefe_id and not acceso:
+                usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
+                    parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+                    Usuario.rol_id == rol_jefe_id
+                ).first()
 
-        usuario = Usuario.query.get_or_404(id)
+                if usuario_jefe_existente and usuario_jefe_existente.id != current_user.id:
+                    return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
 
-        if contrasena and not contrasena.startswith("$2b$"):
-            usuario.contrasena = bcrypt.generate_password_hash(contrasena)
+            # Validar si ya hay más de dos administradores en el mismo parqueadero
+            if rol_id == rol_admin_id:
+                administradores = (
+                    db.session.query(Usuario)
+                    .join(parqueadero_usuario)
+                    .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
+                    .filter(Usuario.rol_id == rol_admin_id)
+                    .count()
+                )
+                if administradores >= 2:
+                    return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
 
-        usuario.documento = documento
-        usuario.nombres = nombres
-        usuario.apellidos = apellidos
-        usuario.telefono = telefono
-        usuario.email = email
-        usuario.ciudad = ciudad
-        usuario.direccion = direccion
-        usuario.rol_id = rol_id
-        
-        if parqueadero_id:
-            parqueadero = Parqueadero.query.get(parqueadero_id)
-            if not parqueadero:
-                return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
-            
-            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
-            
-            association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
-            db.session.execute(association)
-        
-        db.session.commit()
-        
-        return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
-    else:
-        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
+            usuario = Usuario.query.get_or_404(id)
+
+            if contrasena and not contrasena.startswith("$2b$"):
+                usuario.contrasena = bcrypt.generate_password_hash(contrasena)
+
+            usuario.documento = documento
+            usuario.nombres = nombres
+            usuario.apellidos = apellidos
+            usuario.telefono = telefono
+            usuario.email = email
+            usuario.ciudad = ciudad
+            usuario.direccion = direccion
+            usuario.rol_id = rol_id
+
+            if parqueadero_id:
+                parqueadero = Parqueadero.query.get(parqueadero_id)
+                if not parqueadero:
+                    return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+
+                db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+
+                association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
+                db.session.execute(association)
+
+            db.session.commit()
+
+            return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error inesperado: {str(e)}'}), 500
 
 # Usuario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])

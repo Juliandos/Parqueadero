@@ -192,7 +192,7 @@
       let ciudad = row.find("td:eq(6)").text();
       let rol_nombre = row.find("td:eq(7)").text().trim();    
       let parqueadero_nombre = row.find("td:eq(8)").text();
-
+      
       let parqueadero_id = $("#parqueadero_id option").filter(function () {
         return $(this).text().trim() === parqueadero_nombre;
       }).val();
@@ -200,6 +200,16 @@
       let rol_id = $("#rol_id option").filter(function () {
         return $(this).text().trim() === rol_nombre;
       }).val();
+
+      let usuarioLogValue = document.getElementById("UsuarioLogId").value;
+      let usuarioLog = JSON.parse(usuarioLogValue);
+
+      console.log();
+      
+      if (rol_id == 1 && parqueadero_id != usuarioLog.parqueadero_id) {
+        Swal.fire("Error", "No tienes los accesos necesarios", "error");
+        return;
+      }
 
       rolUsuarioMod = rol_id;
       parqueadero_id_mod = parqueadero_id
@@ -228,9 +238,9 @@
       let method = action === "edit" ? "PUT" : "POST";
       let usuarioLogValue = document.getElementById("UsuarioLogId").value;
       let usuarioLog = JSON.parse(usuarioLogValue);
-
-      console.log(usuarioLog.id,rolUsuarioMod,parqueadero_id_mod,usuarioLog.parqueadero_id);
+      // console.log(usuarioLog.id,rolUsuarioMod,parqueadero_id_mod,usuarioLog.parqueadero_id);
       
+      // Validación si soy administrador y estoy modificando un jefe, no se puede
       if(usuarioLog.id == 2 && rolUsuarioMod == 1){
         Swal.fire("Error", "No tienes los accesos necesarios", "error");
       }else{
