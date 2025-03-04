@@ -1505,10 +1505,10 @@ def eliminar_redencion(id):
 
 # Parqueadero ALL
 @routes.route('/parqueadero', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def parqueadero():
-    parqueaderos = Parqueadero.query \
+    if jefe_permission.can() or admin_permission.can():
+        parqueaderos = Parqueadero.query \
         .join(Pais) \
         .add_columns(
             Parqueadero.id,
@@ -1523,45 +1523,45 @@ def parqueadero():
         ) \
         .all()
     
-    usuarios = Usuario.query.order_by(Usuario.nombres).all()
-    paises = Pais.query.order_by(Pais.nombre).all()
+        usuarios = Usuario.query.order_by(Usuario.nombres).all()
+        paises = Pais.query.order_by(Pais.nombre).all()
 
-    usuarios = Usuario.query.order_by(Usuario.id).all()
+        usuarios = Usuario.query.order_by(Usuario.id).all()
 
-    asociaciones = db.session.execute(
-        select(parqueadero_usuario)
-    ).fetchall()
+        asociaciones = db.session.execute(
+            select(parqueadero_usuario)
+        ).fetchall()
 
-    asociaciones_dict = {row[0]: row[1] for row in asociaciones}  # {parqueadero_id: usuario_id}
-    usuarios_dict = {p.id: p.nombres for p in usuarios}  # {parqueadero_id: nombre}
+        asociaciones_dict = {row[0]: row[1] for row in asociaciones}  # {parqueadero_id: usuario_id}
+        usuarios_dict = {p.id: p.nombres for p in usuarios}  # {parqueadero_id: nombre}
 
-    roles_permitidos = [1, 2] # Jefe y Administrador
-    usuarios_dict = {
-        k: v
-        for k, v in usuarios_dict.items()
-        if Usuario.query.filter(Usuario.id == k, Usuario.rol_id.in_(roles_permitidos)).first()
-    }
-
-    parqueaderos_dict = [
-        {
-            "id": p.id,
-            "rut": p.rut,
-            "nombre": p.nombre,
-            "direccion": p.direccion,
-            "telefono": p.telefono,
-            "email": p.email,
-            "ciudad": p.ciudad,
-            "usuario_nombre": usuarios_dict.get(asociaciones_dict.get(p.id), "No asignado"),
-            "pais_id": p.pais_id,
-            "pais_nombre": p.pais_nombre
+        roles_permitidos = [1, 2] # Jefe y Administrador
+        usuarios_dict = {
+            k: v
+            for k, v in usuarios_dict.items()
+            if Usuario.query.filter(Usuario.id == k, Usuario.rol_id.in_(roles_permitidos)).first()
         }
-        for p in parqueaderos
-    ]
-    return render_template('parqueadero.html', 
-                        titulo='Parqueaderos',
-                        parqueaderos=parqueaderos_dict,
-                        usuarios=usuarios_dict,
-                        paises=paises)
+
+        parqueaderos_dict = [
+            {
+                "id": p.id,
+                "rut": p.rut,
+                "nombre": p.nombre,
+                "direccion": p.direccion,
+                "telefono": p.telefono,
+                "email": p.email,
+                "ciudad": p.ciudad,
+                "usuario_nombre": usuarios_dict.get(asociaciones_dict.get(p.id), "No asignado"),
+                "pais_id": p.pais_id,
+                "pais_nombre": p.pais_nombre
+            }
+            for p in parqueaderos
+        ]
+        return render_template('parqueadero.html', 
+                            titulo='Parqueaderos',
+                            parqueaderos=parqueaderos_dict,
+                            usuarios=usuarios_dict,
+                            paises=paises)
 
 # Parqueadero CREATE
 @routes.route('/parqueadero/add', methods=['POST'])
