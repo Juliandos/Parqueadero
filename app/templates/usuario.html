@@ -130,30 +130,30 @@
     let parqueadero_id_mod;
 
     function validarBotonesEliminar() {
-    let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
-    let usuarioLog = JSON.parse(document.getElementById("UsuarioLogId").value);
+      let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
+      let usuarioLog = JSON.parse(document.getElementById("UsuarioLogId").value);
 
-    $("#TableUsuario tbody tr").each(function () {
-      let row = $(this);
-      let id = row.find("td:eq(0)").text().trim();
-      let usuario = usuarios.find(u => u.id == id);
-      
-      let parqueadero_id = $("#parqueadero_id option").filter(function () {
-        return $(this).text().trim() === usuario.parqueadero_nombre;
-      }).val();
-      
-      let rol_id = $("#rol_id option").filter(function () {
-        return $(this).text().trim() === usuario.rol_nombre;
-      }).val();
+      $("#TableUsuario tbody tr").each(function () {
+        let row = $(this);
+        let id = row.find("td:eq(0)").text().trim();
+        let usuario = usuarios.find(u => u.id == id);
+        
+        let parqueadero_id = $("#parqueadero_id option").filter(function () {
+          return $(this).text().trim() === usuario.parqueadero_nombre;
+        }).val();
+        
+        let rol_id = $("#rol_id option").filter(function () {
+          return $(this).text().trim() === usuario.rol_nombre;
+        }).val();
 
-      if ((rol_id == 1 && parqueadero_id != usuarioLog.parqueadero_id) || (rol_id != 1 && parqueadero_id != usuarioLog.parqueadero_id && usuarioLog.id != 1)) {
-        row.find(".btnEliminar").prop("disabled", true);
-        row.find(".btnEditar").prop("disabled", true);
-      }
-    });
-  }
+        if ((rol_id == 1 && parqueadero_id != usuarioLog.parqueadero_id) || (rol_id != 1 && parqueadero_id != usuarioLog.parqueadero_id && usuarioLog.id != 1)) {
+          row.find(".btnEliminar").prop("disabled", true);
+          row.find(".btnEditar").prop("disabled", true);
+        }
+      });
+    }
 
-validarBotonesEliminar();
+    validarBotonesEliminar();
 
     $(document)
       .ajaxStart(function () {

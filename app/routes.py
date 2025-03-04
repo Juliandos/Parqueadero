@@ -442,8 +442,6 @@ def add_usuario():
         rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
         rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
-        print("rol_jefe_id: ", rol_jefe_id, "rol_admin: ", rol_admin_id, "rol_id: ", rol_id)
-
         # Validar si el usuario que se está creando es Jefe
         if rol_id == rol_jefe_id:
             usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
@@ -1557,11 +1555,33 @@ def parqueadero():
             }
             for p in parqueaderos
         ]
+
+        # Obtener el usuario_id asociado al current_user
+        usuario_id = db.session.execute(
+            select(parqueadero_usuario.c.usuario_id)
+            .where(parqueadero_usuario.c.usuario_id == current_user.id)
+        ).scalar()
+
+        # Convertir `current_user` en JSON con el parqueadero_id
+        current_user_dict = {
+            "id": current_user.id,
+            "documento": current_user.documento,
+            "nombres": current_user.nombres,
+            "apellidos": current_user.apellidos,
+            "telefono": current_user.telefono,
+            "email": current_user.email,
+            "ciudad": current_user.ciudad,
+            "direccion": current_user.direccion,
+            "rol_nombre": current_user.rol.nombre,
+            "usuario": usuario_id
+        }
+
         return render_template('parqueadero.html', 
                             titulo='Parqueaderos',
                             parqueaderos=parqueaderos_dict,
                             usuarios=usuarios_dict,
-                            paises=paises)
+                            paises=paises,
+                            current_user=current_user_dict)
 
 # Parqueadero CREATE
 @routes.route('/parqueadero/add', methods=['POST'])

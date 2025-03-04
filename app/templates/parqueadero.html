@@ -62,6 +62,7 @@
       <div class="modal-body">
         <form id="ParqueaderoForm">
           <input type="hidden" id="ParqueaderoId" />
+          <input type="hidden" id="UsuarioLogId" value='{{ current_user | tojson }}' />
           <div class="row">
             <div class="col-md-6">
               <div class="mb-3">
@@ -119,6 +120,29 @@
 
 <script>
   $(document).ready(function () {
+
+    function validarBotonesEliminar() {
+      let parqueaderos = JSON.parse(document.getElementById("parqueaderosData").dataset.parqueaderos);
+      let usuarioLog = JSON.parse(document.getElementById("UsuarioLogId").value);
+      
+      
+      $("#TableParqueadero tbody tr").each(function () {
+        let row = $(this);
+        let id = row.find("td:eq(0)").text().trim();
+        let parqueadero = parqueaderos.find(u => u.id == id);
+        
+        let usuario_id = $("#usuario_id option").filter(function () {
+          return $(this).text().trim() === parqueadero.usuario_nombre;
+        }).val();
+        
+        if (parseInt(usuario_id) != usuarioLog.usuario && (usuarioLog.id == 1 || usuarioLog.id == 2)) {
+          row.find(".btnEliminar").prop("disabled", true);
+          row.find(".btnEditar").prop("disabled", true);
+        }
+      });
+    }
+
+    validarBotonesEliminar();
 
     $("#TableParqueadero").DataTable({
       paging: true,
