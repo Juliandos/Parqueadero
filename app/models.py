@@ -192,7 +192,6 @@ class Usuario(UserMixin, db.Model):
         if self.rol:
             needs.add(RoleNeed(self.rol.nombre))
         return needs
-    
 
 @login_manager.user_loader
 def load_user(id):

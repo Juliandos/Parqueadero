@@ -1,4 +1,1 @@
-contraseña
 agregar validación de fechas como en parqueo
-validación para formularios de contraseñas, ahora falta en el login y registro para clientes sería por nombres, apellidos y documento único
-Hay que agregar validaciones para que solo se pueda borrar el jefe de su misma empresa, antes de seguir con los otros roles
