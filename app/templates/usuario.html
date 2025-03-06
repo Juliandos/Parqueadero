@@ -129,7 +129,7 @@
     let rolUsuarioMod;
     let parqueadero_id_mod;
 
-    function validarBotonesEliminar() {
+    function validarBotones() {
       let usuarios = JSON.parse(document.getElementById("usuariosData").dataset.usuarios);
       let usuarioLog = JSON.parse(document.getElementById("UsuarioLogId").value);
 
@@ -143,17 +143,18 @@
         }).val();
         
         let rol_id = $("#rol_id option").filter(function () {
-          return $(this).text().trim() === usuario.rol_nombre;
+          return $(this).text().trim() === usuarioLog.rol_nombre;
         }).val();
 
-        if ((rol_id == 1 && parqueadero_id != usuarioLog.parqueadero_id) || (rol_id != 1 && parqueadero_id != usuarioLog.parqueadero_id && usuarioLog.id != 1)) {
+        if ((rol_id == 2 && (parqueadero_id != usuarioLog.parqueadero_id || rol_id == 1)) || (rol_id == 1 && (parqueadero_id != usuarioLog.parqueadero_id || rol_id != 1))
+          ) {
           row.find(".btnEliminar").prop("disabled", true);
           row.find(".btnEditar").prop("disabled", true);
         }
       });
     }
 
-    validarBotonesEliminar();
+    validarBotones();
 
     $(document)
       .ajaxStart(function () {

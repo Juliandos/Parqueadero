@@ -35,7 +35,6 @@ def index():
 
 # VehiculoTipo all
 @routes.route('/vehiculo_tipo')
-@jefe_permission.require(http_exception=403)  # Solo accesible para usuarios
 @login_required
 def vehiculo_tipo():
     tipos_vehiculo = VehiculoTipo.query.all()
@@ -64,15 +63,18 @@ def vehiculo_tipo_delete(id):
 @jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_add():
-    data = request.get_json()
-    nombre = data.get('nombre')
-    if not nombre:
-        return jsonify({'error': False, 'message': 'El nombre es obligatorio o es igual a otro'}), 400
-    
-    nuevo_tipo = VehiculoTipo(nombre=nombre)
-    db.session.add(nuevo_tipo)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        if not nombre:
+            return jsonify({'error': False, 'message': 'El nombre es obligatorio o es igual a otro'}), 400
+        
+        nuevo_tipo = VehiculoTipo(nombre=nombre)
+        db.session.add(nuevo_tipo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})
+    else:
+        return jsonify({'error': False, 'message': 'Acceso denegado'}), 403
 
 # VehiculoTipo EDIT
 @routes.route('/vehiculo_tipo/edit/<int:id>', methods=['PUT'])
@@ -93,7 +95,6 @@ def vehiculo_tipo_edit(id):
 
 # TarifaTipo ALL
 @routes.route('/tarifa_tipo', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo():
     tarifas_tipo = TarifaTipo.query.all()
@@ -489,134 +490,118 @@ def add_usuario():
 @login_required
 def update_usuario(id):
     try:
-        if jefe_permission.can() or admin_permission.can():
-            data = request.get_json()
-            documento = data.get('documento')
-            contrasena = data.get('contrasena')
-            nombres = data.get('nombres')
-            apellidos = data.get('apellidos')
-            telefono = data.get('telefono')
-            email = data.get('email')
-            ciudad = data.get('ciudad')
-            direccion = data.get('direccion')
-            rol_id = data.get('rol_id')
-            parqueadero_id = data.get('parqueadero_id')
-            acceso = data.get('acceso')
+        data = request.get_json()
+        documento = data.get('documento')
+        contrasena = data.get('contrasena')
+        nombres = data.get('nombres')
+        apellidos = data.get('apellidos')
+        telefono = data.get('telefono')
+        email = data.get('email')
+        ciudad = data.get('ciudad')
+        direccion = data.get('direccion')
+        rol_id = data.get('rol_id')
+        parqueadero_id = data.get('parqueadero_id')
+        acceso = data.get('acceso')
 
-            if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
-                return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-            rol_id = int(rol_id)
+        rol_id = int(rol_id)
 
-            rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
-            rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
+        rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
+        rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
-            # Validar si ya hay un jefe para ese parqueadero
-            if rol_id == rol_jefe_id and not acceso:
-                usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
-                    parqueadero_usuario.c.parqueadero_id == parqueadero_id,
-                    Usuario.rol_id == rol_jefe_id
-                ).first()
+        # Validar si ya hay un jefe para ese parqueadero
+        if rol_id == rol_jefe_id and not acceso:
+            usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
+                parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+                Usuario.rol_id == rol_jefe_id
+            ).first()
 
-                if usuario_jefe_existente and usuario_jefe_existente.id != current_user.id:
-                    return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
+            if usuario_jefe_existente and usuario_jefe_existente.id != current_user.id:
+                return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
 
-            # Validar si ya hay más de dos administradores en el mismo parqueadero
-            if rol_id == rol_admin_id:
-                administradores = (
-                    db.session.query(Usuario)
-                    .join(parqueadero_usuario)
-                    .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
-                    .filter(Usuario.rol_id == rol_admin_id)
-                    .count()
-                )
-                if administradores >= 2:
-                    return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
+        # Validar si ya hay más de dos administradores en el mismo parqueadero
+        if rol_id == rol_admin_id:
+            administradores = (
+                db.session.query(Usuario)
+                .join(parqueadero_usuario)
+                .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
+                .filter(Usuario.rol_id == rol_admin_id)
+                .filter(Usuario.id != id)
+                .count()
+            )
+            print(administradores)
+            if administradores >= 2:
+                return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
 
-            usuario = Usuario.query.get_or_404(id)
+        usuario = Usuario.query.get_or_404(id)
 
-            if contrasena and not contrasena.startswith("$2b$"):
-                usuario.contrasena = bcrypt.generate_password_hash(contrasena)
+        if contrasena and not contrasena.startswith("$2b$"):
+            usuario.contrasena = bcrypt.generate_password_hash(contrasena)
 
-            usuario.documento = documento
-            usuario.nombres = nombres
-            usuario.apellidos = apellidos
-            usuario.telefono = telefono
-            usuario.email = email
-            usuario.ciudad = ciudad
-            usuario.direccion = direccion
-            usuario.rol_id = rol_id
+        usuario.documento = documento
+        usuario.nombres = nombres
+        usuario.apellidos = apellidos
+        usuario.telefono = telefono
+        usuario.email = email
+        usuario.ciudad = ciudad
+        usuario.direccion = direccion
+        usuario.rol_id = rol_id
 
-            if parqueadero_id:
-                parqueadero = Parqueadero.query.get(parqueadero_id)
-                if not parqueadero:
-                    return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+        if parqueadero_id:
+            parqueadero = Parqueadero.query.get(parqueadero_id)
+            if not parqueadero:
+                return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
 
-                db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
 
-                association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
-                db.session.execute(association)
+            association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
+            db.session.execute(association)
 
-            db.session.commit()
+        db.session.commit()
 
-            return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
-        else:
-            return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
+        return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
 
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error inesperado: {str(e)}'}), 500
 
 # Usuario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def delete_usuario(id):
-    if jefe_permission.can() or admin_permission.can():
-        usuario = Usuario.query.get_or_404(id)
+    usuario = Usuario.query.get_or_404(id)
 
-        # Validar si hay sedes asociadas
-        if Sede.query.filter_by(usuario_id=id).first():
-            return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
-        
-        # Validar si el usuario es Jefe y no es el Jefe de la empresa
-        if usuario.rol_id == 1 and current_user.id == 2:
-            return jsonify({'success': False, 'message': 'No se puede eliminar: Este usuario es el Jefe de la empresa'}), 400
-
-        
-        if request.form.get('_method') == 'DELETE':
-            try:
-                db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
-                db.session.commit()
-
-                # Eliminar el usuario
-                db.session.delete(usuario)
-                db.session.commit()
-
-                # Verificar si realmente se eliminó
-                check = Usuario.query.get(id)
-                if check:
-                    return jsonify({'success': False, 'message': 'Error: El usuario no se eliminó correctamente'}), 500
-
-                return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
-            
-            except Exception as e:
-                db.session.rollback()
-                return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
-
-        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
-    else:
-        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
-
-    # if request.form.get('_method') == 'DELETE':
-    #     db.session.delete(usuario)
-    #     db.session.commit()
-        
-    #     return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+    # Validar si hay sedes asociadas
+    if Sede.query.filter_by(usuario_id=id).first():
+        return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
     
-    # db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
-    # db.session.commit()
+    # Validar si el usuario es Jefe y no es el Jefe de la empresa
+    if usuario.rol_id == 1 and current_user.id == 2:
+        return jsonify({'success': False, 'message': 'No se puede eliminar: Este usuario es el Jefe de la empresa'}), 400
+
     
-    # return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    if request.form.get('_method') == 'DELETE':
+        try:
+            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+            db.session.commit()
+
+            # Eliminar el usuario
+            db.session.delete(usuario)
+            db.session.commit()
+
+            # Verificar si realmente se eliminó
+            check = Usuario.query.get(id)
+            if check:
+                return jsonify({'success': False, 'message': 'Error: El usuario no se eliminó correctamente'}), 500
+
+            return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+        
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
+
+    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
 
 # Vehículo ALL
 @routes.route('/vehiculo', methods=['GET'])
