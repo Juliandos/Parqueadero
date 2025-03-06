@@ -1201,62 +1201,68 @@ def sede():
 
 # Sede CREATE
 @routes.route('/sede/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_sede():
-    data = request.get_json()
-    required_fields = ['nombre', 'direccion', 'telefono', 'email', 'ciudad', 'parqueadero_id', 'usuario_id']
-    
-    if not all(data.get(field) for field in required_fields):
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        required_fields = ['nombre', 'direccion', 'telefono', 'email', 'ciudad', 'parqueadero_id', 'usuario_id']
+        
+        if not all(data.get(field) for field in required_fields):
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-    nueva_sede = Sede(
-        nombre=data['nombre'],
-        direccion=data['direccion'],
-        telefono=data['telefono'],
-        email=data['email'],
-        ciudad=data['ciudad'],
-        parqueadero_id=data['parqueadero_id'],
-        usuario_id=data['usuario_id']
-    )
+        nueva_sede = Sede(
+            nombre=data['nombre'],
+            direccion=data['direccion'],
+            telefono=data['telefono'],
+            email=data['email'],
+            ciudad=data['ciudad'],
+            parqueadero_id=data['parqueadero_id'],
+            usuario_id=data['usuario_id']
+        )
 
-    db.session.add(nueva_sede)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Sede creada correctamente'})
+        db.session.add(nueva_sede)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Sede creada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Sede UPDATE
 @routes.route('/sede/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_sede(id):
-    data = request.get_json()
-    sede = Sede.query.get_or_404(id)
-    
-    sede.nombre = data.get('nombre', sede.nombre)
-    sede.direccion = data.get('direccion', sede.direccion)
-    sede.telefono = data.get('telefono', sede.telefono)
-    sede.email = data.get('email', sede.email)
-    sede.ciudad = data.get('ciudad', sede.ciudad)
-    sede.parqueadero_id = data.get('parqueadero_id', sede.parqueadero_id)
-    sede.usuario_id = data.get('usuario_id', sede.usuario_id)
-    sede.updated_at = datetime.now()
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        sede = Sede.query.get_or_404(id)
+        
+        sede.nombre = data.get('nombre', sede.nombre)
+        sede.direccion = data.get('direccion', sede.direccion)
+        sede.telefono = data.get('telefono', sede.telefono)
+        sede.email = data.get('email', sede.email)
+        sede.ciudad = data.get('ciudad', sede.ciudad)
+        sede.parqueadero_id = data.get('parqueadero_id', sede.parqueadero_id)
+        sede.usuario_id = data.get('usuario_id', sede.usuario_id)
+        sede.updated_at = datetime.now()
 
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Sede actualizada correctamente'})
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Sede actualizada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Sede DELETE
 @routes.route('/sede/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_sede(id):
-    sede = Sede.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        sede = Sede.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(sede)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Sede eliminada'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(sede)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Sede eliminada'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Pais ALL
 @routes.route('/pais', methods=['GET'])
@@ -1278,53 +1284,58 @@ def pais():
 
 # Pais CREATE
 @routes.route('/pais/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_pais():
-    data = request.get_json()
-    
-    if not data.get('nombre'):
-        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        
+        if not data.get('nombre'):
+            return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
 
-    nuevo_pais = Pais(
-        nombre=data['nombre']
-    )
+        nuevo_pais = Pais(
+            nombre=data['nombre']
+        )
 
-    db.session.add(nuevo_pais)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'País creado correctamente'})
+        db.session.add(nuevo_pais)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'País creado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Pais UPDATE
 @routes.route('/pais/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_pais(id):
-    data = request.get_json()
-    pais = Pais.query.get_or_404(id)
-    
-    pais.nombre = data.get('nombre', pais.nombre)
-    pais.updated_at = datetime.now()
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        pais = Pais.query.get_or_404(id)
+        
+        pais.nombre = data.get('nombre', pais.nombre)
+        pais.updated_at = datetime.now()
 
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'País actualizado correctamente'})
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'País actualizado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Pais DELETE
 @routes.route('/pais/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_pais(id):
-    pais = Pais.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        pais = Pais.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(pais)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'País eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(pais)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'País eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Periodicidad ALL
 @routes.route('/periodicidad', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def periodicidad():
     periodicidades = Periodicidad.query.all()
@@ -1343,55 +1354,60 @@ def periodicidad():
 
 # Periodicidad CREATE
 @routes.route('/periodicidad/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_periodicidad():
-    data = request.get_json()
-    
-    if not data.get('nombre') or not data.get('dias'):
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        
+        if not data.get('nombre') or not data.get('dias'):
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-    nueva_periodicidad = Periodicidad(
-        nombre=data['nombre'],
-        dias=data['dias']
-    )
+        nueva_periodicidad = Periodicidad(
+            nombre=data['nombre'],
+            dias=data['dias']
+        )
 
-    db.session.add(nueva_periodicidad)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Periodicidad creada correctamente'})
+        db.session.add(nueva_periodicidad)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Periodicidad creada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Periodicidad UPDATE
 @routes.route('/periodicidad/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_periodicidad(id):
-    data = request.get_json()
-    periodicidad = Periodicidad.query.get_or_404(id)
-    
-    periodicidad.nombre = data.get('nombre', periodicidad.nombre)
-    periodicidad.dias = data.get('dias', periodicidad.dias)
-    periodicidad.updated_at = datetime.now()
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        periodicidad = Periodicidad.query.get_or_404(id)
+        
+        periodicidad.nombre = data.get('nombre', periodicidad.nombre)
+        periodicidad.dias = data.get('dias', periodicidad.dias)
+        periodicidad.updated_at = datetime.now()
 
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Periodicidad actualizada correctamente'})
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Periodicidad actualizada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Periodicidad DELETE
 @routes.route('/periodicidad/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_periodicidad(id):
-    periodicidad = Periodicidad.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        periodicidad = Periodicidad.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(periodicidad)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Periodicidad eliminada'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(periodicidad)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Periodicidad eliminada'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Puntos ALL
 @routes.route('/puntos')
-@jefe_permission.require(http_exception=403)
 @login_required
 def puntos():
     puntos = Punto.query.join(Cliente).add_columns(
@@ -1415,59 +1431,64 @@ def puntos():
 
 # Puntos CREATE
 @routes.route('/punto/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_punto():
-    data = request.get_json()
-    cantidad = data.get('cantidad')
-    cliente_id = data.get('cliente_id')
-    
-    if not cantidad or not cliente_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        cantidad = data.get('cantidad')
+        cliente_id = data.get('cliente_id')
+        
+        if not cantidad or not cliente_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-    nuevo_punto = Punto(
-        cantidad=cantidad,
-        cliente_id=cliente_id,
-        created_at=datetime.now(),
-        updated_at=datetime.now()
-    )
+        nuevo_punto = Punto(
+            cantidad=cantidad,
+            cliente_id=cliente_id,
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
 
-    db.session.add(nuevo_punto)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Punto creado correctamente'})
+        db.session.add(nuevo_punto)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Punto creado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Puntos UPDATE
 @routes.route('/punto/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_punto(id):
-    data = request.get_json()
-    punto = Punto.query.get_or_404(id)
-    
-    punto.cantidad = data.get('cantidad', punto.cantidad)
-    punto.cliente_id = data.get('cliente_id', punto.cliente_id)
-    punto.updated_at = datetime.now()
-    
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Punto actualizado correctamente'})
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        punto = Punto.query.get_or_404(id)
+        
+        punto.cantidad = data.get('cantidad', punto.cantidad)
+        punto.cliente_id = data.get('cliente_id', punto.cliente_id)
+        punto.updated_at = datetime.now()
+        
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Punto actualizado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Puntos DELETE
 @routes.route('/punto/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_punto(id):
-    punto = Punto.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        punto = Punto.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(punto)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Punto eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(punto)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Punto eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Redimir ALL
 @routes.route('/redimir')
-@jefe_permission.require(http_exception=403)
 @login_required
 def redimir():
     redenciones = Redimir.query.join(Punto).add_columns(
@@ -1493,52 +1514,58 @@ def redimir():
 
 # Redimir CREATE
 @routes.route('/redimir/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_redencion():
-    data = request.get_json()
-    cantidad = data.get('cantidad')
-    puntos_id = data.get('puntos_id')
-    
-    if not cantidad or not puntos_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        cantidad = data.get('cantidad')
+        puntos_id = data.get('puntos_id')
+        
+        if not cantidad or not puntos_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-    nuevo_redimir = Redimir(
-        cantidad=cantidad,
-        punto_id=puntos_id
-    )
+        nuevo_redimir = Redimir(
+            cantidad=cantidad,
+            punto_id=puntos_id
+        )
 
-    db.session.add(nuevo_redimir)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Redención registrada correctamente'})
+        db.session.add(nuevo_redimir)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Redención registrada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Redimir UPDATE
 @routes.route('/redimir/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_redencion(id):
-    data = request.get_json()
-    redimir = Redimir.query.get_or_404(id)
-    
-    redimir.cantidad = data.get('cantidad', redimir.cantidad)
-    redimir.punto_id = data.get('puntos_id', redimir.punto_id)
-    
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Redención actualizada correctamente'})
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        redimir = Redimir.query.get_or_404(id)
+        
+        redimir.cantidad = data.get('cantidad', redimir.cantidad)
+        redimir.punto_id = data.get('puntos_id', redimir.punto_id)
+        
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Redención actualizada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Redimir DELETE
 @routes.route('/redimir/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_redencion(id):
-    redimir = Redimir.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        redimir = Redimir.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(redimir)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Redención eliminada'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(redimir)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Redención eliminada'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Parqueadero ALL
 @routes.route('/parqueadero', methods=['GET'])
