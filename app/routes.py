@@ -60,7 +60,6 @@ def vehiculo_tipo_delete(id):
 
 # VehiculoTipo CREATE
 @routes.route('/vehiculo_tipo/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_add():
     if jefe_permission.can() or admin_permission.can():
@@ -78,20 +77,22 @@ def vehiculo_tipo_add():
 
 # VehiculoTipo EDIT
 @routes.route('/vehiculo_tipo/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_edit(id):
-    data = request.get_json()
-    nombre = data.get('nombre')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
 
-    tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
-    if not nombre:
-        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+        tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
+        if not nombre:
+            return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
 
-    tipo_vehiculo.nombre = nombre
-    db.session.commit()  # Se actualiza automáticamente `updated_at`
-    
-    return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
+        tipo_vehiculo.nombre = nombre
+        db.session.commit()  # Se actualiza automáticamente `updated_at`
+        
+        return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
+    else:
+        return jsonify({'error': False, 'message': 'Acceso denegado'}), 403
 
 # TarifaTipo ALL
 @routes.route('/tarifa_tipo', methods=['GET'])
@@ -102,199 +103,220 @@ def tarifa_tipo():
 
 # TarifaTipo CREATE
 @routes.route('/tarifa_tipo/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_add():
-    data = request.get_json()
-    nombre = data.get('nombre')
-    unidad = data.get('unidad')
-    if not nombre or not unidad:
-        return jsonify({'success': False, 'message': 'Los campos nombre y unidad son obligatorios'}), 400
-    
-    nueva_tarifa = TarifaTipo(nombre=nombre, unidad=unidad)
-    db.session.add(nueva_tarifa)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        unidad = data.get('unidad')
+        if not nombre or not unidad:
+            return jsonify({'success': False, 'message': 'Los campos nombre y unidad son obligatorios'}), 400
+        
+        nueva_tarifa = TarifaTipo(nombre=nombre, unidad=unidad)
+        db.session.add(nueva_tarifa)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # TarifaTipo UPDATE
 @routes.route('/tarifa_tipo/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_update(id):
-    data = request.get_json()
-    nombre = data.get('nombre')
-    unidad = data.get('unidad')
-    if not nombre or not unidad:
-        return jsonify({'success': False, 'message': 'Los campos nombre y unidad son obligatorios'}), 400
-    
-    tarifa_tipo = TarifaTipo.query.get_or_404(id)
-    tarifa_tipo.nombre = nombre
-    tarifa_tipo.unidad = unidad
-    db.session.commit()  # Se actualiza automáticamente `updated_at`
-    
-    return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'}), 200
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        unidad = data.get('unidad')
+        if not nombre or not unidad:
+            return jsonify({'success': False, 'message': 'Los campos nombre y unidad son obligatorios'}), 400
+        
+        tarifa_tipo = TarifaTipo.query.get_or_404(id)
+        tarifa_tipo.nombre = nombre
+        tarifa_tipo.unidad = unidad
+        db.session.commit()  # Se actualiza automáticamente `updated_at`
+        
+        return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'}), 200
+    else:
+        return jsonify({'error': False, 'message': 'Acceso denegado'}), 403
 
 # TarifaTipo DELETE
 @routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa_tipo_delete(id):
-    tarifa_tipo = TarifaTipo.query.get_or_404(id)
-    
-    if request.form.get('_method') == 'DELETE':  # Simular DELETE
-        db.session.delete(tarifa_tipo)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        tarifa_tipo = TarifaTipo.query.get_or_404(id)
+        
+        if request.form.get('_method') == 'DELETE':  # Simular DELETE
+            db.session.delete(tarifa_tipo)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # MedioPago ALL
 @routes.route('/medio_pago', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def medio_pago():
-    medios_pagos = MedioPago.query.all()
-    return render_template('medio_pago.html', titulo='Medios de Pago', medios_pagos = medios_pagos)
+    if jefe_permission.can() or admin_permission.can():
+        medios_pagos = MedioPago.query.all()
+        return render_template('medio_pago.html', titulo='Medios de Pago', medios_pagos = medios_pagos)
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # MedioPago CREATE
 @routes.route('/medio_pago/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def add_medio_pago():
-    data = request.get_json()
-    nombre = data.get('nombre')
-    if not nombre:
-        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
-    
-    nuevo_medio = MedioPago(nombre=nombre)
-    db.session.add(nuevo_medio)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Medio de pago agregado correctamente'})
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        if not nombre:
+            return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+        
+        nuevo_medio = MedioPago(nombre=nombre)
+        db.session.add(nuevo_medio)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Medio de pago agregado correctamente'})
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # MedioPago UPDATE
 @routes.route('/medio_pago/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def update_medio_pago(id):
-    data = request.get_json()
-    nombre = data.get('nombre')
-    if not nombre:
-        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
-    
-    medio_pago = MedioPago.query.get_or_404(id)
-    medio_pago.nombre = nombre
-    db.session.commit()  # Se actualiza automáticamente `updated_at`
-    
-    return jsonify({'success': True, 'message': 'Medio de pago actualizado correctamente'}), 200
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        if not nombre:
+            return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+        
+        medio_pago = MedioPago.query.get_or_404(id)
+        medio_pago.nombre = nombre
+        db.session.commit()  # Se actualiza automáticamente `updated_at`
+        
+        return jsonify({'success': True, 'message': 'Medio de pago actualizado correctamente'}), 200
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # MedioPago DELETE
 @routes.route('/medio_pago/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def delete_medio_pago(id):
-    medio_pago = MedioPago.query.get_or_404(id)
-    
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(medio_pago)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Medio de pago eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        medio_pago = MedioPago.query.get_or_404(id)
+        
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(medio_pago)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Medio de pago eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # Cliente ALL
 @routes.route('/cliente', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def cliente():
-    clientes = Cliente.query.join(Parqueadero).add_columns(
-        Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.id.label('parqueadero_id'), Parqueadero.nombre.label('parqueadero_nombre')
-    ).all()
+    if jefe_permission.can() or admin_permission.can():
+        clientes = Cliente.query.join(Parqueadero).add_columns(
+            Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.id.label('parqueadero_id'), Parqueadero.nombre.label('parqueadero_nombre')
+        ).all()
 
-    parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
+        parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
 
-    clientes_dict = [
-        {
-            "id": u.id,
-            "documento": u.documento,
-            "nombres": u.nombres,
-            "apellidos": u.apellidos,
-            "telefono": u.telefono,
-            "email": u.email,
-            "direccion": u.direccion,
-            "parqueadero_nombre": u.parqueadero_nombre
-        }
-        for u in clientes
-    ]
-    return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict, parqueaderos=parqueaderos)
+        clientes_dict = [
+            {
+                "id": u.id,
+                "documento": u.documento,
+                "nombres": u.nombres,
+                "apellidos": u.apellidos,
+                "telefono": u.telefono,
+                "email": u.email,
+                "direccion": u.direccion,
+                "parqueadero_nombre": u.parqueadero_nombre
+            }
+            for u in clientes
+        ]
+        return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict, parqueaderos=parqueaderos)
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # Cliente CREATE
 @routes.route('/cliente/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def add_cliente():
-    data = request.get_json()
-    documento = data.get('documento')
-    nombres = data.get('nombres')
-    apellidos = data.get('apellidos')
-    telefono = data.get('telefono')
-    email = data.get('email')
-    direccion = data.get('direccion')
-    parqueadero_id = data.get('parqueadero_id')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        documento = data.get('documento')
+        nombres = data.get('nombres')
+        apellidos = data.get('apellidos')
+        telefono = data.get('telefono')
+        email = data.get('email')
+        direccion = data.get('direccion')
+        parqueadero_id = data.get('parqueadero_id')
 
-    if not documento or not nombres or not apellidos or not telefono or not email or not direccion or not parqueadero_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
-    
-    nuevo_cliente = Cliente(documento=documento, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, direccion=direccion, parqueadero_id=parqueadero_id)
-    db.session.add(nuevo_cliente)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Cliente agregado correctamente'})
+        if not documento or not nombres or not apellidos or not telefono or not email or not direccion or not parqueadero_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        
+        nuevo_cliente = Cliente(documento=documento, nombres=nombres, apellidos=apellidos, telefono=telefono, email=email, direccion=direccion, parqueadero_id=parqueadero_id)
+        db.session.add(nuevo_cliente)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Cliente agregado correctamente'})
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # Cliente UPDATE
 @routes.route('/cliente/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def update_cliente(id):
-    data = request.get_json()
-    documento = data.get('documento')
-    nombres = data.get('nombres')
-    apellidos = data.get('apellidos')
-    telefono = data.get('telefono')
-    email = data.get('email')
-    direccion = data.get('direccion')
-    parqueadero_id = data.get('parqueadero_id')
-    
-    if not documento or not nombres or not apellidos or not telefono or not email or not direccion or not parqueadero_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
-    
-    cliente = Cliente.query.get_or_404(id)
-    cliente.documento = documento
-    cliente.nombres = nombres
-    cliente.apellidos = apellidos
-    cliente.telefono = telefono
-    cliente.email = email
-    cliente.direccion = direccion
-    cliente.parqueadero_id = parqueadero_id
-    db.session.commit()  # Se actualiza automáticamente `updated_at`
-    
-    return jsonify({'success': True, 'message': 'Cliente actualizado correctamente'}), 200
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        documento = data.get('documento')
+        nombres = data.get('nombres')
+        apellidos = data.get('apellidos')
+        telefono = data.get('telefono')
+        email = data.get('email')
+        direccion = data.get('direccion')
+        parqueadero_id = data.get('parqueadero_id')
+        
+        if not documento or not nombres or not apellidos or not telefono or not email or not direccion or not parqueadero_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        
+        cliente = Cliente.query.get_or_404(id)
+        cliente.documento = documento
+        cliente.nombres = nombres
+        cliente.apellidos = apellidos
+        cliente.telefono = telefono
+        cliente.email = email
+        cliente.direccion = direccion
+        cliente.parqueadero_id = parqueadero_id
+        db.session.commit()  # Se actualiza automáticamente `updated_at`
+        
+        return jsonify({'success': True, 'message': 'Cliente actualizado correctamente'}), 200
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # Cliente DELETE
 @routes.route('/cliente/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def delete_cliente(id):
-    cliente = Cliente.query.get_or_404(id)
-    
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(cliente)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Cliente eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        cliente = Cliente.query.get_or_404(id)
+        
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(cliente)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Cliente eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # Rol ALL
 @routes.route('/rol', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def rol():
     roles = Rol.query.all()
@@ -302,52 +324,55 @@ def rol():
 
 # Rol CREATE
 @routes.route('/rol/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def add_rol():
-    data = request.get_json()
-    nombre = data.get('nombre')
-    if not nombre:
-        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
-    
-    nuevo_rol = Rol(nombre=nombre)
-    db.session.add(nuevo_rol)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Rol agregado correctamente'})
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        if not nombre:
+            return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+        
+        nuevo_rol = Rol(nombre=nombre)
+        db.session.add(nuevo_rol)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Rol agregado correctamente'})
 
 # Rol UPDATE
 @routes.route('/rol/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def update_rol(id):
-    data = request.get_json()
-    nombre = data.get('nombre')
-    if not nombre:
-        return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
-    
-    rol = Rol.query.get_or_404(id)
-    rol.nombre = nombre
-    db.session.commit()  # Se actualiza automáticamente `updated_at`
-    
-    return jsonify({'success': True, 'message': 'Rol actualizado correctamente'}), 200
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        if not nombre:
+            return jsonify({'success': False, 'message': 'El nombre es obligatorio'}), 400
+        
+        rol = Rol.query.get_or_404(id)
+        rol.nombre = nombre
+        db.session.commit()  # Se actualiza automáticamente `updated_at`
+        
+        return jsonify({'success': True, 'message': 'Rol actualizado correctamente'}), 200
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # Rol DELETE
 @routes.route('/rol/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def delete_rol(id):
-    rol = Rol.query.get_or_404(id)
-    
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(rol)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Rol eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    if jefe_permission.can() or admin_permission.can():
+        rol = Rol.query.get_or_404(id)
+        
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(rol)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Rol eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
 
 # Usuario ALL
 @routes.route('/usuario', methods=['GET'])
-# @jefe_permission.require(http_exception=403)
 @login_required
 def usuario():
     if jefe_permission.can() or admin_permission.can():
@@ -411,7 +436,6 @@ def usuario():
 
 # Usuario CREATE
 @routes.route('/usuario/add', methods=['POST'])
-# @jefe_permission.require(http_exception=403)
 @login_required
 def add_usuario():
     if jefe_permission.can() or admin_permission.can():
@@ -489,123 +513,126 @@ def add_usuario():
 @routes.route('/usuario/edit/<int:id>', methods=['PUT'])
 @login_required
 def update_usuario(id):
-    try:
-        data = request.get_json()
-        documento = data.get('documento')
-        contrasena = data.get('contrasena')
-        nombres = data.get('nombres')
-        apellidos = data.get('apellidos')
-        telefono = data.get('telefono')
-        email = data.get('email')
-        ciudad = data.get('ciudad')
-        direccion = data.get('direccion')
-        rol_id = data.get('rol_id')
-        parqueadero_id = data.get('parqueadero_id')
-        acceso = data.get('acceso')
+    if jefe_permission.can() or admin_permission.can():
+        try:
+            data = request.get_json()
+            documento = data.get('documento')
+            contrasena = data.get('contrasena')
+            nombres = data.get('nombres')
+            apellidos = data.get('apellidos')
+            telefono = data.get('telefono')
+            email = data.get('email')
+            ciudad = data.get('ciudad')
+            direccion = data.get('direccion')
+            rol_id = data.get('rol_id')
+            parqueadero_id = data.get('parqueadero_id')
+            acceso = data.get('acceso')
 
-        if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
-            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+            if not documento or not nombres or not apellidos or not telefono or not email or not ciudad or not direccion or not rol_id or not parqueadero_id:
+                return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-        rol_id = int(rol_id)
+            rol_id = int(rol_id)
 
-        rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
-        rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
+            rol_jefe_id = db.session.query(Rol.id).filter(Rol.nombre == "Jefe").scalar()
+            rol_admin_id = db.session.query(Rol.id).filter(Rol.nombre == "Administrador").scalar()
 
-        # Validar si ya hay un jefe para ese parqueadero
-        if rol_id == rol_jefe_id and not acceso:
-            usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
-                parqueadero_usuario.c.parqueadero_id == parqueadero_id,
-                Usuario.rol_id == rol_jefe_id
-            ).first()
+            # Validar si ya hay un jefe para ese parqueadero
+            if rol_id == rol_jefe_id and not acceso:
+                usuario_jefe_existente = db.session.query(Usuario).join(parqueadero_usuario).filter(
+                    parqueadero_usuario.c.parqueadero_id == parqueadero_id,
+                    Usuario.rol_id == rol_jefe_id
+                ).first()
 
-            if usuario_jefe_existente and usuario_jefe_existente.id != current_user.id:
-                return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
+                if usuario_jefe_existente and usuario_jefe_existente.id != current_user.id:
+                    return jsonify({'success': False, 'message': 'Ya existe un usuario con rol de Jefe en este parqueadero'}), 400
 
-        # Validar si ya hay más de dos administradores en el mismo parqueadero
-        if rol_id == rol_admin_id:
-            administradores = (
-                db.session.query(Usuario)
-                .join(parqueadero_usuario)
-                .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
-                .filter(Usuario.rol_id == rol_admin_id)
-                .filter(Usuario.id != id)
-                .count()
-            )
-            print(administradores)
-            if administradores >= 2:
-                return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
+            # Validar si ya hay más de dos administradores en el mismo parqueadero
+            if rol_id == rol_admin_id:
+                administradores = (
+                    db.session.query(Usuario)
+                    .join(parqueadero_usuario)
+                    .filter(parqueadero_usuario.c.parqueadero_id == parqueadero_id)
+                    .filter(Usuario.rol_id == rol_admin_id)
+                    .filter(Usuario.id != id)
+                    .count()
+                )
+                if administradores >= 2:
+                    return jsonify({'success': False, 'message': 'No se pueden asignar más de tres Administradores a un parqueadero'}), 400
 
-        usuario = Usuario.query.get_or_404(id)
+            usuario = Usuario.query.get_or_404(id)
 
-        if contrasena and not contrasena.startswith("$2b$"):
-            usuario.contrasena = bcrypt.generate_password_hash(contrasena)
+            if contrasena and not contrasena.startswith("$2b$"):
+                usuario.contrasena = bcrypt.generate_password_hash(contrasena)
 
-        usuario.documento = documento
-        usuario.nombres = nombres
-        usuario.apellidos = apellidos
-        usuario.telefono = telefono
-        usuario.email = email
-        usuario.ciudad = ciudad
-        usuario.direccion = direccion
-        usuario.rol_id = rol_id
+            usuario.documento = documento
+            usuario.nombres = nombres
+            usuario.apellidos = apellidos
+            usuario.telefono = telefono
+            usuario.email = email
+            usuario.ciudad = ciudad
+            usuario.direccion = direccion
+            usuario.rol_id = rol_id
 
-        if parqueadero_id:
-            parqueadero = Parqueadero.query.get(parqueadero_id)
-            if not parqueadero:
-                return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
+            if parqueadero_id:
+                parqueadero = Parqueadero.query.get(parqueadero_id)
+                if not parqueadero:
+                    return jsonify({'success': False, 'message': 'Parqueadero no encontrado'}), 404
 
-            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+                db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
 
-            association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
-            db.session.execute(association)
+                association = parqueadero_usuario.insert().values(parqueadero_id=parqueadero_id, usuario_id=id)
+                db.session.execute(association)
 
-        db.session.commit()
+            db.session.commit()
 
-        return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
-
-    except Exception as e:
-        return jsonify({'success': False, 'message': f'Error inesperado: {str(e)}'}), 500
+            return jsonify({'success': True, 'message': 'Usuario actualizado correctamente'}), 200
+        except Exception as e:
+            return jsonify({'success': False, 'message': f'Error inesperado: {str(e)}'}), 500
+    else:
+        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Usuario DELETE
 @routes.route('/usuario/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_usuario(id):
-    usuario = Usuario.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        usuario = Usuario.query.get_or_404(id)
 
-    # Validar si hay sedes asociadas
-    if Sede.query.filter_by(usuario_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
-    
-    # Validar si el usuario es Jefe y no es el Jefe de la empresa
-    if usuario.rol_id == 1 and current_user.id == 2:
-        return jsonify({'success': False, 'message': 'No se puede eliminar: Este usuario es el Jefe de la empresa'}), 400
-
-    
-    if request.form.get('_method') == 'DELETE':
-        try:
-            db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
-            db.session.commit()
-
-            # Eliminar el usuario
-            db.session.delete(usuario)
-            db.session.commit()
-
-            # Verificar si realmente se eliminó
-            check = Usuario.query.get(id)
-            if check:
-                return jsonify({'success': False, 'message': 'Error: El usuario no se eliminó correctamente'}), 500
-
-            return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+        # Validar si hay sedes asociadas
+        if Sede.query.filter_by(usuario_id=id).first():
+            return jsonify({'success': False, 'message': 'No se puede eliminar: Hay sedes asociadas a este usuario'}), 400
         
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
+        # Validar si el usuario es Jefe y no es el Jefe de la empresa
+        if usuario.rol_id == 1 and current_user.id == 2:
+            return jsonify({'success': False, 'message': 'No se puede eliminar: Este usuario es el Jefe de la empresa'}), 400
 
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        
+        if request.form.get('_method') == 'DELETE':
+            try:
+                db.session.execute(parqueadero_usuario.delete().where(parqueadero_usuario.c.usuario_id == id))
+                db.session.commit()
+
+                # Eliminar el usuario
+                db.session.delete(usuario)
+                db.session.commit()
+
+                # Verificar si realmente se eliminó
+                check = Usuario.query.get(id)
+                if check:
+                    return jsonify({'success': False, 'message': 'Error: El usuario no se eliminó correctamente'}), 500
+
+                return jsonify({'success': True, 'message': 'Usuario eliminado'}), 200
+            
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'success': False, 'message': f'Error al eliminar: {str(e)}'}), 500
+
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Vehículo ALL
 @routes.route('/vehiculo', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo():
     vehiculos = Vehiculo.query \
@@ -641,69 +668,74 @@ def vehiculo():
 
 # Vehículo CREATE
 @routes.route('/vehiculo/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def add_vehiculo():
-    data = request.get_json()
-    placa = data.get('placa')
-    marca = data.get('marca')
-    modelo = data.get('modelo')
-    vehiculo_tipo_id = data.get('vehiculo_tipo_id')
-    cliente_id = data.get('cliente_id')
-    
-    if not placa or not marca or not modelo or not vehiculo_tipo_id or not cliente_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
-    
-    if Vehiculo.query.filter_by(placa=placa).first():
-        return jsonify({'success': False, 'message': 'La placa ya existe'}), 400
-    
-    nuevo_vehiculo = Vehiculo(placa=placa, marca=marca, modelo=modelo, vehiculo_tipo_id=vehiculo_tipo_id, cliente_id=cliente_id)
-    db.session.add(nuevo_vehiculo)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        placa = data.get('placa')
+        marca = data.get('marca')
+        modelo = data.get('modelo')
+        vehiculo_tipo_id = data.get('vehiculo_tipo_id')
+        cliente_id = data.get('cliente_id')
+        
+        if not placa or not marca or not modelo or not vehiculo_tipo_id or not cliente_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        
+        if Vehiculo.query.filter_by(placa=placa).first():
+            return jsonify({'success': False, 'message': 'La placa ya existe'}), 400
+        
+        nuevo_vehiculo = Vehiculo(placa=placa, marca=marca, modelo=modelo, vehiculo_tipo_id=vehiculo_tipo_id, cliente_id=cliente_id)
+        db.session.add(nuevo_vehiculo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})
+    else:
+        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Vehiculo UPDATE
 @routes.route('/vehiculo/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def update_vehiculo(id):
-    data = request.get_json()
-    placa = data.get('placa')
-    marca = data.get('marca')
-    modelo = data.get('modelo')
-    vehiculo_tipo_id = data.get('vehiculo_tipo_id')
-    cliente_id = data.get('cliente_id')
-    
-    if not placa or not marca or not modelo or not vehiculo_tipo_id or not cliente_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
-    
-    vehiculo = Vehiculo.query.get_or_404(id)
-    vehiculo.placa = placa
-    vehiculo.marca = marca
-    vehiculo.modelo = modelo
-    vehiculo.vehiculo_tipo_id = vehiculo_tipo_id
-    vehiculo.cliente_id = cliente_id
-    db.session.commit()  # Se actualiza automáticamente `updated_at`
-    
-    return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        placa = data.get('placa')
+        marca = data.get('marca')
+        modelo = data.get('modelo')
+        vehiculo_tipo_id = data.get('vehiculo_tipo_id')
+        cliente_id = data.get('cliente_id')
+        
+        if not placa or not marca or not modelo or not vehiculo_tipo_id or not cliente_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        
+        vehiculo = Vehiculo.query.get_or_404(id)
+        vehiculo.placa = placa
+        vehiculo.marca = marca
+        vehiculo.modelo = modelo
+        vehiculo.vehiculo_tipo_id = vehiculo_tipo_id
+        vehiculo.cliente_id = cliente_id
+        db.session.commit()  # Se actualiza automáticamente `updated_at`
+        
+        return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
+    else:
+        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Vehículo DELETE
 @routes.route('/vehiculo/delete/<string:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def delete_vehiculo(id):
-    vehiculo = Vehiculo.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        vehiculo = Vehiculo.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(vehiculo)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Vehículo eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(vehiculo)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Vehículo eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False, 'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Tarifa ALL
 @routes.route('/tarifa', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def tarifa():
     tarifas = Tarifa.query \
@@ -736,61 +768,67 @@ def tarifa():
 
 # Tarifa CREATE
 @routes.route('/tarifa/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def add_tarifa():
-    data = request.get_json()
-    nombre = data.get('nombre')
-    costo = data.get('costo')
-    tarifacol = data.get('tarifacol')
-    tarifa_tipo_id = data.get('tarifa_tipo_id')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        costo = data.get('costo')
+        tarifacol = data.get('tarifacol')
+        tarifa_tipo_id = data.get('tarifa_tipo_id')
 
-    if not nombre or not costo or not tarifa_tipo_id:
-        return jsonify({'success': False, 'message': 'Todos los campos obligatorios'}), 400
+        if not nombre or not costo or not tarifa_tipo_id:
+            return jsonify({'success': False, 'message': 'Todos los campos obligatorios'}), 400
 
-    nueva_tarifa = Tarifa(
-        nombre=nombre, costo=costo, tarifacol=tarifacol, tarifa_tipo_id=tarifa_tipo_id
-    )
-    db.session.add(nueva_tarifa)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
+        nueva_tarifa = Tarifa(
+            nombre=nombre, costo=costo, tarifacol=tarifacol, tarifa_tipo_id=tarifa_tipo_id
+        )
+        db.session.add(nueva_tarifa)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Tarifa UPDATE
 @routes.route('/tarifa/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def update_tarifa(id):
-    data = request.get_json()
-    nombre = data.get('nombre')
-    costo = data.get('costo')
-    tarifacol = data.get('tarifacol')
-    tarifa_tipo_id = data.get('tarifa_tipo_id')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        costo = data.get('costo')
+        tarifacol = data.get('tarifacol')
+        tarifa_tipo_id = data.get('tarifa_tipo_id')
 
-    if not nombre or not costo or not tarifa_tipo_id:
-        return jsonify({'success': False, 'message': 'Todos los campos obligatorios'}), 400
+        if not nombre or not costo or not tarifa_tipo_id:
+            return jsonify({'success': False, 'message': 'Todos los campos obligatorios'}), 400
 
-    tarifa = Tarifa.query.get_or_404(id)
-    tarifa.nombre = nombre
-    tarifa.costo = costo
-    tarifa.tarifacol = tarifacol
-    tarifa.tarifa_tipo_id = tarifa_tipo_id
-    db.session.commit()
-    
-    return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'})
+        tarifa = Tarifa.query.get_or_404(id)
+        tarifa.nombre = nombre
+        tarifa.costo = costo
+        tarifa.tarifacol = tarifacol
+        tarifa.tarifa_tipo_id = tarifa_tipo_id
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Tarifa DELETE
 @routes.route('/tarifa/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def delete_tarifa(id):
-    tarifa = Tarifa.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        tarifa = Tarifa.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(tarifa)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(tarifa)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Tarifa eliminada'}), 200
 
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Parqueo ALL
 @routes.route('/parqueo', methods=['GET'])
@@ -840,70 +878,75 @@ def parqueo():
 
 # Parqueo CREATE
 @routes.route('/parqueo/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_parqueo():
-    data = request.get_json()
-    modulo_id = data.get('modulo_id')
-    vehiculo_placa = data.get('vehiculo_placa')
-    medio_pago_id = data.get('medio_pago_id')
-    tarifa_id = data.get('tarifa_id')
-    fecha_entrada = data.get('fecha_entrada')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        modulo_id = data.get('modulo_id')
+        vehiculo_placa = data.get('vehiculo_placa')
+        medio_pago_id = data.get('medio_pago_id')
+        tarifa_id = data.get('tarifa_id')
+        fecha_entrada = data.get('fecha_entrada')
 
-    if not modulo_id or not vehiculo_placa or not medio_pago_id or not tarifa_id or not fecha_entrada:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        if not modulo_id or not vehiculo_placa or not medio_pago_id or not tarifa_id or not fecha_entrada:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-    nuevo_parqueo = Parqueo(
-        fecha_entrada=datetime.now(),
-        modulo_id=modulo_id,
-        vehiculo_placa=vehiculo_placa,
-        medio_pago_id=medio_pago_id,
-        tarifa_id=tarifa_id
-    )
+        nuevo_parqueo = Parqueo(
+            fecha_entrada=datetime.now(),
+            modulo_id=modulo_id,
+            vehiculo_placa=vehiculo_placa,
+            medio_pago_id=medio_pago_id,
+            tarifa_id=tarifa_id
+        )
 
-    db.session.add(nuevo_parqueo)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Parqueo registrado correctamente'})
+        db.session.add(nuevo_parqueo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Parqueo registrado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Parqueo UPDATE
 @routes.route('/parqueo/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_parqueo(id):
-    data = request.get_json()
-    modulo_id = data.get('modulo_id')
-    vehiculo_placa = data.get('vehiculo_placa')
-    medio_pago_id = data.get('medio_pago_id')
-    tarifa_id = data.get('tarifa_id')
-    fecha_salida = data.get('fecha_salida')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        modulo_id = data.get('modulo_id')
+        vehiculo_placa = data.get('vehiculo_placa')
+        medio_pago_id = data.get('medio_pago_id')
+        tarifa_id = data.get('tarifa_id')
+        fecha_salida = data.get('fecha_salida')
 
-    parqueo = Parqueo.query.get_or_404(id)
-    parqueo.fecha_salida = datetime.fromisoformat(fecha_salida)
-    parqueo.modulo_id = modulo_id
-    parqueo.vehiculo_placa = vehiculo_placa
-    parqueo.medio_pago_id = medio_pago_id
-    parqueo.tarifa_id = tarifa_id
+        parqueo = Parqueo.query.get_or_404(id)
+        parqueo.fecha_salida = datetime.fromisoformat(fecha_salida)
+        parqueo.modulo_id = modulo_id
+        parqueo.vehiculo_placa = vehiculo_placa
+        parqueo.medio_pago_id = medio_pago_id
+        parqueo.tarifa_id = tarifa_id
 
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Parqueo actualizado correctamente'})
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Parqueo actualizado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Parqueo DELETE
 @routes.route('/parqueo/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_parqueo(id):
-    parqueo = Parqueo.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        parqueo = Parqueo.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(parqueo)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Parqueo eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(parqueo)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Parqueo eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Arrendamiento ALL
 @routes.route('/arrendamiento', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def arrendamiento():
     arrendamientos = Arrendamiento.query \
@@ -949,67 +992,72 @@ def arrendamiento():
 
 # Arrendamiento CREATE
 @routes.route('/arrendamiento/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_arrendamiento():
-    data = request.get_json()
-    descripcion = data.get('descripcion')
-    periodicidad_id = data.get('periodicidad_id')
-    vehiculo_placa = data.get('vehiculo_placa')
-    medio_pago_id = data.get('medio_pago_id')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        descripcion = data.get('descripcion')
+        periodicidad_id = data.get('periodicidad_id')
+        vehiculo_placa = data.get('vehiculo_placa')
+        medio_pago_id = data.get('medio_pago_id')
 
-    if not descripcion or not periodicidad_id or not vehiculo_placa or not medio_pago_id:
-        return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
+        if not descripcion or not periodicidad_id or not vehiculo_placa or not medio_pago_id:
+            return jsonify({'success': False, 'message': 'Todos los campos son obligatorios'}), 400
 
-    nuevo_arrendamiento = Arrendamiento(
-        descripcion=descripcion,
-        periodicidad_id=periodicidad_id,
-        vehiculo_placa=vehiculo_placa,
-        medio_pago_id=medio_pago_id
-    )
+        nuevo_arrendamiento = Arrendamiento(
+            descripcion=descripcion,
+            periodicidad_id=periodicidad_id,
+            vehiculo_placa=vehiculo_placa,
+            medio_pago_id=medio_pago_id
+        )
 
-    db.session.add(nuevo_arrendamiento)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Arrendamiento creado correctamente'})
+        db.session.add(nuevo_arrendamiento)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Arrendamiento creado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Arrendamiento UPDATE
 @routes.route('/arrendamiento/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_arrendamiento(id):
-    data = request.get_json()
-    descripcion = data.get('descripcion')
-    periodicidad_id = data.get('periodicidad_id')
-    vehiculo_placa = data.get('vehiculo_placa')
-    medio_pago_id = data.get('medio_pago_id')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        descripcion = data.get('descripcion')
+        periodicidad_id = data.get('periodicidad_id')
+        vehiculo_placa = data.get('vehiculo_placa')
+        medio_pago_id = data.get('medio_pago_id')
 
-    arrendamiento = Arrendamiento.query.get_or_404(id)
-    arrendamiento.descripcion = descripcion
-    arrendamiento.periodicidad_id = periodicidad_id
-    arrendamiento.vehiculo_placa = vehiculo_placa
-    arrendamiento.medio_pago_id = medio_pago_id
-    arrendamiento.updated_at = datetime.now()
+        arrendamiento = Arrendamiento.query.get_or_404(id)
+        arrendamiento.descripcion = descripcion
+        arrendamiento.periodicidad_id = periodicidad_id
+        arrendamiento.vehiculo_placa = vehiculo_placa
+        arrendamiento.medio_pago_id = medio_pago_id
+        arrendamiento.updated_at = datetime.now()
 
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Arrendamiento actualizado correctamente'})
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Arrendamiento actualizado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Arrendamiento DELETE
 @routes.route('/arrendamiento/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_arrendamiento(id):
-    arrendamiento = Arrendamiento.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        arrendamiento = Arrendamiento.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(arrendamiento)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Arrendamiento eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(arrendamiento)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Arrendamiento eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Modulo ALL
 @routes.route('/modulo', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def modulo():
     modulos = Modulo.query \
@@ -1045,59 +1093,65 @@ def modulo():
 
 # Modulo CREATE
 @routes.route('/modulo/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def agregar_modulo():
-    data = request.get_json()
-    nombre = data.get('nombre')
-    habilitado = data.get('habilitado')
-    descripcion = data.get('descripcion')
-    sede_id = data.get('sede_id')
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        nombre = data.get('nombre')
+        habilitado = data.get('habilitado')
+        descripcion = data.get('descripcion')
+        sede_id = data.get('sede_id')
 
-    if not nombre or not sede_id or habilitado is None:
-        return jsonify({'success': False, 'message': 'Nombre, Habilitado y Sede son obligatorios'}), 400
+        if not nombre or not sede_id or habilitado is None:
+            return jsonify({'success': False, 'message': 'Nombre, Habilitado y Sede son obligatorios'}), 400
 
-    nuevo_modulo = Modulo(
-        nombre=nombre,
-        habilitado=habilitado,
-        descripcion=descripcion,
-        sede_id=sede_id
-    )
+        nuevo_modulo = Modulo(
+            nombre=nombre,
+            habilitado=habilitado,
+            descripcion=descripcion,
+            sede_id=sede_id
+        )
 
-    db.session.add(nuevo_modulo)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Módulo creado correctamente'})
+        db.session.add(nuevo_modulo)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Módulo creado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Modulo UPDATE
 @routes.route('/modulo/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def actualizar_modulo(id):
-    data = request.get_json()
-    modulo = Modulo.query.get_or_404(id)
-    
-    modulo.nombre = data.get('nombre', modulo.nombre)
-    modulo.habilitado = data.get('habilitado', modulo.habilitado)
-    modulo.descripcion = data.get('descripcion', modulo.descripcion)
-    modulo.sede_id = data.get('sede_id', modulo.sede_id)
-    modulo.updated_at = datetime.now()
+    if jefe_permission.can() or admin_permission.can():
+        data = request.get_json()
+        modulo = Modulo.query.get_or_404(id)
+        
+        modulo.nombre = data.get('nombre', modulo.nombre)
+        modulo.habilitado = data.get('habilitado', modulo.habilitado)
+        modulo.descripcion = data.get('descripcion', modulo.descripcion)
+        modulo.sede_id = data.get('sede_id', modulo.sede_id)
+        modulo.updated_at = datetime.now()
 
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Módulo actualizado correctamente'})
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Módulo actualizado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Modulo DELETE
 @routes.route('/modulo/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def eliminar_modulo(id):
-    modulo = Modulo.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        modulo = Modulo.query.get_or_404(id)
 
-    if request.form.get('_method') == 'DELETE':
-        db.session.delete(modulo)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Módulo eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(modulo)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Módulo eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Sede ALL
 @routes.route('/sede', methods=['GET'])
