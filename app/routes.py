@@ -42,21 +42,22 @@ def vehiculo_tipo():
 
 # VehiculoTipo DELETE
 @routes.route('/vehiculo_tipo/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def vehiculo_tipo_delete(id):
-    tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
+    if jefe_permission.can() or admin_permission.can():
+        tipo_vehiculo = VehiculoTipo.query.get_or_404(id)
 
-    # Verificar si el usuario está asociado a parqueadero
-    if VehiculoTipo.query.filter_by(vehiculo_tipo_id=id).first():
-        return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
-    
-    if request.form.get('_method') == 'DELETE':  # Simular DELETE
-        db.session.delete(tipo_vehiculo)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Vehículo eliminado'}), 200
-    
-    return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+        if VehiculoTipo.query.filter_by(vehiculo_tipo_id=id).first():
+            return jsonify({'success': False, 'message': 'No se puede eliminar: usuario en uso'})
+        
+        if request.form.get('_method') == 'DELETE':
+            db.session.delete(tipo_vehiculo)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Vehículo eliminado'}), 200
+        
+        return jsonify({'success': False, 'message': 'Método no permitido'}), 400
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # VehiculoTipo CREATE
 @routes.route('/vehiculo_tipo/add', methods=['POST'])
@@ -73,7 +74,7 @@ def vehiculo_tipo_add():
         db.session.commit()
         return jsonify({'success': True, 'message': 'Vehículo agregado correctamente'})
     else:
-        return jsonify({'error': False, 'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # VehiculoTipo EDIT
 @routes.route('/vehiculo_tipo/edit/<int:id>', methods=['PUT'])
@@ -92,7 +93,7 @@ def vehiculo_tipo_edit(id):
         
         return jsonify({'success': True, 'message': 'Vehículo actualizado correctamente'}), 200
     else:
-        return jsonify({'error': False, 'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # TarifaTipo ALL
 @routes.route('/tarifa_tipo', methods=['GET'])
@@ -117,7 +118,7 @@ def tarifa_tipo_add():
         db.session.commit()
         return jsonify({'success': True, 'message': 'Tarifa agregada correctamente'})
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # TarifaTipo UPDATE
 @routes.route('/tarifa_tipo/edit/<int:id>', methods=['PUT'])
@@ -137,7 +138,7 @@ def tarifa_tipo_update(id):
         
         return jsonify({'success': True, 'message': 'Tarifa actualizada correctamente'}), 200
     else:
-        return jsonify({'error': False, 'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # TarifaTipo DELETE
 @routes.route('/tarifa_tipo/delete/<int:id>', methods=['POST'])
@@ -153,7 +154,7 @@ def tarifa_tipo_delete(id):
         
         return jsonify({'success': False, 'message': 'Método no permitido'}), 400
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # MedioPago ALL
 @routes.route('/medio_pago', methods=['GET'])
@@ -163,7 +164,7 @@ def medio_pago():
         medios_pagos = MedioPago.query.all()
         return render_template('medio_pago.html', titulo='Medios de Pago', medios_pagos = medios_pagos)
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # MedioPago CREATE
 @routes.route('/medio_pago/add', methods=['POST'])
@@ -180,7 +181,7 @@ def add_medio_pago():
         db.session.commit()
         return jsonify({'success': True, 'message': 'Medio de pago agregado correctamente'})
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # MedioPago UPDATE
 @routes.route('/medio_pago/edit/<int:id>', methods=['PUT'])
@@ -198,7 +199,7 @@ def update_medio_pago(id):
         
         return jsonify({'success': True, 'message': 'Medio de pago actualizado correctamente'}), 200
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # MedioPago DELETE
 @routes.route('/medio_pago/delete/<int:id>', methods=['POST'])
@@ -214,7 +215,7 @@ def delete_medio_pago(id):
         
         return jsonify({'success': False, 'message': 'Método no permitido'}), 400
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Cliente ALL
 @routes.route('/cliente', methods=['GET'])
@@ -242,7 +243,7 @@ def cliente():
         ]
         return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict, parqueaderos=parqueaderos)
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Cliente CREATE
 @routes.route('/cliente/add', methods=['POST'])
@@ -266,7 +267,7 @@ def add_cliente():
         db.session.commit()
         return jsonify({'success': True, 'message': 'Cliente agregado correctamente'})
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Cliente UPDATE
 @routes.route('/cliente/edit/<int:id>', methods=['PUT'])
@@ -297,7 +298,7 @@ def update_cliente(id):
         
         return jsonify({'success': True, 'message': 'Cliente actualizado correctamente'}), 200
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Cliente DELETE
 @routes.route('/cliente/delete/<int:id>', methods=['POST'])
@@ -313,7 +314,7 @@ def delete_cliente(id):
         
         return jsonify({'success': False, 'message': 'Método no permitido'}), 400
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Rol ALL
 @routes.route('/rol', methods=['GET'])
@@ -336,6 +337,8 @@ def add_rol():
         db.session.add(nuevo_rol)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Rol agregado correctamente'})
+    else:
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Rol UPDATE
 @routes.route('/rol/edit/<int:id>', methods=['PUT'])
@@ -349,11 +352,11 @@ def update_rol(id):
         
         rol = Rol.query.get_or_404(id)
         rol.nombre = nombre
-        db.session.commit()  # Se actualiza automáticamente `updated_at`
+        db.session.commit()
         
         return jsonify({'success': True, 'message': 'Rol actualizado correctamente'}), 200
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Rol DELETE
 @routes.route('/rol/delete/<int:id>', methods=['POST'])
@@ -369,7 +372,7 @@ def delete_rol(id):
         
         return jsonify({'success': False, 'message': 'Método no permitido'}), 400
     else:
-        return jsonify({'error': False,'message': 'Acceso denegado'}), 403
+        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
 
 # Usuario ALL
 @routes.route('/usuario', methods=['GET'])
@@ -832,7 +835,6 @@ def delete_tarifa(id):
 
 # Parqueo ALL
 @routes.route('/parqueo', methods=['GET'])
-@jefe_permission.require(http_exception=403)
 @login_required
 def parqueo():
     parqueos = Parqueo.query \
@@ -880,7 +882,7 @@ def parqueo():
 @routes.route('/parqueo/add', methods=['POST'])
 @login_required
 def agregar_parqueo():
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or operario_permission.can():
         data = request.get_json()
         modulo_id = data.get('modulo_id')
         vehiculo_placa = data.get('vehiculo_placa')
@@ -909,7 +911,7 @@ def agregar_parqueo():
 @routes.route('/parqueo/edit/<int:id>', methods=['PUT'])
 @login_required
 def actualizar_parqueo(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or operario_permission.can():
         data = request.get_json()
         modulo_id = data.get('modulo_id')
         vehiculo_placa = data.get('vehiculo_placa')
@@ -933,7 +935,7 @@ def actualizar_parqueo(id):
 @routes.route('/parqueo/delete/<int:id>', methods=['POST'])
 @login_required
 def eliminar_parqueo(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or operario_permission.can():
         parqueo = Parqueo.query.get_or_404(id)
 
         if request.form.get('_method') == 'DELETE':
@@ -1155,7 +1157,7 @@ def eliminar_modulo(id):
 
 # Sede ALL
 @routes.route('/sede', methods=['GET'])
-@jefe_permission.require(http_exception=403)
+
 @login_required
 def sede():
     sedes = Sede.query \
@@ -1266,7 +1268,7 @@ def eliminar_sede(id):
 
 # Pais ALL
 @routes.route('/pais', methods=['GET'])
-@jefe_permission.require(http_exception=403)
+
 @login_required
 def pais():
     paises = Pais.query.all()
@@ -1651,7 +1653,7 @@ def parqueadero():
 
 # Parqueadero CREATE
 @routes.route('/parqueadero/add', methods=['POST'])
-@jefe_permission.require(http_exception=403)
+
 @login_required
 def agregar_parqueadero():
     data = request.get_json()
@@ -1692,7 +1694,7 @@ def agregar_parqueadero():
 
 # Parqueadero UPDATE
 @routes.route('/parqueadero/edit/<int:id>', methods=['PUT'])
-@jefe_permission.require(http_exception=403)
+
 @login_required
 def actualizar_parqueadero(id):
     data = request.get_json()
@@ -1728,7 +1730,7 @@ def actualizar_parqueadero(id):
 
 # Parqueadero DELETE
 @routes.route('/parqueadero/delete/<int:id>', methods=['POST'])
-@jefe_permission.require(http_exception=403)
+
 @login_required
 def eliminar_parqueadero(id):
     parqueadero = Parqueadero.query.get_or_404(id)
@@ -1822,7 +1824,7 @@ def register():
 
 # Información de perfil
 @routes.route('/profile_info', methods=['GET'])
-@jefe_permission.require(http_exception=403)
+
 @login_required
 def profile_info():
 

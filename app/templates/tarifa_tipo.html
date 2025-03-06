@@ -119,8 +119,11 @@
           success: function (response) {
             Swal.fire("Éxito", response.message, "success").then(() => location.reload());
           },
-          error: function () {
-            Swal.fire("Error", "No se pudo completar la operación.", "error");
+          error: function(jqXHR, textStatus, errorThrown) {
+            let response = jqXHR.responseJSON;
+            let message = response && response.message ? response.message : "Error desconocido";
+
+            Swal.fire("Error", message, "error");
           }
         });
         $("#feeModal").modal("hide");
