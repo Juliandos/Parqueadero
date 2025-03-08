@@ -12,8 +12,8 @@
       <thead class="table-blue">
         <tr>
           <th>ID</th>
-          <th>Cantidad</th>
-          <th>Puntos</th>
+          <th>Redimir</th>
+          <th>Puntos - Cliente</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -22,7 +22,7 @@
         <tr>
           <td>{{ redencion.id }}</td>
           <td>{{ redencion.cantidad }}</td>
-          <td>{{ redencion.punto_cantidad }}</td>
+          <td>{{ redencion.puntos_cantidad }} - {{ clientes.get(redencion.cliente_id, 'Desconocido') }}</td>
           <td>
             <button class="btn btn-warning btn-sm btnEditar" title="Editar" data-id="{{ redencion.id }}">
               <i class="fas fa-edit"></i>
@@ -52,16 +52,16 @@
           <input type="hidden" id="RedimirId">
           <div class="mb-3">
             <label class="form-label">Cantidad</label>
-            <input type="number" class="form-control" id="cantidad" required>
+            <input type="number" class="form-control text-dark" id="cantidad" required>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Puntos a Redimir</label>
             <select class="form-select" id="puntos_id" required>
-              <option value="">Seleccionar puntos</option>
+              <option value="">Puntos Cliente</option>
               {% for punto in puntos %}
               <option value="{{ punto.id }}">
-                {{ punto.cantidad }}
+                {{ punto.cantidad }} - {{ clientes.get(punto.id)}}
               </option>
               {% endfor %}
             </select>
@@ -112,12 +112,13 @@
 
       let redimirId = row.find("td:eq(0)").text();
       let cantidad = row.find("td:eq(1)").text();
-      const cantidadText = row.find("td:eq(2)").text();
-      const cantidadValue = parseInt(cantidadText, 10);
-
-      const redimirEncontrado = redimir.find(p => p.punto_cantidad === cantidadValue);
-
+      let cantidadText = row.find("td:eq(2)").text();
+      let cantidadValue = parseInt(cantidadText, 10);
+      
+      const redimirEncontrado = redimir.find(p => p.id == redimirId);
+      
       const puntos_id = redimirEncontrado ? redimirEncontrado.punto_id : null;
+      console.log(redimir, redimirEncontrado, puntos_id, redimirId);
 
       $('#ModalRedimirLabel').text('Editar Redención');
       $('#RedimirId').val(redimirId);

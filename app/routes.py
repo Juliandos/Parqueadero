@@ -1493,23 +1493,30 @@ def redimir():
     redenciones = Redimir.query.join(Punto).add_columns(
         Redimir.id,
         Redimir.cantidad,
-        Punto.id.label('punto_id'),
-        Punto.cantidad.label('punto_cantidad')
+        Punto.cantidad.label('puntos_cantidad'),
+        Punto.cliente_id.label('cliente_id'),
+        Punto.id.label('punto_id')
     ).all()
 
     puntos = Punto.query.order_by(Punto.id).all()
+    clientes = Cliente.query.order_by(Cliente.id).all()
 
+    clientes_dict = {cliente.id: cliente.nombres for cliente in clientes}  # Ajusta 'nombre' al campo correcto
+
+    print(redenciones)
     redenciones_data = [{
         'id': r.id,
         'cantidad': r.cantidad,
-        'punto_id': r.punto_id,
-        'punto_cantidad': r.punto_cantidad  
+        'puntos_cantidad': r.puntos_cantidad,
+        'cliente_id': r.cliente_id,
+        'punto_id': r.punto_id
     } for r in redenciones]
 
     return render_template('redimir.html', 
                         titulo="Administración de Redenciones",
                         redenciones=redenciones_data,
-                        puntos=puntos)
+                        puntos=puntos,
+                        clientes=clientes_dict)
 
 # Redimir CREATE
 @routes.route('/redimir/add', methods=['POST'])
