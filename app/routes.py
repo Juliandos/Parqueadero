@@ -1503,7 +1503,6 @@ def redimir():
 
     clientes_dict = {cliente.id: cliente.nombres for cliente in clientes}  # Ajusta 'nombre' al campo correcto
 
-    print(redenciones)
     redenciones_data = [{
         'id': r.id,
         'cantidad': r.cantidad,
@@ -1517,6 +1516,42 @@ def redimir():
                         redenciones=redenciones_data,
                         puntos=puntos,
                         clientes=clientes_dict)
+
+# Redimir PROCESS
+@routes.route('/redimir/<int:id>', methods=['PUT'])
+@login_required
+def procesar_redencion(id):
+    try:
+        if not (jefe_permission.can() or admin_permission.can()):
+            return jsonify({'success': False, 'message': 'No tienes permisos para esta acción'}), 403
+
+        data = request.get_json()
+        cantidad_redimir = data.get('cantidad')
+
+        # Verificar que cantidad_redimir no sea None y convertir a entero
+        if cantidad_redimir is None or not str(cantidad_redimir).isdigit():
+            return jsonify({'success': False, 'message': 'Cantidad inválida'}), 400
+        
+        cantidad_redimir = int(cantidad_redimir)  # Convertir a entero
+
+        if cantidad_redimir <= 0:
+            return jsonify({'success': False, 'message': 'Cantidad debe ser mayor a 0'}), 400
+
+        redimir = Redimir.query.get_or_404(id)
+        punto = Punto.query.filter_by(id=redimir.punto_id).first()
+
+        if not punto or punto.cantidad < cantidad_redimir:
+            return jsonify({'success': False, 'message': 'Puntos insuficientes'}), 400
+
+        # Restar los puntos redimidos
+        punto.cantidad -= cantidad_redimir
+        redimir.cantidad = cantidad_redimir
+
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Redención procesada correctamente'})
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error inesperado: {str(e)}'}), 500
 
 # Redimir CREATE
 @routes.route('/redimir/add', methods=['POST'])

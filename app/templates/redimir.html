@@ -30,6 +30,9 @@
             <button class="btn btn-danger btn-sm btnEliminar" title="Eliminar" data-id="{{ redencion.id }}">
               <i class="fas fa-trash-alt"></i>
             </button>
+            <button class="btn btn-success btn-sm" title="Redimir" id="btnRedimir" data-id="{{ redencion.id }}">
+              <i class="fas fa-money-bill-wave"></i>
+            </button>
           </td>
         </tr>
         {% endfor %}
@@ -66,8 +69,7 @@
               {% endfor %}
             </select>
           </div>
-
-          <button type="submit" class="btn btn-primary w-100">Guardar</button>
+            <button type="submit" class="btn btn-primary w-100">Guardar</button>
         </form>
       </div>
     </div>
@@ -116,15 +118,49 @@
       let cantidadValue = parseInt(cantidadText, 10);
       
       const redimirEncontrado = redimir.find(p => p.id == redimirId);
-      
       const puntos_id = redimirEncontrado ? redimirEncontrado.punto_id : null;
-      console.log(redimir, redimirEncontrado, puntos_id, redimirId);
 
       $('#ModalRedimirLabel').text('Editar Redención');
       $('#RedimirId').val(redimirId);
       $('#cantidad').val(cantidad);
       $('#puntos_id').val(puntos_id);
       $('#ModalRedimir').modal('show');
+    });
+
+    $('#btnRedimir').click(function () {
+      let row = $(this).closest("tr");
+      let redimirId = row.find("td:eq(0)").text();
+      let cantidadRedimir = row.find("td:eq(1)").text();
+      console.log(row.html(), redimirId, cantidadRedimir);
+      
+      Swal.fire({
+        title: '¿Confirmar Redención?',
+        text: `Se restarán ${cantidadRedimir} puntos.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, redimir',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: `/redimir/${redimirId}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ cantidad: cantidadRedimir }),
+            success: function (response) {
+              Swal.fire('Éxito', response.message, 'success').then(() => {
+                window.location.reload();
+              });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              let response = jqXHR.responseJSON;
+              let message = response && response.message ? response.message : "Error desconocido";
+
+              Swal.fire("Error", message, "error");
+            }
+          });
+        }
+      });
     });
 
     $('#RedimirForm').submit(function (e) {
