@@ -221,35 +221,32 @@ def delete_medio_pago(id):
 @routes.route('/cliente', methods=['GET'])
 @login_required
 def cliente():
-    if jefe_permission.can() or admin_permission.can():
-        clientes = Cliente.query.join(Parqueadero).add_columns(
-            Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.id.label('parqueadero_id'), Parqueadero.nombre.label('parqueadero_nombre')
-        ).all()
+    clientes = Cliente.query.join(Parqueadero).add_columns(
+        Cliente.id, Cliente.documento, Cliente.nombres, Cliente.apellidos, Cliente.telefono, Cliente.email, Cliente.direccion, Parqueadero.id.label('parqueadero_id'), Parqueadero.nombre.label('parqueadero_nombre')
+    ).all()
 
-        parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
+    parqueaderos = Parqueadero.query.order_by(Parqueadero.id).all()  # Obtener TODOS los parqueaderos ordenados por ID
 
-        clientes_dict = [
-            {
-                "id": u.id,
-                "documento": u.documento,
-                "nombres": u.nombres,
-                "apellidos": u.apellidos,
-                "telefono": u.telefono,
-                "email": u.email,
-                "direccion": u.direccion,
-                "parqueadero_nombre": u.parqueadero_nombre
-            }
-            for u in clientes
-        ]
-        return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict, parqueaderos=parqueaderos)
-    else:
-        return jsonify({'success': False,'message': 'No tienes permisos para realizar esta acción'}), 403
+    clientes_dict = [
+        {
+            "id": u.id,
+            "documento": u.documento,
+            "nombres": u.nombres,
+            "apellidos": u.apellidos,
+            "telefono": u.telefono,
+            "email": u.email,
+            "direccion": u.direccion,
+            "parqueadero_nombre": u.parqueadero_nombre
+        }
+        for u in clientes
+    ]
+    return render_template('clientes.html', titulo='Clientes', clientes = clientes_dict, parqueaderos=parqueaderos)
 
 # Cliente CREATE
 @routes.route('/cliente/add', methods=['POST'])
 @login_required
 def add_cliente():
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or admin_permission.can():
         data = request.get_json()
         documento = data.get('documento')
         nombres = data.get('nombres')
@@ -273,7 +270,7 @@ def add_cliente():
 @routes.route('/cliente/edit/<int:id>', methods=['PUT'])
 @login_required
 def update_cliente(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or admin_permission.can():
         data = request.get_json()
         documento = data.get('documento')
         nombres = data.get('nombres')
@@ -1124,7 +1121,7 @@ def agregar_modulo():
 @routes.route('/modulo/edit/<int:id>', methods=['PUT'])
 @login_required
 def actualizar_modulo(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or admin_permission.can():
         data = request.get_json()
         modulo = Modulo.query.get_or_404(id)
         
@@ -1435,7 +1432,7 @@ def puntos():
 @routes.route('/punto/add', methods=['POST'])
 @login_required
 def agregar_punto():
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or admin_permission.can():
         data = request.get_json()
         cantidad = data.get('cantidad')
         cliente_id = data.get('cliente_id')
@@ -1460,7 +1457,7 @@ def agregar_punto():
 @routes.route('/punto/edit/<int:id>', methods=['PUT'])
 @login_required
 def actualizar_punto(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or admin_permission.can():
         data = request.get_json()
         punto = Punto.query.get_or_404(id)
         
@@ -1477,7 +1474,7 @@ def actualizar_punto(id):
 @routes.route('/punto/delete/<int:id>', methods=['POST'])
 @login_required
 def eliminar_punto(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or admin_permission.can():
         punto = Punto.query.get_or_404(id)
 
         if request.form.get('_method') == 'DELETE':

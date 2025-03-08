@@ -1,2 +1,3 @@
 agregar validación de fechas como en parqueo
 agregar registro de actividad en la db para saber quien hace que y a que hora, agregar tabla
+hay que modificar  puntos y redimir para que reste la cantidad 
