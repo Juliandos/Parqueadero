@@ -1543,9 +1543,11 @@ def procesar_redencion(id):
         if not punto or punto.cantidad < cantidad_redimir:
             return jsonify({'success': False, 'message': 'Puntos insuficientes'}), 400
 
-        # Restar los puntos redimidos
+        # Restar los puntos redimidos del cliente
         punto.cantidad -= cantidad_redimir
-        redimir.cantidad = cantidad_redimir
+
+        # Poner a 0 los puntos de la tabla Redimir
+        redimir.cantidad = 0
 
         db.session.commit()
         return jsonify({'success': True, 'message': 'Redención procesada correctamente'})
