@@ -1522,13 +1522,12 @@ def redimir():
 @login_required
 def procesar_redencion(id):
     try:
-        if not (jefe_permission.can() or admin_permission.can()):
+        if not (jefe_permission.can() or admin_permission.can() or operario_permission.can()):
             return jsonify({'success': False, 'message': 'No tienes permisos para esta acción'}), 403
 
         data = request.get_json()
         cantidad_redimir = data.get('cantidad')
 
-        # Verificar que cantidad_redimir no sea None y convertir a entero
         if cantidad_redimir is None or not str(cantidad_redimir).isdigit():
             return jsonify({'success': False, 'message': 'Cantidad inválida'}), 400
         
@@ -1543,10 +1542,7 @@ def procesar_redencion(id):
         if not punto or punto.cantidad < cantidad_redimir:
             return jsonify({'success': False, 'message': 'Puntos insuficientes'}), 400
 
-        # Restar los puntos redimidos del cliente
         punto.cantidad -= cantidad_redimir
-
-        # Poner a 0 los puntos de la tabla Redimir
         redimir.cantidad = 0
 
         db.session.commit()
@@ -1559,7 +1555,7 @@ def procesar_redencion(id):
 @routes.route('/redimir/add', methods=['POST'])
 @login_required
 def agregar_redencion():
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or operario_permission.can():
         data = request.get_json()
         cantidad = data.get('cantidad')
         puntos_id = data.get('puntos_id')
@@ -1582,7 +1578,7 @@ def agregar_redencion():
 @routes.route('/redimir/edit/<int:id>', methods=['PUT'])
 @login_required
 def actualizar_redencion(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or operario_permission.can():
         data = request.get_json()
         redimir = Redimir.query.get_or_404(id)
         
@@ -1598,7 +1594,7 @@ def actualizar_redencion(id):
 @routes.route('/redimir/delete/<int:id>', methods=['POST'])
 @login_required
 def eliminar_redencion(id):
-    if jefe_permission.can() or admin_permission.can():
+    if jefe_permission.can() or admin_permission.can() or operario_permission.can():
         redimir = Redimir.query.get_or_404(id)
 
         if request.form.get('_method') == 'DELETE':
