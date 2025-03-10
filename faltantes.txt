@@ -1,3 +1,5 @@
 agregar validación de fechas como en parqueo
 agregar registro de actividad en la db para saber quien hace que y a que hora, agregar tabla
-hay que modificar  puntos y redimir para que reste la cantidad 
+sistema de cobro por unidad de tiempo
+en parqueo colocar nombre y placa del cliente
+quede antes de esto porque aca inicia a crear formularios para empezar a implementar la funcionalidad https://www.youtube.com/watch?v=DNeLAwrt-HI&list=PL2PZw96yQChx9mV5_bZ3Y-_iW_oaq5pCV&index=246
