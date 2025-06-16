@@ -49,11 +49,11 @@ ParqueaderoVirtual/
 
 |                                  |                                 |
 |----------------------------------|---------------------------------|
-| ![Imagen 1](https://github.com/Juliandos/TiendaVirtual/blob/main/Imagenes/login.png)|![Imagen 2](https://github.com/Juliandos/TiendaVirtual/blob/main/Imagenes/dashboard.png)
+| ![Imagen 1](https://github.com/Juliandos/Parqueadero/blob/main/Imagenes/Login.png)|![Imagen 2](https://github.com/Juliandos/Parqueadero/blob/main/Imagenes/Dashboard.png)
 
 |                                  |                                 |
 |----------------------------------|---------------------------------|
-| ![Imagen 2](https://github.com/Juliandos/TiendaVirtual/blob/main/Imagenes/Tienda%20Virtual.png) | ![Imagen 2](https://github.com/Juliandos/TiendaVirtual/blob/main/Imagenes/Carrito.png) |
+| ![Imagen 2](https://github.com/Juliandos/Parqueadero/blob/main/Imagenes/Dashboard1.png) | ![Imagen 2](https://github.com/Juliandos/Parqueadero/blob/main/Imagenes/perfil.png) |
 
 ## Instalación y Configuración
 
