@@ -14,8 +14,6 @@ db = SQLAlchemy()
 login = LoginManager()
 principal = Principal()
 
-# admin_permission = Permission(RoleNeed('Jefe'))
-# user_permission = Permission(RoleNeed('Administrador'))
 
 def create_app():
     app = Flask(__name__)
