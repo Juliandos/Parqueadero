@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  # Aplicación Flask
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: parqueadero-app-prod
+    restart: unless-stopped
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY}
+      - SQLALCHEMY_DATABASE=sqlite:////app/data/app.db
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - parqueadero-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx como proxy reverso
+  nginx:
+    image: nginx:alpine
+    container_name: parqueadero-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - parqueadero-network
+    depends_on:
+      app:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.25'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Base de datos PostgreSQL (opcional, para producción)
+  # Descomenta si quieres usar PostgreSQL en lugar de SQLite
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: parqueadero-db-prod
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_DB=parqueadero_db
+  #     - POSTGRES_USER=${DB_USER}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./backups:/backups
+  #   networks:
+  #     - parqueadero-network
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 256M
+  #         cpus: '0.25'
+  #       reservations:
+  #         memory: 128M
+  #         cpus: '0.1'
+
+  # Redis para caché (opcional)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: parqueadero-redis-prod
+  #   restart: unless-stopped
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - parqueadero-network
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 64M
+  #         cpus: '0.1'
+  #       reservations:
+  #         memory: 32M
+  #         cpus: '0.05'
+
+  # Monitor de logs (opcional)
+  # logrotate:
+  #   image: blacklabelops/logrotate
+  #   container_name: parqueadero-logrotate
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./logs:/logs
+  #     - ./nginx/logrotate.conf:/etc/logrotate.d/nginx:ro
+  #   environment:
+  #     - LOGS_DIRECTORIES=/logs
+  #     - LOGROTATE_INTERVAL=daily
+  #     - LOGROTATE_COPIES=7
+  #     - LOGROTATE_SIZE=100M
+
+networks:
+  parqueadero-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: parqueadero-br
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  logs:
+    driver: local
